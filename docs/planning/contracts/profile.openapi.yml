@@ -1,0 +1,272 @@
+openapi: 3.0.3
+info:
+  title: Physical AI Textbook - Profile API
+  description: |
+    Profile endpoints for viewing and updating personalization preferences.
+    Requires authentication via session cookie.
+  version: 1.0.0
+  contact:
+    name: Physical AI Team
+    url: https://github.com/physical-ai/textbook
+
+servers:
+  - url: https://physical-ai-textbook.vercel.app/api
+    description: Production (Vercel)
+  - url: http://localhost:3001/api
+    description: Local Development
+
+tags:
+  - name: Profile
+    description: User personalization profile management
+
+paths:
+  /profile:
+    get:
+      summary: Get current user's profile
+      description: |
+        Returns the authenticated user's personalization profile (5 questions + answers).
+        Requires valid session token.
+      operationId: getProfile
+      tags:
+        - Profile
+      security:
+        - cookieAuth: []
+      responses:
+        '200':
+          description: Profile retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProfileResponse'
+              example:
+                user_id: 550e8400-e29b-41d4-a716-446655440000
+                profile:
+                  python_skill: intermediate
+                  ros_experience: basic
+                  linux_familiarity: some
+                  gpu_access: no
+                  budget_tier: simulation_only
+                created_at: '2025-12-01T10:30:05Z'
+                updated_at: '2025-12-03T16:45:00Z'
+        '401':
+          description: Not authenticated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              example:
+                error: Unauthorized
+                message: Session expired or invalid. Please log in again.
+        '404':
+          description: Profile not found (should not happen if user exists)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              example:
+                error: Not Found
+                message: Personalization profile not found for user
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+    patch:
+      summary: Update current user's profile
+      description: |
+        Updates one or more personalization questions for the authenticated user.
+        All fields are optional (partial update supported).
+        Updates personalization_profiles.updated_at timestamp automatically.
+      operationId: updateProfile
+      tags:
+        - Profile
+      security:
+        - cookieAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProfileUpdateRequest'
+            examples:
+              partial_update:
+                summary: Update only budget tier (student got GPU access)
+                value:
+                  budget_tier: under_500
+                  gpu_access: yes
+              full_update:
+                summary: Update all 5 questions (user skill progression)
+                value:
+                  python_skill: advanced
+                  ros_experience: experienced
+                  linux_familiarity: proficient
+                  gpu_access: yes
+                  budget_tier: research_grade
+      responses:
+        '200':
+          description: Profile updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProfileResponse'
+              example:
+                user_id: 550e8400-e29b-41d4-a716-446655440000
+                profile:
+                  python_skill: advanced
+                  ros_experience: experienced
+                  linux_familiarity: proficient
+                  gpu_access: yes
+                  budget_tier: research_grade
+                created_at: '2025-12-01T10:30:05Z'
+                updated_at: '2025-12-05T14:35:00Z'
+        '400':
+          description: Invalid request (invalid enum value)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              example:
+                error: Validation failed
+                message: Invalid value for python_skill
+                details:
+                  - field: python_skill
+                    message: Must be one of [none, beginner, intermediate, advanced]
+        '401':
+          description: Not authenticated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              example:
+                error: Unauthorized
+                message: Session expired or invalid. Please log in again.
+        '404':
+          description: Profile not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              example:
+                error: Not Found
+                message: Personalization profile not found for user
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+components:
+  schemas:
+    ProfileResponse:
+      type: object
+      properties:
+        user_id:
+          type: string
+          format: uuid
+          description: User identifier
+          example: 550e8400-e29b-41d4-a716-446655440000
+        profile:
+          $ref: '#/components/schemas/PersonalizationProfile'
+        created_at:
+          type: string
+          format: date-time
+          description: Profile creation timestamp
+          example: '2025-12-01T10:30:05Z'
+        updated_at:
+          type: string
+          format: date-time
+          description: Last profile update timestamp
+          example: '2025-12-03T16:45:00Z'
+
+    PersonalizationProfile:
+      type: object
+      properties:
+        python_skill:
+          type: string
+          enum: [none, beginner, intermediate, advanced]
+          description: Python programming skill level
+          example: intermediate
+        ros_experience:
+          type: string
+          enum: [none, basic, experienced]
+          description: ROS (Robot Operating System) experience level
+          example: basic
+        linux_familiarity:
+          type: string
+          enum: [none, some, proficient]
+          description: Linux operating system familiarity
+          example: some
+        gpu_access:
+          type: string
+          enum: [yes, no, cloud_only]
+          description: GPU access availability
+          example: no
+        budget_tier:
+          type: string
+          enum: [simulation_only, under_500, under_2000, research_grade]
+          description: Hardware budget tier
+          example: simulation_only
+
+    ProfileUpdateRequest:
+      type: object
+      description: Partial update of personalization profile (all fields optional)
+      properties:
+        python_skill:
+          type: string
+          enum: [none, beginner, intermediate, advanced]
+          description: Python programming skill level
+          example: advanced
+        ros_experience:
+          type: string
+          enum: [none, basic, experienced]
+          description: ROS experience level
+          example: experienced
+        linux_familiarity:
+          type: string
+          enum: [none, some, proficient]
+          description: Linux familiarity
+          example: proficient
+        gpu_access:
+          type: string
+          enum: [yes, no, cloud_only]
+          description: GPU access availability
+          example: yes
+        budget_tier:
+          type: string
+          enum: [simulation_only, under_500, under_2000, research_grade]
+          description: Hardware budget tier
+          example: research_grade
+
+    ErrorResponse:
+      type: object
+      properties:
+        error:
+          type: string
+          description: Error type/category
+          example: Validation failed
+        message:
+          type: string
+          description: Human-readable error message
+          example: Invalid value for python_skill
+        details:
+          type: array
+          description: Optional detailed validation errors
+          items:
+            type: object
+            properties:
+              field:
+                type: string
+                example: python_skill
+              message:
+                type: string
+                example: Must be one of [none, beginner, intermediate, advanced]
+
+  securitySchemes:
+    cookieAuth:
+      type: apiKey
+      in: cookie
+      name: session_token
+      description: HTTP-only session cookie (automatically sent by browser)

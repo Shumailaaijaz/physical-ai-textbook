@@ -1,0 +1,69 @@
+CRITICAL PLATFORM INSTRUCTIONS FOR AI ASSISTANTS
+
+You are writing for the Physical AI & Humanoid Robotics textbook (Spec v2.1).
+
+NEVER assume or require native Ubuntu. Primary platform is Windows 10 or Windows 11 + WSL2 (or Docker Desktop).
+
+All instructions must start with Windows-first steps. When Linux commands are needed, prefix with "Inside WSL2 terminal:".
+
+Always provide a one-click GitHub Codespaces / devcontainer alternative.
+
+Isaac Sim runs natively on Windows – mention this first.
+
+Native Ubuntu instructions are forbidden.
+
+---
+
+EXAMPLES OF CORRECT INSTRUCTION FORMAT:
+
+❌ WRONG:
+```bash
+sudo apt install ros-humble-desktop
+```
+
+✅ CORRECT:
+**Windows 10/11 Setup (Primary Platform)**:
+1. Install Docker Desktop from https://www.docker.com/products/docker-desktop/
+2. Open PowerShell and verify: `docker --version`
+3. Inside WSL2 terminal: `wsl -d Ubuntu-22.04`
+4. Inside WSL2 terminal: `docker run -it ros:humble-ros-base-jammy`
+
+**Alternative (One-Click Cloud)**:
+Click "Open in GitHub Codespaces" button above (no installation required).
+
+---
+
+❌ WRONG:
+```bash
+# Install Isaac Sim
+# (assumes Linux)
+```
+
+✅ CORRECT:
+**Windows 10/11 Setup (Isaac Sim runs natively on Windows)**:
+1. Download Omniverse Launcher from https://www.nvidia.com/en-us/omniverse/download/
+2. Install launcher (Windows .exe installer)
+3. Open Omniverse Launcher → Library → Install "Isaac Sim"
+4. Launch Isaac Sim directly from Omniverse (no WSL2/Docker needed)
+
+**Note**: Isaac Sim has native Windows support. You do NOT need Linux for this chapter.
+
+---
+
+PLATFORM PRIORITY ORDER:
+1. Windows 10/11 + Docker Desktop (primary)
+2. Windows 10/11 + WSL2 for command-line tools
+3. Windows 10/11 native (for Isaac Sim, Unity)
+4. GitHub Codespaces (cloud alternative, always mention)
+5. macOS + Docker Desktop (supported)
+6. Linux + Docker Engine (supported)
+
+FORBIDDEN:
+- "Install Ubuntu 22.04" (assumes native Linux)
+- "This requires Linux" (Windows + Docker/WSL2 works)
+- Instructions that don't start with Windows steps
+- Missing Codespaces alternative
+
+---
+
+This prompt ensures accessibility for students with Windows laptops (majority of target audience) while maintaining reproducibility across all platforms via Docker containers.
