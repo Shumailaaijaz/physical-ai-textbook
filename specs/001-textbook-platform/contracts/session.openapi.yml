@@ -1,0 +1,371 @@
+openapi: 3.0.3
+info:
+  title: Physical AI Textbook - Session API
+  description: |
+    Session validation endpoints for verifying authentication status,
+    checking idle timeout, and managing personalization/language state.
+  version: 1.0.0
+  contact:
+    name: Physical AI Team
+    url: https://github.com/physical-ai/textbook
+
+servers:
+  - url: https://physical-ai-textbook.vercel.app/api
+    description: Production (Vercel)
+  - url: http://localhost:3001/api
+    description: Local Development
+
+tags:
+  - name: Session
+    description: Session validation and state management
+
+paths:
+  /session/validate:
+    get:
+      summary: Validate current session
+      description: |
+        Validates the session token from HTTP-only cookie.
+        Checks both idle timeout (7 days) and absolute expiration (90 days).
+        Updates last_activity timestamp on success.
+
+        **Session Validity Rules**:
+        1. Token must exist and match hash in database
+        2. Session must be active (is_active = TRUE)
+        3. last_activity must be within 7 days (idle timeout)
+        4. expires_at must be in the future (90-day max)
+
+        **Performance Target**: <150ms (Supabase query + middleware)
+
+        **Usage**: Called on every page load and API request via middleware
+      operationId: validateSession
+      tags:
+        - Session
+      security:
+        - cookieAuth: []
+      responses:
+        '200':
+          description: Session is valid
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SessionValidResponse'
+              examples:
+                active_session:
+                  summary: Valid session with 85 days remaining
+                  value:
+                    valid: true
+                    user:
+                      id: 550e8400-e29b-41d4-a716-446655440000
+                      email: student@university.edu
+                    session:
+                      expires_at: '2026-03-01T10:30:10Z'
+                      last_activity: '2025-12-05T14:22:00Z'
+                      personalization_enabled: true
+                      language_preference: ur
+                    idle_timeout_warning: false
+                    days_until_expiration: 85
+                approaching_idle_timeout:
+                  summary: Valid session but nearing 7-day idle timeout (5 days inactive)
+                  value:
+                    valid: true
+                    user:
+                      id: 550e8400-e29b-41d4-a716-446655440000
+                      email: student@university.edu
+                    session:
+                      expires_at: '2026-03-01T10:30:10Z'
+                      last_activity: '2025-11-30T10:00:00Z'
+                      personalization_enabled: false
+                      language_preference: en
+                    idle_timeout_warning: true
+                    hours_until_idle_logout: 48
+                    days_until_expiration: 85
+        '401':
+          description: Session is invalid or expired
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SessionInvalidResponse'
+              examples:
+                idle_timeout:
+                  summary: Session expired due to 7-day inactivity
+                  value:
+                    valid: false
+                    reason: idle_timeout
+                    message: Session expired due to inactivity. Please log in again to restore personalization.
+                    last_activity: '2025-11-20T08:00:00Z'
+                    days_inactive: 15
+                absolute_expiration:
+                  summary: Session expired after 90 days
+                  value:
+                    valid: false
+                    reason: absolute_expiration
+                    message: Session expired after 90 days. Please log in again.
+                    expires_at: '2025-11-30T10:30:10Z'
+                no_session:
+                  summary: No session cookie present
+                  value:
+                    valid: false
+                    reason: no_session
+                    message: No active session. Please log in.
+                invalid_token:
+                  summary: Session token is invalid or revoked
+                  value:
+                    valid: false
+                    reason: invalid_token
+                    message: Session token is invalid. Please log in again.
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /session/state:
+    patch:
+      summary: Update session state (personalization/language preference)
+      description: |
+        Updates personalization_enabled or language_preference for the current session.
+        Does NOT require full authentication check (assumes valid session).
+
+        **Use Cases**:
+        - Toggle "Personalise this chapter" on/off → Update personalization_enabled
+        - Toggle "اردو میں دیکھیں / View in English" → Update language_preference
+
+        **Performance Target**: <200ms (Supabase update)
+      operationId: updateSessionState
+      tags:
+        - Session
+      security:
+        - cookieAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SessionStateUpdateRequest'
+            examples:
+              enable_personalization:
+                summary: Enable "Personalise this chapter"
+                value:
+                  personalization_enabled: true
+              switch_to_urdu:
+                summary: Switch language to Urdu
+                value:
+                  language_preference: ur
+              both:
+                summary: Enable personalization and switch to Urdu
+                value:
+                  personalization_enabled: true
+                  language_preference: ur
+      responses:
+        '200':
+          description: Session state updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SessionStateResponse'
+              example:
+                success: true
+                session:
+                  personalization_enabled: true
+                  language_preference: ur
+                  last_activity: '2025-12-05T14:35:00Z'
+        '400':
+          description: Invalid request (invalid language code)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              example:
+                error: Bad Request
+                message: Invalid language_preference (must be 'en' or 'ur')
+        '401':
+          description: Not authenticated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              example:
+                error: Unauthorized
+                message: No active session. Please log in.
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+components:
+  schemas:
+    SessionValidResponse:
+      type: object
+      properties:
+        valid:
+          type: boolean
+          description: Session validity status
+          example: true
+        user:
+          type: object
+          properties:
+            id:
+              type: string
+              format: uuid
+              description: User identifier
+              example: 550e8400-e29b-41d4-a716-446655440000
+            email:
+              type: string
+              format: email
+              description: User email
+              example: student@university.edu
+        session:
+          type: object
+          properties:
+            expires_at:
+              type: string
+              format: date-time
+              description: Absolute session expiration (90 days from creation)
+              example: '2026-03-01T10:30:10Z'
+            last_activity:
+              type: string
+              format: date-time
+              description: Most recent user activity timestamp
+              example: '2025-12-05T14:22:00Z'
+            personalization_enabled:
+              type: boolean
+              description: Whether "Personalise this chapter" is active
+              example: true
+            language_preference:
+              type: string
+              enum: [en, ur]
+              description: Current language preference
+              example: ur
+        idle_timeout_warning:
+          type: boolean
+          description: True if session will expire due to inactivity in <48 hours
+          example: false
+        hours_until_idle_logout:
+          type: integer
+          description: Hours until idle timeout (if warning is true)
+          example: 48
+        days_until_expiration:
+          type: integer
+          description: Days until absolute expiration (90-day max)
+          example: 85
+
+    SessionInvalidResponse:
+      type: object
+      properties:
+        valid:
+          type: boolean
+          description: Session validity status (always false)
+          example: false
+        reason:
+          type: string
+          enum: [idle_timeout, absolute_expiration, no_session, invalid_token]
+          description: Reason for session invalidity
+          example: idle_timeout
+        message:
+          type: string
+          description: Human-readable error message
+          example: Session expired due to inactivity. Please log in again to restore personalization.
+        last_activity:
+          type: string
+          format: date-time
+          description: Last activity timestamp (for idle_timeout reason)
+          example: '2025-11-20T08:00:00Z'
+        days_inactive:
+          type: integer
+          description: Number of days inactive (for idle_timeout reason)
+          example: 15
+        expires_at:
+          type: string
+          format: date-time
+          description: Expiration timestamp (for absolute_expiration reason)
+          example: '2025-11-30T10:30:10Z'
+
+    SessionStateUpdateRequest:
+      type: object
+      description: Update personalization or language preference (at least one field required)
+      properties:
+        personalization_enabled:
+          type: boolean
+          description: Enable/disable chapter personalization
+          example: true
+        language_preference:
+          type: string
+          enum: [en, ur]
+          description: Set language preference (English/Urdu)
+          example: ur
+
+    SessionStateResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+          description: Update success status
+          example: true
+        session:
+          type: object
+          properties:
+            personalization_enabled:
+              type: boolean
+              description: Updated personalization state
+              example: true
+            language_preference:
+              type: string
+              enum: [en, ur]
+              description: Updated language preference
+              example: ur
+            last_activity:
+              type: string
+              format: date-time
+              description: Updated last activity timestamp
+              example: '2025-12-05T14:35:00Z'
+
+    ErrorResponse:
+      type: object
+      properties:
+        error:
+          type: string
+          description: Error type/category
+          example: Unauthorized
+        message:
+          type: string
+          description: Human-readable error message
+          example: No active session. Please log in.
+
+  securitySchemes:
+    cookieAuth:
+      type: apiKey
+      in: cookie
+      name: session_token
+      description: HTTP-only session cookie (automatically sent by browser)
+
+  x-performance-targets:
+    session_validation_latency_ms: 150
+    state_update_latency_ms: 200
+
+  x-session-validation-logic:
+    description: |
+      Session validation query (PostgreSQL):
+
+      SELECT * FROM sessions
+      WHERE token_hash = $1
+        AND is_active = TRUE
+        AND last_activity >= NOW() - INTERVAL '7 days'  -- Idle timeout check
+        AND expires_at > NOW()                            -- Absolute expiration check
+      LIMIT 1;
+
+      If query returns no rows, session is invalid.
+      If query returns a row, update last_activity = NOW() and return user data.
+
+  x-middleware-usage:
+    description: |
+      This endpoint is called automatically via middleware on:
+      - Every page load (Docusaurus client-side navigation)
+      - Every API request (GET /api/profile, PATCH /api/profile, etc.)
+
+      Middleware behavior:
+      - If session is valid: Allow request, inject user context
+      - If session is invalid (401): Redirect to login page or show re-login prompt
+      - If approaching idle timeout: Show warning banner ("You will be logged out in 2 days due to inactivity")
