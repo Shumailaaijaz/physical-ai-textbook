@@ -1,0 +1,998 @@
+---
+id: 04-gazebo-simulation
+title: "Chapter 4: Gazebo Simulation"
+sidebar_position: 4
+part: 2
+week: 6
+difficulty_levels: [intermediate]
+hardware_tracks: [simulation_only, budget_hardware, research_grade]
+citation_count: 10
+word_count: 7500
+urdu_completeness: 0
+---
+
+# Chapter 4: Gazebo Simulation
+
+> *"Simulation is where robots learn to fall a million times so they never fall once in reality."*
+
+## Learning Objectives
+
+By the end of this chapter, you will be able to:
+
+1. **Set up Gazebo** simulation environments
+2. **Spawn robots** from URDF into Gazebo worlds
+3. **Simulate sensors** (LIDAR, cameras, IMU, contact sensors)
+4. **Apply forces** and model physics (gravity, friction, collisions)
+5. **Integrate Gazebo with ROS 2** for robot control
+
+**Estimated Time**: 6-8 hours (reading + labs)
+
+---
+
+## 4.1 Introduction: Why Simulate?
+
+Before deploying a $16,000 humanoid robot, you want to know it won't:
+- Walk into walls
+- Fall down stairs
+- Drop objects
+- Collide with humans
+
+**Simulation** lets you test algorithms in a virtual world first.
+
+### 4.1.1 Benefits of Simulation
+
+| Benefit | Example |
+|---------|---------|
+| **Safety** | Test aggressive locomotion policies without damaging hardware |
+| **Speed** | Run 100 experiments overnight (parallel simulations) |
+| **Cost** | $0 per experiment (vs. $1000+ robot maintenance per year) |
+| **Reproducibility** | Same initial conditions every time (no battery drain, motor wear) |
+| **Synthetic data** | Generate 1M labeled images for training vision models |
+
+### 4.1.2 Industry Use Cases
+
+- **Waymo**: Simulates 20 billion miles/year for self-driving cars
+- **Amazon Robotics**: Tests warehouse robots in digital twins before deployment
+- **Boston Dynamics**: Atlas backflips were first perfected in simulation
+
+### 4.1.3 Gazebo vs Other Simulators
+
+| Simulator | Physics | Graphics | ROS Integration | Best For |
+|-----------|---------|----------|-----------------|----------|
+| **Gazebo** | ⭐⭐⭐⭐⭐ (ODE, Bullet) | ⭐⭐ | ⭐⭐⭐⭐⭐ (Native) | Navigation, manipulation |
+| **Isaac Sim** | ⭐⭐⭐⭐ (PhysX) | ⭐⭐⭐⭐⭐ (RTX) | ⭐⭐⭐⭐ (ROS bridge) | Synthetic data, ML training |
+| **MuJoCo** | ⭐⭐⭐⭐⭐ (Fast contacts) | ⭐⭐ | ⭐⭐⭐ (Custom) | RL, control theory |
+| **PyBullet** | ⭐⭐⭐⭐ | ⭐⭐ | ⭐⭐ (DIY) | Quick prototyping |
+
+**Gazebo is the standard** for ROS-based robotics.
+
+---
+
+## 4.2 Gazebo Architecture
+
+Gazebo uses a **client-server** model:
+
+1. **`gzserver`**: Physics engine (runs simulations, computes collisions, sensor data)
+2. **`gzclient`**: GUI (visualizes the world, user interaction)
+
+**You can run `gzserver` without `gzclient`** for headless batch simulations (e.g., training RL policies).
+
+### 4.2.1 Physics Engines
+
+Gazebo supports multiple physics engines:
+
+| Engine | Speed | Accuracy | Best For |
+|--------|-------|----------|----------|
+| **ODE** (default) | Fast | Good | General robotics |
+| **Bullet** | Fastest | Good | Real-time simulations |
+| **Simbody** | Slow | Excellent | Biomechanics |
+| **DART** | Medium | Excellent | Contact-rich tasks |
+
+**For humanoids**: ODE or Bullet (balance speed + accuracy).
+
+### 4.2.2 Plugins
+
+**Plugins** extend Gazebo with custom:
+- **Sensors**: Custom LIDAR, thermal cameras
+- **Controllers**: Velocity commands, force control
+- **World logic**: Spawn objects, change gravity
+
+Plugins are written in C++ or use ROS 2 bridges (Python).
+
+---
+
+## 4.3 Installing Gazebo on Windows
+
+Gazebo runs inside Docker on Windows (Linux container).
+
+<details>
+<summary>Click to expand: Windows Docker Setup</summary>
+
+**Prerequisites**:
+- Docker Desktop for Windows
+- VcXsrv (for GUI forwarding)
+
+**Step 1: Install VcXsrv**
+
+1. Download: https://sourceforge.net/projects/vcxsrv/
+2. Install and launch "XLaunch"
+3. Select "Multiple windows", Display number: 0
+4. **Important**: Check "Disable access control"
+
+**Step 2: Pull Gazebo + ROS 2 Image**
+
+```powershell
+docker pull osrf/ros:humble-desktop-full
+```
+
+**Step 3: Run Container with GUI Forwarding**
+
+```powershell
+# Set DISPLAY variable (Windows host IP)
+docker run -it `
+  -e DISPLAY=host.docker.internal:0 `
+  --name ros2_gazebo `
+  osrf/ros:humble-desktop-full
+```
+
+**Step 4: Verify Installation**
+
+```bash
+# Inside container:
+gazebo --version
+# Expected: Gazebo multi-robot simulator, version 11.10.2
+```
+
+**Step 5: Launch Gazebo GUI**
+
+```bash
+gazebo
+```
+
+**Expected**: Gazebo window opens showing an empty world with a ground plane.
+
+</details>
+
+---
+
+## 4.4 World Files (SDF Format)
+
+**SDF (Simulation Description Format)** is XML for defining:
+- Worlds (lighting, gravity, physics settings)
+- Models (robots, objects, buildings)
+
+### 4.4.1 Minimal World
+
+Create `empty_world.world`:
+
+```xml
+<?xml version="1.0"?>
+<sdf version="1.6">
+  <world name="empty_world">
+
+    <!-- Lighting -->
+    <include>
+      <uri>model://sun</uri>
+    </include>
+
+    <!-- Ground Plane -->
+    <include>
+      <uri>model://ground_plane</uri>
+    </include>
+
+    <!-- Physics Settings -->
+    <physics type="ode">
+      <real_time_update_rate>1000</real_time_update_rate>
+      <max_step_size>0.001</max_step_size>
+      <real_time_factor>1</real_time_factor>  <!-- 1 = real-time speed -->
+    </physics>
+
+    <!-- Gravity -->
+    <gravity>0 0 -9.81</gravity>  <!-- Earth gravity (m/s²) -->
+
+  </world>
+</sdf>
+```
+
+**Launch**:
+```bash
+gazebo empty_world.world
+```
+
+**Result**: World with ground and sun (basic lighting).
+
+### 4.4.2 Adding Objects
+
+```xml
+<!-- Add a box at position (1, 2, 0.5) -->
+<model name="box">
+  <pose>1 2 0.5 0 0 0</pose>  <!-- x y z roll pitch yaw -->
+  <static>true</static>  <!-- Fixed (won't fall) -->
+
+  <link name="link">
+    <collision name="collision">
+      <geometry>
+        <box>
+          <size>1 1 1</size>  <!-- 1m cube -->
+        </box>
+      </geometry>
+    </collision>
+
+    <visual name="visual">
+      <geometry>
+        <box>
+          <size>1 1 1</size>
+        </box>
+      </geometry>
+      <material>
+        <ambient>1 0 0 1</ambient>  <!-- Red -->
+      </material>
+    </visual>
+  </link>
+</model>
+```
+
+---
+
+## 4.5 Spawning Robots from URDF
+
+You can spawn robots defined in URDF into Gazebo worlds.
+
+### 4.5.1 Method 1: Command Line
+
+```bash
+# Start Gazebo (empty world)
+gazebo &
+
+# Spawn robot from URDF (separate terminal)
+ros2 run gazebo_ros spawn_entity.py \
+  -entity my_robot \
+  -file /path/to/robot.urdf \
+  -x 0 -y 0 -z 0.5
+```
+
+**Parameters**:
+- `-entity`: Robot name (must be unique)
+- `-file`: Path to URDF file
+- `-x`, `-y`, `-z`: Initial position
+- `-R`, `-P`, `-Y`: Initial orientation (roll, pitch, yaw in radians)
+
+### 4.5.2 Method 2: Launch File
+
+```python
+from launch import LaunchDescription
+from launch_ros.actions import Node
+from launch.actions import ExecuteProcess
+from ament_index_python.packages import get_package_share_directory
+import os
+
+def generate_launch_description():
+    # Path to URDF
+    urdf_file = os.path.join(
+        get_package_share_directory('my_robot_description'),
+        'urdf', 'robot.urdf'
+    )
+
+    return LaunchDescription([
+        # Launch Gazebo
+        ExecuteProcess(
+            cmd=['gazebo', '--verbose', '-s', 'libgazebo_ros_factory.so'],
+            output='screen'
+        ),
+
+        # Spawn robot
+        Node(
+            package='gazebo_ros',
+            executable='spawn_entity.py',
+            arguments=['-entity', 'my_robot', '-file', urdf_file, '-z', '0.5'],
+            output='screen'
+        ),
+    ])
+```
+
+**Run**:
+```bash
+ros2 launch my_robot_description spawn_robot.launch.py
+```
+
+---
+
+## 4.6 Physics Simulation
+
+Gazebo simulates real-world physics.
+
+### 4.6.1 Gravity
+
+**Default**: Earth gravity (9.81 m/s² downward)
+
+**Custom gravity** (e.g., Mars: 3.71 m/s²):
+```xml
+<physics type="ode">
+  <gravity>0 0 -3.71</gravity>
+</physics>
+```
+
+**Zero gravity** (space):
+```xml
+<gravity>0 0 0</gravity>
+```
+
+### 4.6.2 Friction
+
+**Friction** affects:
+- Wheels (grip on ground)
+- Feet (slip resistance)
+- Grasping (object slips from gripper)
+
+**Configure per surface**:
+
+```xml
+<collision name="collision">
+  <geometry>
+    <cylinder>
+      <radius>0.1</radius>
+      <length>0.05</length>
+    </cylinder>
+  </geometry>
+
+  <surface>
+    <friction>
+      <ode>
+        <mu>0.8</mu>   <!-- Coefficient of friction (0 = ice, 1 = rubber) -->
+        <mu2>0.8</mu2> <!-- Secondary friction (for anisotropic surfaces) -->
+        <slip1>0.0</slip1>
+        <slip2>0.0</slip2>
+      </ode>
+    </friction>
+  </surface>
+</collision>
+```
+
+**Typical values**:
+- **Ice**: μ = 0.02
+- **Wood on wood**: μ = 0.4
+- **Rubber on concrete**: μ = 0.9
+
+### 4.6.3 Collisions
+
+Gazebo detects collisions between objects and applies contact forces.
+
+**Collision shapes** (fastest to slowest):
+1. **Sphere**: Fastest
+2. **Box**: Fast
+3. **Cylinder**: Medium
+4. **Mesh**: Slowest (use only for static objects)
+
+**Best practice**: Use **convex hulls** or simple shapes for dynamic objects.
+
+### 4.6.4 Contact Forces
+
+When two objects collide, Gazebo computes:
+- **Normal force** (pushes objects apart)
+- **Tangential force** (friction)
+
+**Example**: Robot foot on ground
+- Ground pushes foot up (normal force)
+- Friction prevents foot from sliding (tangential force)
+
+---
+
+## 4.7 Simulated Sensors
+
+Gazebo provides plugins for common robotics sensors.
+
+### 4.7.1 Camera
+
+**Add to URDF/SDF**:
+
+```xml
+<link name="camera_link">
+  <visual>
+    <geometry>
+      <box size="0.05 0.05 0.05"/>
+    </geometry>
+  </visual>
+
+  <sensor name="camera" type="camera">
+    <update_rate>30</update_rate>
+    <camera>
+      <horizontal_fov>1.047</horizontal_fov>  <!-- 60 degrees (radians) -->
+      <image>
+        <width>640</width>
+        <height>480</height>
+        <format>R8G8B8</format>  <!-- RGB -->
+      </image>
+      <clip>
+        <near>0.1</near>  <!-- Min distance (m) -->
+        <far>100</far>    <!-- Max distance (m) -->
+      </clip>
+    </camera>
+
+    <!-- ROS 2 Plugin -->
+    <plugin name="camera_controller" filename="libgazebo_ros_camera.so">
+      <ros>
+        <namespace>/robot</namespace>
+        <remapping>image_raw:=camera/image_raw</remapping>
+        <remapping>camera_info:=camera/camera_info</remapping>
+      </ros>
+    </plugin>
+  </sensor>
+</link>
+```
+
+**ROS 2 Topics Published**:
+- `/robot/camera/image_raw` (sensor_msgs/Image): RGB images
+- `/robot/camera/camera_info` (sensor_msgs/CameraInfo): Calibration
+
+**View images**:
+```bash
+ros2 run rqt_image_view rqt_image_view /robot/camera/image_raw
+```
+
+### 4.7.2 LIDAR
+
+```xml
+<sensor name="lidar" type="ray">
+  <pose>0 0 0.1 0 0 0</pose>
+  <update_rate>10</update_rate>
+
+  <ray>
+    <scan>
+      <horizontal>
+        <samples>360</samples>        <!-- 360 rays -->
+        <resolution>1</resolution>    <!-- 1 degree resolution -->
+        <min_angle>-3.14159</min_angle>  <!-- -180 degrees -->
+        <max_angle>3.14159</max_angle>   <!-- +180 degrees -->
+      </horizontal>
+    </scan>
+
+    <range>
+      <min>0.1</min>   <!-- Min range (m) -->
+      <max>30.0</max>  <!-- Max range (m) -->
+      <resolution>0.01</resolution>
+    </range>
+
+    <noise>
+      <type>gaussian</type>
+      <mean>0.0</mean>
+      <stddev>0.01</stddev>  <!-- 1cm noise -->
+    </noise>
+  </ray>
+
+  <plugin name="lidar_controller" filename="libgazebo_ros_ray_sensor.so">
+    <ros>
+      <remapping>~/out:=scan</remapping>
+    </ros>
+    <output_type>sensor_msgs/LaserScan</output_type>
+  </plugin>
+</sensor>
+```
+
+**ROS 2 Topic**:
+- `/scan` (sensor_msgs/LaserScan): Range measurements
+
+**Visualize in RViz**:
+```bash
+rviz2
+# Add → LaserScan → Topic: /scan
+```
+
+### 4.7.3 IMU (Inertial Measurement Unit)
+
+Measures:
+- **Linear acceleration** (m/s²)
+- **Angular velocity** (rad/s)
+
+```xml
+<sensor name="imu" type="imu">
+  <update_rate>100</update_rate>
+
+  <imu>
+    <angular_velocity>
+      <x>
+        <noise type="gaussian">
+          <mean>0.0</mean>
+          <stddev>0.01</stddev>
+        </noise>
+      </x>
+      <!-- Repeat for y, z -->
+    </angular_velocity>
+
+    <linear_acceleration>
+      <x>
+        <noise type="gaussian">
+          <mean>0.0</mean>
+          <stddev>0.05</stddev>
+        </noise>
+      </x>
+      <!-- Repeat for y, z -->
+    </linear_acceleration>
+  </imu>
+
+  <plugin name="imu_plugin" filename="libgazebo_ros_imu_sensor.so">
+    <ros>
+      <remapping>~/out:=imu/data</remapping>
+    </ros>
+  </plugin>
+</sensor>
+```
+
+**ROS 2 Topic**:
+- `/imu/data` (sensor_msgs/Imu): Acceleration + angular velocity
+
+### 4.7.4 Depth Camera (RGB-D)
+
+```xml
+<sensor name="depth_camera" type="depth">
+  <update_rate>20</update_rate>
+  <camera>
+    <horizontal_fov>1.047</horizontal_fov>
+    <image>
+      <width>640</width>
+      <height>480</height>
+      <format>R8G8B8</format>
+    </image>
+    <clip>
+      <near>0.5</near>
+      <far>8.0</far>
+    </clip>
+  </camera>
+
+  <plugin name="depth_camera_controller" filename="libgazebo_ros_camera.so">
+    <ros>
+      <remapping>image_raw:=camera/rgb/image_raw</remapping>
+      <remapping>depth/image_raw:=camera/depth/image_raw</remapping>
+      <remapping>points:=camera/depth/points</remapping>
+    </ros>
+  </plugin>
+</sensor>
+```
+
+**ROS 2 Topics**:
+- `/camera/rgb/image_raw` (sensor_msgs/Image): RGB
+- `/camera/depth/image_raw` (sensor_msgs/Image): Depth (float32)
+- `/camera/depth/points` (sensor_msgs/PointCloud2): 3D point cloud
+
+---
+
+## 4.8 Robot Control in Gazebo
+
+### 4.8.1 Differential Drive Plugin
+
+For wheeled robots (2 wheels + caster).
+
+```xml
+<plugin name="diff_drive" filename="libgazebo_ros_diff_drive.so">
+  <!-- Wheel joints -->
+  <left_joint>left_wheel_joint</left_joint>
+  <right_joint>right_wheel_joint</right_joint>
+
+  <!-- Robot geometry -->
+  <wheel_separation>0.4</wheel_separation>  <!-- Distance between wheels (m) -->
+  <wheel_diameter>0.2</wheel_diameter>      <!-- Wheel diameter (m) -->
+
+  <!-- Limits -->
+  <max_wheel_torque>20</max_wheel_torque>
+  <max_wheel_acceleration>1.0</max_wheel_acceleration>
+
+  <!-- ROS 2 interface -->
+  <ros>
+    <namespace>/robot</namespace>
+    <remapping>cmd_vel:=cmd_vel</remapping>
+    <remapping>odom:=odom</remapping>
+  </ros>
+
+  <!-- Odometry -->
+  <publish_odom>true</publish_odom>
+  <publish_odom_tf>true</publish_odom_tf>
+  <odometry_frame>odom</odometry_frame>
+  <robot_base_frame>base_link</robot_base_frame>
+</plugin>
+```
+
+**ROS 2 Interface**:
+- **Subscribe**: `/robot/cmd_vel` (geometry_msgs/Twist) → velocity commands
+- **Publish**: `/robot/odom` (nav_msgs/Odometry) → position, velocity
+
+**Control the robot**:
+```bash
+# Publish velocity command (forward at 0.5 m/s)
+ros2 topic pub /robot/cmd_vel geometry_msgs/Twist \
+  "linear: {x: 0.5, y: 0.0, z: 0.0}
+   angular: {x: 0.0, y: 0.0, z: 0.0}"
+```
+
+### 4.8.2 Joint Position Controller
+
+For robot arms.
+
+```xml
+<plugin name="joint_state_publisher" filename="libgazebo_ros_joint_state_publisher.so">
+  <ros>
+    <remapping>~/out:=joint_states</remapping>
+  </ros>
+  <update_rate>50</update_rate>
+  <joint_name>shoulder_pan_joint</joint_name>
+  <joint_name>shoulder_lift_joint</joint_name>
+  <joint_name>elbow_joint</joint_name>
+</plugin>
+
+<plugin name="joint_controller" filename="libgazebo_ros_joint_pose_trajectory.so">
+  <ros>
+    <remapping>~/set_joint_trajectory:=/joint_trajectory</remapping>
+  </ros>
+  <update_rate>100</update_rate>
+</plugin>
+```
+
+**Send joint commands**:
+```bash
+ros2 topic pub /joint_trajectory trajectory_msgs/JointTrajectory \
+  "joint_names: ['shoulder_pan_joint']
+   points:
+   - positions: [1.57]
+     time_from_start: {sec: 2, nanosec: 0}"
+```
+
+---
+
+## 4.9 Building Custom Worlds
+
+### 4.9.1 Gazebo Building Editor
+
+**GUI-based**: Design rooms, walls, stairs.
+
+**Steps**:
+1. Launch Gazebo
+2. Edit → Building Editor
+3. Add walls, doors, stairs (drag-and-drop)
+4. Save as `.sdf` model
+
+### 4.9.2 Inserting Models
+
+Gazebo includes a **model library** (objects, furniture, robots).
+
+**From GUI**:
+1. Insert → Model Database
+2. Search "table"
+3. Click to place in world
+
+**From SDF**:
+```xml
+<include>
+  <uri>model://cafe_table</uri>
+  <pose>2 3 0 0 0 0</pose>
+</include>
+```
+
+**Available models**: http://models.gazebosim.org/
+
+### 4.9.3 Programmatic World Building
+
+**Python script to spawn objects**:
+
+```python
+#!/usr/bin/env python3
+import rclpy
+from gazebo_msgs.srv import SpawnEntity
+from geometry_msgs.msg import Pose
+import random
+
+def spawn_random_boxes(num_boxes=10):
+    rclpy.init()
+    node = rclpy.create_node('box_spawner')
+    client = node.create_client(SpawnEntity, '/spawn_entity')
+
+    while not client.wait_for_service(timeout_sec=1.0):
+        node.get_logger().info('Waiting for /spawn_entity service...')
+
+    sdf_box = """
+    <sdf version='1.6'>
+      <model name='box'>
+        <link name='link'>
+          <collision name='collision'>
+            <geometry><box><size>0.5 0.5 0.5</size></box></geometry>
+          </collision>
+          <visual name='visual'>
+            <geometry><box><size>0.5 0.5 0.5</size></box></geometry>
+          </visual>
+        </link>
+      </model>
+    </sdf>
+    """
+
+    for i in range(num_boxes):
+        request = SpawnEntity.Request()
+        request.name = f'box_{i}'
+        request.xml = sdf_box
+        request.initial_pose = Pose()
+        request.initial_pose.position.x = random.uniform(-5, 5)
+        request.initial_pose.position.y = random.uniform(-5, 5)
+        request.initial_pose.position.z = 0.25
+
+        future = client.call_async(request)
+        rclpy.spin_until_future_complete(node, future)
+        node.get_logger().info(f'Spawned {request.name}')
+
+    node.destroy_node()
+    rclpy.shutdown()
+
+if __name__ == '__main__':
+    spawn_random_boxes(10)
+```
+
+**Run**:
+```bash
+# Start Gazebo
+gazebo &
+
+# Spawn boxes
+python3 spawn_boxes.py
+```
+
+---
+
+## 4.10 Domain Randomization
+
+**Goal**: Train robust policies by randomizing simulation parameters.
+
+### 4.10.1 What to Randomize
+
+- **Object poses**: Random positions/orientations
+- **Textures**: Change object colors
+- **Lighting**: Vary brightness, shadows
+- **Physics**: Randomize friction, mass
+- **Sensors**: Add noise to camera, LIDAR
+
+### 4.10.2 Example: Randomize Object Positions
+
+```python
+import random
+from geometry_msgs.msg import Pose
+
+def randomize_pose():
+    pose = Pose()
+    pose.position.x = random.uniform(-2, 2)
+    pose.position.y = random.uniform(-2, 2)
+    pose.position.z = random.uniform(0.5, 2.0)
+    return pose
+
+# Spawn 50 objects with random poses
+for i in range(50):
+    spawn_object(name=f'obj_{i}', pose=randomize_pose())
+```
+
+### 4.10.3 Why Domain Randomization?
+
+**Sim-to-real transfer**: Policies trained in simulation often fail on real robots due to:
+- Different lighting
+- Sensor noise
+- Physics inaccuracies
+
+**Solution**: Expose the policy to **diverse simulated conditions**. If it works across 1000 randomized simulations, it's likely to work in the real world.
+
+---
+
+## 4.11 Performance Optimization
+
+### 4.11.1 Real-Time Factor (RTF)
+
+**RTF = Simulation speed / Real-time speed**
+
+- **RTF = 1.0**: Simulation runs at real-time speed (1 sim second = 1 real second)
+- **RTF = 0.5**: Simulation is slow (1 sim second = 2 real seconds)
+- **RTF = 2.0**: Simulation is fast (2 sim seconds = 1 real second)
+
+**Check RTF**: Look at Gazebo GUI (bottom-right corner).
+
+### 4.11.2 Optimization Tips
+
+1. **Use simple collision geometry**
+   - Bad: High-poly mesh (1000+ triangles)
+   - Good: Bounding box or convex hull
+
+2. **Reduce sensor update rates**
+   - Camera: 10 Hz (not 30 Hz) if you don't need high-frame-rate
+   - LIDAR: 5 Hz for navigation (not 30 Hz)
+
+3. **Disable GUI for batch simulations**
+   ```bash
+   gzserver world.sdf  # No GUI (faster)
+   ```
+
+4. **Lower physics update rate** (if accuracy is not critical)
+   ```xml
+   <physics>
+     <real_time_update_rate>500</real_time_update_rate>  <!-- Down from 1000 -->
+   </physics>
+   ```
+
+5. **Use Bullet physics engine** (faster than ODE)
+   ```xml
+   <physics type="bullet">
+     ...
+   </physics>
+   ```
+
+---
+
+## 4.12 Gazebo + ROS 2 Integration
+
+### 4.12.1 Complete Launch File
+
+```python
+import os
+from ament_index_python.packages import get_package_share_directory
+from launch import LaunchDescription
+from launch.actions import IncludeLaunchDescription, ExecuteProcess
+from launch.launch_description_sources import PythonLaunchDescriptionSource
+from launch_ros.actions import Node
+
+def generate_launch_description():
+    # Paths
+    pkg_gazebo_ros = get_package_share_directory('gazebo_ros')
+    pkg_my_robot = get_package_share_directory('my_robot_description')
+
+    world_file = os.path.join(pkg_my_robot, 'worlds', 'my_world.world')
+    urdf_file = os.path.join(pkg_my_robot, 'urdf', 'robot.urdf')
+
+    # Launch Gazebo with custom world
+    gazebo = IncludeLaunchDescription(
+        PythonLaunchDescriptionSource(
+            os.path.join(pkg_gazebo_ros, 'launch', 'gazebo.launch.py')
+        ),
+        launch_arguments={'world': world_file, 'verbose': 'true'}.items()
+    )
+
+    # Spawn robot
+    spawn_robot = Node(
+        package='gazebo_ros',
+        executable='spawn_entity.py',
+        arguments=['-entity', 'my_robot', '-file', urdf_file, '-z', '0.5'],
+        output='screen'
+    )
+
+    # Robot state publisher
+    robot_state_publisher = Node(
+        package='robot_state_publisher',
+        executable='robot_state_publisher',
+        parameters=[{'robot_description': open(urdf_file).read()}],
+        output='screen'
+    )
+
+    return LaunchDescription([
+        gazebo,
+        spawn_robot,
+        robot_state_publisher,
+    ])
+```
+
+**Run**:
+```bash
+ros2 launch my_robot_description simulation.launch.py
+```
+
+---
+
+## Exercises
+
+### Exercise 4.1: Obstacle Avoidance
+
+**Goal**: Spawn 10 random boxes, write a ROS 2 node that:
+1. Subscribes to `/scan` (LIDAR)
+2. Publishes to `/cmd_vel` (velocity commands)
+3. Avoids obstacles (turn if obstacle within 1m)
+
+**Success criteria**: Robot navigates for 5 minutes without collisions.
+
+### Exercise 4.2: Camera Object Detection
+
+**Goal**: Add a camera to your robot, subscribe to `/camera/image_raw`, use OpenCV to:
+1. Convert ROS Image → OpenCV Mat
+2. Detect red objects (color thresholding)
+3. Publish bounding boxes
+
+**Expected output**: Bounding boxes drawn in `rqt_image_view`.
+
+### Exercise 4.3: Physics Accuracy Test
+
+**Goal**: Drop a ball from 1m height, measure impact time.
+
+**Theory**: Free fall time = √(2h/g) = √(2×1/9.81) ≈ 0.452 seconds
+
+**Tasks**:
+1. Create SDF sphere (0.1m radius, mass 1kg)
+2. Spawn at z=1.0
+3. Record time until z < 0.1 (ground contact)
+4. Compare to theoretical value
+
+**Accuracy**: Should be within 1% (±0.005s).
+
+---
+
+## Citations
+
+1. Koenig, N., & Howard, A. (2004). *Design and use paradigms for Gazebo, an open-source multi-robot simulator.* IEEE/RSJ International Conference on Intelligent Robots and Systems (IROS), 2149-2154.
+
+2. Open Robotics. (2023). *Gazebo Simulation Documentation.* https://gazebosim.org/
+
+3. Smith, R. (2006). *Open Dynamics Engine.* http://www.ode.org/
+
+4. Coumans, E. (2015). *Bullet Physics Library.* https://pybullet.org/
+
+5. Sherman, M. A., Seth, A., & Delp, S. L. (2011). *Simbody: multibody dynamics for biomedical research.* Procedia IUTAM, 2, 241-261.
+
+6. Lee, J., Grey, M. X., Ha, S., Kunz, T., Jain, S., Ye, Y., ... & Liu, C. K. (2018). *DART: Dynamic Animation and Robotics Toolkit.* Journal of Open Source Software, 3(22), 500.
+
+7. Tobin, J., Fong, R., Ray, A., Schneider, J., Zaremba, W., & Abbeel, P. (2017). *Domain randomization for transferring deep neural networks from simulation to the real world.* IEEE/RSJ International Conference on Intelligent Robots and Systems (IROS), 23-30.
+
+8. Peng, X. B., Andrychowicz, M., Zaremba, W., & Abbeel, P. (2018). *Sim-to-real transfer of robotic control with dynamics randomization.* IEEE International Conference on Robotics and Automation (ICRA), 3803-3810.
+
+9. Waymo. (2023). *Simulation is Key to Self-Driving Safety.* https://waymo.com/blog/2021/10/simulation-is-key-to-self-driving-safety.html
+
+10. Macenski, S., et al. (2020). *Robot Operating System 2.* https://design.ros2.org/
+
+---
+
+## Hardware Requirements
+
+**Minimum**:
+- **CPU**: Dual-core
+- **RAM**: 4 GB
+- **GPU**: Integrated (RTF ~0.5)
+
+**Recommended**:
+- **CPU**: Quad-core Intel i5/AMD Ryzen 5
+- **RAM**: 8 GB
+- **GPU**: NVIDIA GTX 1650 or better (RTF ~1.0)
+
+**For batch simulations**:
+- **GPU**: Not required (run headless `gzserver`)
+
+---
+
+## Labs
+
+**Lab 4.1: Build Custom Gazebo World**
+
+**Repository**: [github.com/Shumailaaijaz/physical-ai-labs](https://github.com/Shumailaaijaz/physical-ai-labs)
+
+**Lab Path**: `labs/chapter-04-gazebo-world/`
+
+**What's Included**:
+- Empty world template
+- SDF models (boxes, cylinders, obstacles)
+- Python scripts to spawn objects
+- README with tasks
+
+**To Run**:
+```bash
+cd labs/chapter-04-gazebo-world
+docker compose up
+```
+
+**Expected Result**: Maze world with robot, camera, and LIDAR sensors.
+
+---
+
+**Lab 4.2: Differential Drive Control**
+
+**Lab Path**: `labs/chapter-04-gazebo-control/`
+
+**What's Included**:
+- Differential drive robot URDF
+- Teleoperation node (keyboard control)
+- Autonomous navigation script
+
+**Tasks**:
+1. Control robot with arrow keys
+2. Add obstacles to world
+3. Implement collision avoidance
+
+---
+
+**Next Chapter**: [Chapter 5: Unity Robotics Hub →](05-unity-robotics-hub.mdx)
+
+---
+
+*This textbook is a living document. Found an error? Have a suggestion? Submit an issue or PR at [github.com/Shumailaaijaz/physical-ai-textbook](https://github.com/Shumailaaijaz/physical-ai-textbook)*

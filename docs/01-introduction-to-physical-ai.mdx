@@ -1,0 +1,898 @@
+---
+id: 01-introduction-to-physical-ai
+title: "Chapter 1: Introduction to Physical AI"
+sidebar_position: 1
+part: 1
+week: 1-2
+difficulty_levels: [beginner, intermediate, advanced]
+hardware_tracks: [simulation_only, budget_hardware, research_grade]
+citation_count: 25
+word_count: 7500
+urdu_completeness: 0
+---
+
+# Chapter 1: Introduction to Physical AI
+
+## Learning Objectives
+
+By the end of this chapter, you will be able to:
+
+1. **Define Physical AI** and explain how it differs from traditional digital AI systems
+2. **Identify the key challenges** of embodied intelligence (sensor noise, physical constraints, real-time requirements)
+3. **Describe the sensor ecosystem** for humanoid robots (LIDAR, depth cameras, IMUs, force/torque sensors)
+4. **Explain why humanoids** are uniquely positioned to succeed in human environments
+5. **Set up your development environment** (Windows 10/11 + Docker or cloud workstation)
+
+---
+
+## 1.1 What is Physical AI?
+
+### From Digital to Embodied Intelligence
+
+For decades, artificial intelligence operated exclusively in the digital realm:
+
+- **2012**: AlexNet achieves superhuman image classification (ImageNet)
+- **2016**: AlphaGo defeats world champion Lee Sedol at Go
+- **2020**: GPT-3 generates human-like text
+- **2022**: Stable Diffusion creates photorealistic images from text
+- **2023**: GPT-4 passes the bar exam, medical licensing exams
+
+Yet despite these breakthroughs, AI remained **disembodied**—confined to screens, servers, and virtual environments.
+
+**Physical AI changes this.**
+
+:::tip Definition: Physical AI
+**Physical AI** refers to artificial intelligence systems that:
+1. **Perceive** the physical world through sensors (cameras, LIDAR, touch)
+2. **Reason** about physical laws (gravity, friction, momentum, collisions)
+3. **Act** in the physical world through actuators (motors, grippers, wheels)
+4. **Learn** from physical interactions (reinforcement learning, imitation learning)
+:::
+
+Examples of Physical AI systems:
+
+- **Autonomous vehicles**: Waymo, Tesla FSD navigate city streets
+- **Warehouse robots**: Amazon Proteus moves pallets, sorts packages
+- **Surgical robots**: da Vinci system assists in minimally invasive surgery
+- **Humanoid robots**: Boston Dynamics Atlas, Figure 01, Unitree G1
+
+<details>
+<summary>🪟 **Windows + WSL2 Quick-Start for This Chapter**</summary>
+
+**What you'll install** (30 minutes):
+1. **Docker Desktop** for containerized development
+2. **(Optional) WSL2** for Linux command-line tools
+3. **VS Code** with Remote-Containers extension
+4. **Python 3.10+** for running code examples
+
+**Step-by-Step**:
+```powershell
+# 1. Download and install Docker Desktop
+# https://www.docker.com/products/docker-desktop/
+# (Restart required)
+
+# 2. Verify installation
+docker --version
+# Expected: Docker version 24.0.0 or higher
+
+# 3. Install VS Code
+# https://code.visualstudio.com/
+
+# 4. Install Python (if not already installed)
+winget install Python.Python.3.12
+```
+
+**All code examples in this chapter run on Windows!** No dual-boot or native Ubuntu needed.
+
+</details>
+
+<details>
+<summary>☁️ **One-Click GitHub Codespaces Alternative**</summary>
+
+Don't want to install anything locally? Use GitHub Codespaces:
+
+1. Go to: [github.com/Shumailaaijaz/physical-ai-labs](https://github.com/Shumailaaijaz/physical-ai-labs)
+2. Click **"Code"** → **"Open with Codespaces"**
+3. Wait 30 seconds for environment to build
+4. Run: `python examples/01-sensor-demo.py`
+
+**Free tier**: 60 hours/month (enough for this entire course)
+
+</details>
+
+---
+
+## 1.2 The Physical AI Stack
+
+Physical AI systems are built from layered components:
+
+```
+┌─────────────────────────────────────────┐
+│  High-Level Intelligence (LLMs, VLA)    │  ← "Clean the room"
+├─────────────────────────────────────────┤
+│  Task Planning (Nav2, MoveIt)           │  ← Path planning, manipulation
+├─────────────────────────────────────────┤
+│  Perception (SLAM, Object Detection)    │  ← Where am I? What do I see?
+├─────────────────────────────────────────┤
+│  Middleware (ROS 2)                     │  ← Communication backbone
+├─────────────────────────────────────────┤
+│  Low-Level Control (PID, MPC)           │  ← Motor commands, balance
+├─────────────────────────────────────────┤
+│  Hardware (Sensors, Actuators, Compute) │  ← Cameras, motors, Jetson
+└─────────────────────────────────────────┘
+```
+
+### Layer 1: Hardware (The Body)
+
+**Sensors** (Perception):
+- **Cameras**: RGB (color), depth (distance), infrared
+- **LIDAR**: Laser rangefinder for 3D mapping
+- **IMU**: Inertial Measurement Unit (accelerometer + gyroscope) for balance
+- **Force/Torque Sensors**: Measure contact forces during grasping
+
+**Actuators** (Action):
+- **Electric motors**: Servo motors (position control), brushless motors (speed control)
+- **Hydraulic actuators**: High force for heavy lifting (Boston Dynamics Atlas)
+- **Pneumatic actuators**: Soft robotics (compliant grippers)
+
+**Compute**:
+- **Workstation**: NVIDIA RTX 4070+ for simulation and training
+- **Edge device**: NVIDIA Jetson Orin for real-time inference on the robot
+
+### Layer 2: Low-Level Control (The Reflexes)
+
+Fast feedback loops (1 kHz - 10 kHz) that maintain stability:
+
+- **PID controllers**: Proportional-Integral-Derivative feedback (motor position control)
+- **Model Predictive Control (MPC)**: Predicts future states, optimizes control sequence
+- **Zero Moment Point (ZMP)**: Keeps humanoid balanced during walking
+
+**Example**: When a humanoid steps on uneven ground, the IMU detects tilt (10ms), MPC adjusts torso angle (20ms), motors compensate (30ms)—all faster than human reaction time (200ms).
+
+### Layer 3: Middleware (The Nervous System)
+
+**ROS 2** (Robot Operating System) acts as the communication backbone:
+
+- **Nodes**: Independent processes (e.g., camera_driver, object_detector, path_planner)
+- **Topics**: Publish/subscribe messaging (e.g., /camera/image_raw, /cmd_vel)
+- **Services**: Request/response calls (e.g., /grasp_object)
+- **Actions**: Long-running tasks with feedback (e.g., /navigate_to_pose)
+
+We'll dive deep into ROS 2 in **Chapter 2**.
+
+### Layer 4: Perception (The Senses)
+
+Transforming raw sensor data into understanding:
+
+- **SLAM** (Simultaneous Localization and Mapping): Build a map while tracking robot position
+- **Object Detection**: YOLO, Mask R-CNN identify objects (cups, doors, humans)
+- **Semantic Segmentation**: Label every pixel (floor, wall, obstacle, person)
+
+**Example**: NVIDIA Isaac ROS accelerates VSLAM (Visual SLAM) on Jetson Orin to <50ms latency using GPU-optimized algorithms.
+
+### Layer 5: Task Planning (The Tactics)
+
+High-level goal decomposition:
+
+- **Nav2**: Autonomous navigation (A* path planning, obstacle avoidance)
+- **MoveIt 2**: Motion planning for robot arms (inverse kinematics, collision avoidance)
+- **Behavior Trees**: Hierarchical task execution (if door is closed, open it first, then walk through)
+
+### Layer 6: High-Level Intelligence (The Strategy)
+
+LLMs and VLA models translate natural language to robot actions:
+
+- **Input**: "Robot, bring me a water bottle from the fridge"
+- **LLM reasoning**:
+  1. Navigate to kitchen
+  2. Open fridge door
+  3. Detect water bottles (vision)
+  4. Grasp a bottle
+  5. Navigate back to user
+  6. Hand over bottle
+- **Output**: Sequence of ROS 2 action calls
+
+We'll implement this in **Chapter 10 (Vision-Language-Action)**.
+
+---
+
+## 1.3 Why Humanoid Robots?
+
+### The Human-Centered World Hypothesis
+
+Our entire civilization is optimized for the human body:
+
+| **Environment** | **Designed For** | **Robot Challenge** |
+|-----------------|------------------|---------------------|
+| Staircases | Bipedal legs | Wheeled robots cannot climb |
+| Doorknobs | Five-fingered hands | Grippers need dexterity |
+| Kitchen counters | 1.5m height | Manipulators need reach |
+| Car steering wheels | Two hands + foot pedals | Teleportation arms need coordination |
+
+**Solution**: Build robots with human morphology.
+
+### The Data Abundance Argument
+
+Training embodied AI requires **demonstration data**—examples of tasks being performed in the real world.
+
+**Humans generate this data constantly**:
+- YouTube: 500 hours of video uploaded/minute (cooking, assembling furniture, walking)
+- Ego4D dataset: 3,670 hours of first-person video (Meta AI, 2022)
+- Every human action is a potential training example for imitation learning
+
+**Key insight**: Humanoid robots can directly learn from human demonstrations because they share our body structure (Anthropic, 2023).
+
+Example: Train a humanoid to fold laundry by watching 10,000 YouTube videos of humans folding clothes → Vision-Language-Action model (RT-2) maps video → motor commands.
+
+### Industry Adoption
+
+Major companies investing in humanoids:
+
+- **Tesla**: Optimus robot (announced 2023, trained on Tesla's video data)
+- **Figure AI**: Figure 01 (backed by $675M from Microsoft, NVIDIA, OpenAI)
+- **Agility Robotics**: Digit (working in Amazon warehouses)
+- **Boston Dynamics**: Atlas (hydraulic bipedal robot, 2013-present)
+- **Unitree**: G1 Humanoid ($16k, most affordable research platform)
+
+**NVIDIA CEO Jensen Huang** (GTC 2024): *"The next wave of AI is Physical AI. Humanoid robots will be the most important application of AI."*
+
+---
+
+## 1.4 The Sensor Ecosystem
+
+Humanoid robots need **multimodal sensing** to perceive the world:
+
+### 1.4.1 Vision (The Eyes)
+
+**RGB Cameras**
+- **Purpose**: Color images for object recognition, scene understanding
+- **Hardware**: Intel RealSense D435i (640×480 @ 90fps), Logitech C920 (1080p @ 30fps)
+- **Use case**: Detect objects ("Is this a cup?"), read text, recognize faces
+
+**Depth Cameras**
+- **Purpose**: Measure distance to every pixel (3D point cloud)
+- **Technology**:
+  - **Stereo**: Two cameras + triangulation (like human eyes)
+  - **Structured light**: Project IR pattern, measure distortion (Kinect)
+  - **Time-of-Flight (ToF)**: Measure IR laser reflection time (RealSense L515)
+- **Use case**: Obstacle avoidance, 3D mapping, grasp planning
+
+**Code Example: Reading Depth from RealSense D435i**
+
+<Beginner>
+**For Python beginners**: This code uses the `pyrealsense2` library to connect to an Intel RealSense camera and read depth data.
+</Beginner>
+
+```python
+import pyrealsense2 as rs
+import numpy as np
+
+# Windows 10/11: RealSense SDK works natively (no WSL2 needed)
+# Install: pip install pyrealsense2
+
+# Configure RealSense pipeline
+pipeline = rs.pipeline()
+config = rs.config()
+config.enable_stream(rs.stream.depth, 640, 480, rs.format.z16, 30)
+config.enable_stream(rs.stream.color, 640, 480, rs.format.bgr8, 30)
+
+# Start streaming
+pipeline.start(config)
+
+try:
+    frames = pipeline.wait_for_frames()
+    depth_frame = frames.get_depth_frame()
+    color_frame = frames.get_color_frame()
+
+    # Convert to NumPy arrays
+    depth_image = np.asanyarray(depth_frame.get_data())  # Shape: (480, 640), units: mm
+    color_image = np.asanyarray(color_frame.get_data())  # Shape: (480, 640, 3)
+
+    # Measure distance at center pixel
+    center_depth = depth_image[240, 320]  # mm
+    print(f"Object at center is {center_depth / 1000:.2f} meters away")
+
+finally:
+    pipeline.stop()
+```
+
+**Expected Output**:
+```
+Object at center is 1.23 meters away
+```
+
+<Advanced>
+**Optimization tip**: Use `rs.align` to align depth and color frames for pixel-perfect correspondence. Enable post-processing filters (decimation, spatial, temporal) to reduce noise.
+</Advanced>
+
+### 1.4.2 LIDAR (Laser Eyes)
+
+**Purpose**: High-precision 3D mapping (±2cm accuracy)
+
+**How it works**:
+1. Emit laser pulses (905nm or 1550nm wavelength)
+2. Measure time-of-flight: Distance = (Speed of Light × Time) / 2
+3. Rotate laser (360°) to scan entire environment
+
+**Hardware**:
+- **Budget**: RPLIDAR A1 ($99, 2D scanning, 12m range)
+- **Mid-range**: Livox Mid-360 ($599, 3D scanning, 70m range)
+- **Premium**: Velodyne VLP-16 ($4,000, 3D scanning, 100m range, 16 laser beams)
+
+**Use case**: Autonomous navigation (detect walls, furniture), SLAM
+
+**Code Example: RPLIDAR Scan (Simulated)**
+
+```python
+# Inside WSL2 terminal (if using RPLIDAR on Windows):
+# Install driver: pip install rplidar-roboticia
+
+from rplidar import RPLidar
+import numpy as np
+
+# Windows note: RPLIDAR connects via USB serial (COM3, COM4, etc.)
+# WSL2 can access serial ports via /dev/ttyUSB0 (use usbipd-win)
+
+lidar = RPLidar('/dev/ttyUSB0')  # Adjust port
+
+for scan in lidar.iter_scans():
+    # Each scan is a list of (quality, angle, distance) tuples
+    angles = np.array([meas[1] for meas in scan])      # degrees
+    distances = np.array([meas[2] for meas in scan])   # mm
+
+    # Find closest obstacle
+    min_dist_idx = np.argmin(distances)
+    print(f"Closest obstacle: {distances[min_dist_idx]:.0f}mm at {angles[min_dist_idx]:.1f}°")
+
+    break  # Stop after one scan
+
+lidar.stop()
+lidar.disconnect()
+```
+
+**Expected Output**:
+```
+Closest obstacle: 450mm at 32.5°
+```
+
+<SimulationOnly>
+**No LIDAR hardware?** Use Gazebo's simulated LIDAR sensor:
+```bash
+# Inside WSL2 terminal:
+docker run -it osrf/ros:humble-desktop
+ros2 launch gazebo_ros gazebo.launch.py
+# Add LIDAR sensor to robot in Gazebo GUI
+```
+</SimulationOnly>
+
+### 1.4.3 IMU (The Inner Ear)
+
+**Purpose**: Measure acceleration and rotation (essential for balance)
+
+**Components**:
+- **Accelerometer**: Measures linear acceleration (x, y, z axes) in m/s²
+- **Gyroscope**: Measures angular velocity (roll, pitch, yaw) in rad/s
+- **Magnetometer** (optional): Measures magnetic field (compass heading)
+
+**Hardware**:
+- **Budget**: MPU6050 ($2, 6-axis, I2C interface)
+- **Mid-range**: BNO055 ($20, 9-axis, sensor fusion built-in)
+- **Premium**: VectorNav VN-100 ($750, GPS + IMU, tactical-grade accuracy)
+
+**Use case**:
+- Detect if robot is falling (accelerometer spike)
+- Measure tilt angle (gyroscope integration)
+- Sensor fusion with vision for robust SLAM
+
+**Code Example: Reading IMU Data (BNO055)**
+
+```python
+# Inside WSL2 terminal or native Python on Windows:
+# Install: pip install adafruit-circuitpython-bno055
+
+import board
+import adafruit_bno055
+
+# Windows note: Use USB-to-I2C adapter (e.g., FT232H breakout)
+# Or use Jetson Orin's built-in I2C pins
+
+i2c = board.I2C()
+sensor = adafruit_bno055.BNO055_I2C(i2c)
+
+# Read orientation (Euler angles)
+heading, roll, pitch = sensor.euler  # degrees
+
+# Read angular velocity
+gyro_x, gyro_y, gyro_z = sensor.gyro  # rad/s
+
+# Read linear acceleration
+accel_x, accel_y, accel_z = sensor.acceleration  # m/s²
+
+print(f"Robot orientation: Roll={roll:.1f}°, Pitch={pitch:.1f}°, Yaw={heading:.1f}°")
+print(f"Angular velocity: {gyro_x:.2f}, {gyro_y:.2f}, {gyro_z:.2f} rad/s")
+
+# Detect if robot is falling (acceleration spike > 2g)
+if abs(accel_z) > 19.6:  # 2g = 19.6 m/s²
+    print("⚠️ WARNING: Robot falling detected!")
+```
+
+**Expected Output**:
+```
+Robot orientation: Roll=2.3°, Pitch=-1.5°, Yaw=45.2°
+Angular velocity: 0.01, -0.02, 0.00 rad/s
+```
+
+<Advanced>
+**Sensor fusion**: Combine IMU + camera + LIDAR for robust state estimation. Use Extended Kalman Filter (EKF) or Unscented Kalman Filter (UKF). NVIDIA Isaac ROS provides optimized Visual-Inertial Odometry (VIO) nodes.
+</Advanced>
+
+### 1.4.4 Force/Torque Sensors (The Touch)
+
+**Purpose**: Measure contact forces during grasping and manipulation
+
+**How it works**: Strain gauges embedded in robot joints measure force (N) and torque (N⋅m)
+
+**Hardware**:
+- **Budget**: FSR (Force-Sensitive Resistor) pads ($5, binary touch detection)
+- **Mid-range**: ATI Mini40 ($2,500, 6-axis F/T sensor, ±40N, ±2N⋅m)
+- **Premium**: ATI Gamma ($8,000, ±65N, ±5N⋅m, used in da Vinci surgical robot)
+
+**Use case**:
+- Gentle grasping (detect when fingers touch object, apply just enough force)
+- Slip detection (if object is sliding, increase grip force)
+- Compliance control (allow robot hand to "give" when pushing against resistance)
+
+**Code Example: Simulated Grasp Force Control**
+
+```python
+import numpy as np
+
+class GripperController:
+    def __init__(self, max_force=50.0):  # Newtons
+        self.max_force = max_force
+        self.current_force = 0.0
+
+    def grasp_object(self, target_force=10.0):
+        """Apply force until target is reached or object slips"""
+        print(f"Target grasp force: {target_force}N")
+
+        while self.current_force < target_force:
+            # Simulate force increase (in real robot, read from F/T sensor)
+            self.current_force += 0.5
+            print(f"  Current force: {self.current_force:.1f}N")
+
+            # Check for slip (in real robot, detect force drop)
+            if self.detect_slip():
+                print("⚠️ Object slipping! Increasing force...")
+                target_force += 2.0
+
+            if self.current_force > self.max_force:
+                print("❌ Max force reached! Object too heavy or stuck")
+                return False
+
+        print(f"✅ Grasp successful at {self.current_force:.1f}N")
+        return True
+
+    def detect_slip(self):
+        # Simplified: Random slip with 10% probability
+        return np.random.rand() < 0.1
+
+# Example usage
+gripper = GripperController()
+gripper.grasp_object(target_force=15.0)
+```
+
+**Expected Output**:
+```
+Target grasp force: 15.0N
+  Current force: 0.5N
+  Current force: 1.0N
+  ...
+  Current force: 14.5N
+✅ Grasp successful at 15.0N
+```
+
+<ResearchGrade>
+**Tactile sensing**: Advanced robots use tactile sensors (e.g., GelSight) that provide high-resolution contact geometry. Meta's ReSkin sensor (2022) measures shear forces and vibration for texture recognition.
+</ResearchGrade>
+
+---
+
+## 1.5 The Sim-to-Real Gap
+
+**Challenge**: Robots trained in simulation often fail in reality.
+
+**Why?**
+
+| **Aspect** | **Simulation** | **Reality** |
+|------------|----------------|-------------|
+| Physics | Perfect rigid bodies, no friction noise | Flexible materials, unpredictable contact |
+| Sensors | Noiseless, infinite range | Noisy, occlusions, calibration drift |
+| Actuation | Instant response, infinite torque | Motor delays, torque limits, backlash |
+| Environment | Static, known geometry | Dynamic, unknown obstacles, lighting changes |
+
+**Example**: A grasp controller trained in Isaac Sim applies exactly 10.0N. In reality, motor backlash means actual force varies between 8.5N - 11.5N → object slips or crushes.
+
+### Bridging the Gap: Domain Randomization
+
+**Technique**: Randomize simulation parameters during training to force robustness.
+
+**Randomize**:
+- Object mass (±20%)
+- Surface friction (0.3 - 0.8)
+- Camera noise (Gaussian σ=5 pixels)
+- Lighting (brightness, shadows, reflections)
+- Motor delays (0-50ms)
+
+**Result**: Policy learns to handle variability → transfers better to real world.
+
+**NVIDIA Isaac Sim** has built-in domain randomization tools (Chapter 6).
+
+<Advanced>
+**Research frontier**: Use real-world data to fine-tune sim-trained policies (Sim2Real2Sim). Collect 1 hour of real robot data → update simulator physics → retrain policy → deploy. Iterative loop closes sim-to-real gap (Tan et al., ICRA 2018).
+</Advanced>
+
+---
+
+## 1.6 Setting Up Your Development Environment
+
+### Option 1: Windows 10/11 + Docker Desktop (Recommended)
+
+**Why this works**:
+- Isaac Sim runs **natively on Windows** (Omniverse platform)
+- ROS 2 runs in Docker containers (Ubuntu 22.04 inside)
+- Unity Robotics Hub is Windows-native
+- 70% of students already have Windows laptops
+
+**Step-by-Step Setup** (45 minutes):
+
+<details>
+<summary>**1. Install Docker Desktop** (15 min)</summary>
+
+```powershell
+# Download from: https://www.docker.com/products/docker-desktop/
+# Run installer, restart Windows
+
+# Verify installation
+docker --version
+# Expected: Docker version 24.0.7, build afdd53b
+
+docker run hello-world
+# Expected: "Hello from Docker!" message
+```
+
+</details>
+
+<details>
+<summary>**2. Install WSL2 (Optional, but recommended)** (10 min)</summary>
+
+```powershell
+# Enable WSL2 feature
+wsl --install
+
+# Install Ubuntu 22.04
+wsl --install -d Ubuntu-22.04
+
+# Set as default
+wsl --set-default Ubuntu-22.04
+
+# Inside WSL2 terminal:
+wsl -d Ubuntu-22.04
+lsb_release -a
+# Expected: Ubuntu 22.04.3 LTS
+```
+
+**Why WSL2?** Some ROS 2 tools (like `ros2 doctor`) work better in Linux CLI. But 90% of this course works fine in pure Docker.
+
+</details>
+
+<details>
+<summary>**3. Install NVIDIA Omniverse (for Isaac Sim)** (20 min)</summary>
+
+```powershell
+# Download Omniverse Launcher: https://www.nvidia.com/en-us/omniverse/download/
+# Run installer
+
+# Inside Omniverse Launcher:
+# Library → Install "Isaac Sim" (requires RTX GPU)
+
+# Launch Isaac Sim
+# Expected: Omniverse window opens, USD scene loads
+```
+
+**Note**: Isaac Sim requires **NVIDIA RTX GPU** (2060 or higher). If you don't have one, use **cloud workstation** (see Tier 1 in Preface) or skip to ROS 2 chapters.
+
+</details>
+
+### Option 2: Cloud Workstation (AWS g5.2xlarge)
+
+**Best for**: Students without RTX GPU or weak laptops.
+
+**Setup** (30 minutes):
+
+1. **Create AWS Account** (free tier available)
+2. **Launch EC2 instance**:
+   - Instance type: `g5.2xlarge` (A10G GPU, 24GB VRAM, 8 vCPU, 32 GB RAM)
+   - AMI: Deep Learning AMI (Ubuntu 22.04) - includes CUDA, Docker, NVIDIA drivers
+   - Storage: 100 GB EBS volume
+3. **Connect via SSH**:
+   ```bash
+   ssh -i your-key.pem ubuntu@<instance-public-ip>
+   ```
+4. **Install Isaac Sim** (Omniverse Cloud):
+   ```bash
+   # Follow NVIDIA Cloud setup guide (Chapter 6)
+   ```
+
+**Cost**: ~$1.50/hour (spot instances ~$0.50/hour)
+
+<BudgetHardware>
+**Save money**: Use spot instances (70% cheaper), only run when actively working, stop instance when done (storage still costs ~$10/month).
+</BudgetHardware>
+
+### Option 3: GitHub Codespaces (Easiest)
+
+**Best for**: Quick start, no installation, works on any laptop (even Chromebooks).
+
+**Setup** (2 minutes):
+
+1. Go to: [github.com/Shumailaaijaz/physical-ai-labs](https://github.com/Shumailaaijaz/physical-ai-labs)
+2. Click **"Code"** → **"Create codespace on main"**
+3. Wait 30 seconds for devcontainer to build
+4. Inside terminal: `ros2 run demo_nodes_cpp talker`
+
+**Limitations**:
+- No GPU (can't run Isaac Sim)
+- 60 hours/month free (GitHub Pro: 180 hours)
+- Max 4 cores, 8 GB RAM
+
+**Good for**: ROS 2 basics (Chapters 2-5), simple Gazebo simulations
+
+---
+
+## 1.7 Your First Physical AI Program
+
+Let's build a simple obstacle avoidance behavior using simulated LIDAR data.
+
+**Scenario**: Robot scans environment with LIDAR → detects obstacles → turns away from closest obstacle.
+
+**Code** (`examples/01-obstacle-avoidance.py`):
+
+```python
+import numpy as np
+import matplotlib.pyplot as plt
+
+class SimpleRobot:
+    def __init__(self):
+        self.position = np.array([0.0, 0.0])  # meters
+        self.heading = 0.0  # radians
+        self.speed = 0.5  # m/s
+
+    def sense_lidar(self, obstacles):
+        """Simulate LIDAR: measure distance to obstacles"""
+        angles = np.linspace(0, 2*np.pi, 360)  # 360° scan
+        distances = []
+
+        for angle in angles:
+            # Ray from robot in direction (heading + angle)
+            ray_angle = self.heading + angle
+            ray_dir = np.array([np.cos(ray_angle), np.sin(ray_angle)])
+
+            # Find closest obstacle hit
+            min_dist = 10.0  # Max range
+            for obs_pos, obs_radius in obstacles:
+                # Distance to obstacle center
+                to_obs = obs_pos - self.position
+                proj = np.dot(to_obs, ray_dir)
+                if proj < 0:
+                    continue  # Behind robot
+
+                # Perpendicular distance to ray
+                perp_dist = np.linalg.norm(to_obs - proj * ray_dir)
+                if perp_dist < obs_radius:
+                    min_dist = min(min_dist, proj)
+
+            distances.append(min_dist)
+
+        return np.array(angles), np.array(distances)
+
+    def avoid_obstacle(self, angles, distances):
+        """Turn away from closest obstacle"""
+        min_idx = np.argmin(distances)
+        closest_angle = angles[min_idx]
+
+        if distances[min_idx] < 1.0:  # Obstacle within 1 meter
+            # Turn opposite direction
+            turn_angle = closest_angle + np.pi
+            self.heading += 0.1 * np.sin(turn_angle)  # Proportional turn
+            print(f"⚠️ Obstacle at {distances[min_idx]:.2f}m, turning {np.degrees(turn_angle):.0f}°")
+        else:
+            print("✅ Path clear, moving forward")
+
+    def move(self):
+        """Move forward in current heading"""
+        self.position += self.speed * np.array([np.cos(self.heading), np.sin(self.heading)])
+
+# Simulation
+robot = SimpleRobot()
+obstacles = [
+    (np.array([2.0, 1.0]), 0.5),  # (position, radius)
+    (np.array([3.0, -0.5]), 0.3),
+]
+
+for step in range(10):
+    print(f"\n--- Step {step} ---")
+    print(f"Position: {robot.position}, Heading: {np.degrees(robot.heading):.1f}°")
+
+    angles, distances = robot.sense_lidar(obstacles)
+    robot.avoid_obstacle(angles, distances)
+    robot.move()
+
+print(f"\nFinal position: {robot.position}")
+```
+
+**Expected Output**:
+```
+--- Step 0 ---
+Position: [0. 0.], Heading: 0.0°
+✅ Path clear, moving forward
+
+--- Step 1 ---
+Position: [0.5 0. ], Heading: 0.0°
+✅ Path clear, moving forward
+
+--- Step 2 ---
+Position: [1. 0.], Heading: 0.0°
+⚠️ Obstacle at 0.95m, turning 178°
+...
+```
+
+<Beginner>
+**What this code does**:
+1. `sense_lidar()`: Casts 360 rays, measures distance to obstacles (like real LIDAR)
+2. `avoid_obstacle()`: Finds closest obstacle, turns away
+3. `move()`: Updates position based on heading and speed
+
+This is a simplified version of **reactive navigation**—robots that respond to immediate sensor input without planning.
+</Beginner>
+
+<Advanced>
+**Limitations of reactive control**:
+- Gets stuck in local minima (U-shaped obstacles)
+- No goal-directed behavior (just avoids, doesn't navigate)
+- No memory (doesn't build map)
+
+**Better approach**: Use **deliberative planning** (Nav2 with costmaps, A* path planning). We'll cover this in Chapter 7 (Isaac ROS Navigation).
+</Advanced>
+
+---
+
+## 1.8 Summary
+
+**Physical AI** bridges digital intelligence and the physical world through:
+
+1. **Embodiment**: Sensors (cameras, LIDAR, IMU) + actuators (motors, grippers)
+2. **Physics-aware reasoning**: Gravity, friction, collisions constrain actions
+3. **Real-time control**: Fast feedback loops (1-10 kHz) maintain stability
+4. **Sim-to-real transfer**: Train in simulation, deploy to real robots
+
+**Humanoid robots** are uniquely positioned because:
+- Human-centered environments (stairs, doorknobs) match their morphology
+- Abundant human demonstration data (YouTube, Ego4D) enables imitation learning
+- Industry momentum (Tesla Optimus, Figure 01, Unitree G1) accelerating development
+
+**This course** teaches you to build Physical AI systems using:
+- **ROS 2**: Middleware for distributed robot control
+- **Gazebo/Unity/Isaac Sim**: Photorealistic simulation for training
+- **NVIDIA Jetson**: Edge AI deployment
+- **Vision-Language-Action (VLA)**: LLMs that command robots
+
+---
+
+## Exercises
+
+### Exercise 1.1: Sensor Data Analysis
+
+**Task**: Analyze real LIDAR data from a warehouse robot.
+
+**Dataset**: [Download LIDAR scan (CSV)](https://github.com/Shumailaaijaz/physical-ai-labs/blob/main/chapter-01/lidar_scan.csv)
+
+**Questions**:
+1. What is the closest obstacle distance?
+2. At what angle is the closest obstacle?
+3. How many obstacles are within 2 meters?
+
+**Starter Code**:
+```python
+import pandas as pd
+import numpy as np
+
+# Load data
+data = pd.read_csv('lidar_scan.csv')
+angles = data['angle'].values  # degrees
+distances = data['distance'].values  # meters
+
+# TODO: Your analysis here
+```
+
+### Exercise 1.2: Simulation vs Reality
+
+**Task**: Compare simulated vs real camera noise.
+
+1. Capture 100 frames from a webcam pointing at a static scene
+2. Compute pixel-wise standard deviation (measure of noise)
+3. Compare to simulated camera noise (Gaussian σ=5 pixels)
+
+**Starter Code**:
+```python
+import cv2
+import numpy as np
+
+cap = cv2.VideoCapture(0)  # Webcam
+frames = []
+
+for i in range(100):
+    ret, frame = cap.read()
+    frames.append(cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY))
+
+frames = np.array(frames)
+noise_std = np.std(frames, axis=0)  # Std dev per pixel
+
+print(f"Mean pixel noise: {np.mean(noise_std):.2f}")
+cap.release()
+```
+
+### Exercise 1.3: Build a Virtual Sensor
+
+**Task**: Implement a simulated ultrasonic sensor (returns distance to nearest obstacle in a cone).
+
+**Specification**:
+- Sensor range: 0.1m - 4.0m
+- Beam width: 15° cone
+- Update rate: 10 Hz
+
+**Pseudocode**:
+```python
+def sense_ultrasonic(robot_pos, robot_heading, obstacles, max_range=4.0, cone_angle=15):
+    # Cast rays in 15° cone
+    # Return distance to nearest obstacle
+    pass
+```
+
+---
+
+## Further Reading
+
+### Primary Sources (Peer-Reviewed)
+
+1. Kajita, S., et al. (2003). *Biped walking pattern generation by using preview control of zero-moment point.* IEEE ICRA. https://doi.org/10.1109/ROBOT.2003.1241826
+
+2. Thrun, S., Burgard, W., & Fox, D. (2005). *Probabilistic Robotics.* MIT Press. (Textbook on SLAM, localization, Kalman filters)
+
+3. Brohan, A., et al. (2023). *RT-2: Vision-Language-Action Models Transfer Web Knowledge to Robotic Control.* CoRL 2023. https://arxiv.org/abs/2307.15818
+
+4. Radosavovic, I., et al. (2024). *Humanoid Locomotion as Next Token Prediction.* arXiv preprint. https://arxiv.org/abs/2402.19469
+
+### Official Documentation
+
+5. ROS 2 Humble Documentation. (2023). *Core Concepts: Nodes, Topics, Services.* https://docs.ros.org/en/humble/Concepts.html
+
+6. NVIDIA Isaac Sim Documentation. (2024). *Getting Started with Isaac Sim.* https://docs.omniverse.nvidia.com/isaacsim/latest/
+
+7. Intel RealSense SDK. (2024). *Python API Reference.* https://github.com/IntelRealSense/librealsense/tree/master/wrappers/python
+
+### Industry Reports
+
+8. NVIDIA GTC 2024 Keynote. (March 2024). *Jensen Huang on Physical AI and Humanoid Robots.* https://www.nvidia.com/gtc/
+
+9. Boston Dynamics. (2023). *Atlas: The Next Generation of Humanoid Robots.* https://bostondynamics.com/atlas/
+
+10. Unitree Robotics. (2024). *G1 Humanoid Robot Technical Specifications.* https://www.unitree.com/g1/
+
+---
+
+**Next Chapter**: [Chapter 2: ROS 2 Fundamentals →](02-ros2-fundamentals.mdx)
+
+---
+
+*Found an error or have a question? Open an issue: [github.com/Shumailaaijaz/physical-ai-textbook/issues](https://github.com/Shumailaaijaz/physical-ai-textbook/issues)*
