@@ -67,16 +67,21 @@ const ModuleList: ModuleItem[] = [
   }
 ];
 
-function Module({title, weekRange, description, learningOutcomes, icon}: ModuleItem) {
+function Module({id, title, weekRange, description, learningOutcomes, icon}: ModuleItem) {
   return (
     <div className={clsx('col col--3')}>
-      <div className={styles.moduleCard}>
-        <div className={styles.moduleIcon}>{icon}</div>
+      <div className={clsx(styles.moduleCard, styles[id])}>
+        <div className={styles.moduleHeader}>
+          <div className={styles.moduleIcon}>{icon}</div>
+          <div className={styles.weekRange}>{weekRange}</div>
+        </div>
         <Heading as="h3" className={styles.moduleTitle}>{title}</Heading>
-        <div className={styles.weekRange}>{weekRange}</div>
         <p className={styles.moduleDescription}>{description}</p>
         <div className={styles.learningOutcomes}>
-          <strong>Learning Outcomes:</strong>
+          <div className={styles.outcomesHeader}>
+            <span className={styles.outcomesIcon}>✓</span>
+            <strong>What You'll Master</strong>
+          </div>
           <ul>
             {learningOutcomes.map((outcome, idx) => (
               <li key={idx}>{outcome}</li>
