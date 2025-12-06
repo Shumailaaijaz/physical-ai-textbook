@@ -25,12 +25,6 @@ function HomepageHeader() {
             to="/docs/00-preface">
             Start Learning 🚀
           </Link>
-          <Link
-            className="button button--secondary button--lg"
-            to="https://github.com/Shumailaaijaz/physical-ai-labs"
-            target="_blank">
-            View Labs 🧪
-          </Link>
         </div>
       </div>
     </header>
