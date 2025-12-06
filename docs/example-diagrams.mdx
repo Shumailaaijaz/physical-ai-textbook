@@ -1,0 +1,190 @@
+---
+id: example-diagrams
+title: Example Mermaid Diagrams
+sidebar_label: Example Diagrams
+sidebar_position: 100
+---
+
+# Example Mermaid Diagrams
+
+This page demonstrates the various diagram types available in the textbook using Mermaid.js.
+
+## ROS 2 Communication Patterns
+
+### Publisher-Subscriber
+
+```mermaid
+graph LR
+    A[Camera Node] -->|/image_raw| B[Image Topic]
+    B --> C[Object Detector]
+    B --> D[SLAM Node]
+    style A fill:#4CAF50
+    style C fill:#2196F3
+    style D fill:#FF9800
+```
+
+### Service-Client
+
+```mermaid
+sequenceDiagram
+    participant Client as Service Client
+    participant Server as Service Server
+
+    Client->>Server: Request (GetPose)
+    activate Server
+    Server-->>Client: Response (x, y, z, roll, pitch, yaw)
+    deactivate Server
+```
+
+## Humanoid Robot Architecture
+
+```mermaid
+graph TD
+    A[High-Level Planner<br/>GPT-4 / VLA] --> B[Motion Controller]
+    B --> C[Left Leg<br/>3 DOF]
+    B --> D[Right Leg<br/>3 DOF]
+    B --> E[Arms<br/>7 DOF each]
+    F[Sensors<br/>Camera, IMU, Force] --> G[State Estimator]
+    G --> A
+
+    style A fill:#E91E63
+    style B fill:#9C27B0
+    style F fill:#FF5722
+    style G fill:#009688
+```
+
+## State Machines
+
+### Locomotion Controller
+
+```mermaid
+stateDiagram-v2
+    [*] --> Idle
+    Idle --> Standing: Power On
+    Standing --> Walking: Start Walk
+    Walking --> Running: Speed > 1.5 m/s
+    Running --> Walking: Speed < 1.5 m/s
+    Walking --> Standing: Stop
+    Standing --> Crouching: Lower COM
+    Crouching --> Standing: Raise COM
+    Standing --> Idle: Power Off
+
+    note right of Walking
+        Linear velocity: 0.5-1.5 m/s
+        Step frequency: 1-2 Hz
+    end note
+```
+
+## Class Diagrams
+
+### ROS 2 Node Hierarchy
+
+```mermaid
+classDiagram
+    class Node {
+        +String name
+        +Publisher[] publishers
+        +Subscription[] subscriptions
+        +create_publisher()
+        +create_subscription()
+        +spin()
+    }
+
+    class Publisher {
+        +String topic
+        +publish(msg)
+    }
+
+    class Subscription {
+        +String topic
+        +callback(msg)
+    }
+
+    Node "1" --> "*" Publisher
+    Node "1" --> "*" Subscription
+```
+
+## Timeline Diagrams
+
+### Capstone Project Timeline
+
+```mermaid
+gantt
+    title 13-Week Physical AI Course Timeline
+    dateFormat  YYYY-MM-DD
+    section Foundations
+    ROS 2 Basics           :a1, 2024-01-01, 2w
+    URDF Modeling          :a2, after a1, 1w
+    section Simulation
+    Gazebo Setup           :b1, after a2, 1w
+    Unity Integration      :b2, after b1, 1w
+    Isaac Sim              :b3, after b2, 2w
+    section Control
+    Locomotion             :c1, after b3, 2w
+    Manipulation           :c2, after c1, 2w
+    section AI
+    VLA Models             :d1, after c2, 1w
+    Capstone Project       :d2, after d1, 2w
+```
+
+## Flowcharts
+
+### Navigation Decision Tree
+
+```mermaid
+flowchart TD
+    Start([Start Navigation]) --> A{Obstacle Detected?}
+    A -->|Yes| B{Distance < 1m?}
+    A -->|No| C[Continue Forward]
+    B -->|Yes| D[Emergency Stop]
+    B -->|No| E{Can Avoid?}
+    E -->|Yes| F[Plan Alternate Path]
+    E -->|No| G[Request Human Help]
+    F --> C
+    C --> H{Goal Reached?}
+    H -->|Yes| End([Mission Complete])
+    H -->|No| A
+
+    style Start fill:#4CAF50
+    style End fill:#4CAF50
+    style D fill:#F44336
+    style G fill:#FF9800
+```
+
+## Entity Relationship
+
+### Robot Database Schema
+
+```mermaid
+erDiagram
+    ROBOT ||--o{ SENSOR : has
+    ROBOT ||--o{ ACTUATOR : has
+    ROBOT ||--|| CONTROLLER : uses
+    SENSOR {
+        string type
+        float frequency
+        string topic
+    }
+    ACTUATOR {
+        string joint_name
+        float max_effort
+        float max_velocity
+    }
+    CONTROLLER {
+        string algorithm
+        float control_rate
+    }
+```
+
+---
+
+## Usage in MDX
+
+To add a diagram to your chapter, use triple backticks with `mermaid`:
+
+\`\`\`mermaid
+graph LR
+    A[Start] --> B[End]
+\`\`\`
+
+See [SKILLS_GUIDE.md](../SKILLS_GUIDE.md) for more examples and advanced usage.

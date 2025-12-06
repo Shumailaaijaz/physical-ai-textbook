@@ -1,0 +1,40 @@
+skill: urdu-translate
+version: 1.0.0
+description: Translates English technical content to natural Urdu while preserving technical terms
+
+prompt: |
+  Translate the following English text to accurate, natural Urdu.
+
+  IMPORTANT RULES:
+  1. Preserve ALL technical terms in English (ROS 2, URDF, Gazebo, Python, etc.)
+  2. Use natural, conversational Urdu
+  3. Maintain markdown formatting
+  4. Keep code blocks unchanged
+  5. Translate headings and descriptions
+
+  Input text:
+  {input_text}
+
+  Output as JSON with this exact format:
+  {
+    "original": "original English text",
+    "urdu": "translated Urdu text with English technical terms",
+    "technical_terms": ["list", "of", "preserved", "terms"]
+  }
+
+output_format: JSON
+cache_duration: 86400  # 24 hours
+model: gpt-4-turbo
+
+examples:
+  - input: "ROS 2 is a robotics framework"
+    output:
+      original: "ROS 2 is a robotics framework"
+      urdu: "ROS 2 ایک robotics framework ہے"
+      technical_terms: ["ROS 2", "robotics framework"]
+
+  - input: "Install Python packages using pip"
+    output:
+      original: "Install Python packages using pip"
+      urdu: "pip استعمال کرتے ہوئے Python packages install کریں"
+      technical_terms: ["Python", "packages", "pip", "install"]

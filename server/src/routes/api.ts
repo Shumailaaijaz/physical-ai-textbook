@@ -1,6 +1,10 @@
 import express, { Request, Response } from 'express';
+import translateRouter from '../api/translate';
 
 const router = express.Router();
+
+// Mount translation routes
+router.use('/translate', translateRouter);
 
 /**
  * Example API endpoint
