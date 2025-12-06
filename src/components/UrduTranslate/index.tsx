@@ -1,5 +1,4 @@
-import React, { useState, useEffect } from 'react';
-import { supabase } from '../../lib/supabase';
+import React, { useState } from 'react';
 import styles from './styles.module.css';
 
 interface UrduTranslateProps {
@@ -9,70 +8,13 @@ interface UrduTranslateProps {
 
 export default function UrduTranslate({ chapterId, chapterTitle }: UrduTranslateProps): React.JSX.Element {
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-  const [urduContent, setUrduContent] = useState<string | null>(null);
 
-  // Check localStorage for cached translation
-  useEffect(() => {
-    const cachedTranslation = localStorage.getItem(`urdu-${chapterId}`);
-    if (cachedTranslation) {
-      try {
-        const data = JSON.parse(cachedTranslation);
-        setUrduContent(data.mdx_content);
-      } catch (err) {
-        console.error('Error parsing cached translation:', err);
-      }
-    }
-  }, [chapterId]);
-
-  const handleOpenModal = async () => {
+  const handleOpenModal = () => {
     setIsModalOpen(true);
-    setError(null);
-
-    // If we already have cached content, no need to fetch
-    if (urduContent) {
-      return;
-    }
-
-    // Try to fetch from API
-    setIsLoading(true);
-    try {
-      const { data, error: fetchError } = await supabase
-        .from('translation_content')
-        .select('*')
-        .eq('chapter_id', chapterId)
-        .eq('language_code', 'ur')
-        .single();
-
-      if (fetchError || !data) {
-        // No translation available - show placeholder
-        setUrduContent(null);
-        setError('اس باب کا اردو ترجمہ ابھی دستیاب نہیں ہے۔\n\nUrdu translation for this chapter is not yet available. It will be added soon.');
-      } else {
-        setUrduContent(data.mdx_content);
-        // Cache the translation
-        localStorage.setItem(`urdu-${chapterId}`, JSON.stringify(data));
-      }
-    } catch (err: any) {
-      console.error('Translation error:', err);
-      setError('اس باب کا اردو ترجمہ ابھی دستیاب نہیں ہے۔\n\nUrdu translation for this chapter is not yet available. It will be added soon.');
-    } finally {
-      setIsLoading(false);
-    }
   };
 
   const handleCloseModal = () => {
     setIsModalOpen(false);
-  };
-
-  // Get English content from the page
-  const getEnglishContent = () => {
-    const article = document.querySelector('article');
-    if (article) {
-      return article.textContent || '';
-    }
-    return '';
   };
 
   return (
@@ -105,36 +47,21 @@ export default function UrduTranslate({ chapterId, chapterTitle }: UrduTranslate
             </div>
 
             <div className={styles.modalBody}>
-              {isLoading ? (
-                <div className={styles.loadingContainer}>
-                  <span className={styles.spinner}></span>
-                  <p>Loading Urdu translation...</p>
-                </div>
-              ) : error ? (
-                <div className={styles.errorContainer}>
-                  <div className={styles.errorIcon}>📖</div>
-                  <p style={{ whiteSpace: 'pre-line', textAlign: 'center', fontSize: '1.1rem' }}>
-                    {error}
-                  </p>
-                  <p style={{ marginTop: '1rem', fontSize: '0.9rem', color: '#666' }}>
-                    In the meantime, you can read the English version below.
-                  </p>
-                </div>
-              ) : urduContent ? (
-                <div
-                  className={styles.urduText}
-                  dangerouslySetInnerHTML={{ __html: urduContent }}
-                />
-              ) : (
-                <div className={styles.placeholderContainer}>
-                  <div className={styles.placeholderIcon}>📚</div>
-                  <h3>اردو ترجمہ جلد آرہا ہے</h3>
-                  <p>Urdu translation coming soon!</p>
-                  <p style={{ marginTop: '1rem', fontSize: '0.9rem' }}>
-                    This chapter will be translated into Urdu shortly. Technical terms (ROS 2, Python, URDF, etc.) will be preserved in English for clarity.
-                  </p>
-                </div>
-              )}
+              <div className={styles.placeholderContainer}>
+                <div className={styles.placeholderIcon}>📚</div>
+                <h3 style={{ fontSize: '1.8rem', margin: '1rem 0', fontFamily: 'Noto Nastaliq Urdu, serif' }}>
+                  اردو ترجمہ جلد آرہا ہے
+                </h3>
+                <p style={{ fontSize: '1.2rem', fontWeight: 'bold', color: '#01411c' }}>
+                  Urdu Translation Coming Soon!
+                </p>
+                <p style={{ marginTop: '1.5rem', fontSize: '1rem', lineHeight: '1.6', maxWidth: '600px' }}>
+                  This chapter will be translated into Urdu shortly. Technical terms (ROS 2, Python, URDF, Gazebo, etc.) will be preserved in English for clarity and consistency.
+                </p>
+                <p style={{ marginTop: '1rem', fontSize: '0.9rem', color: '#666' }}>
+                  یہ باب جلد ہی اردو میں دستیاب ہوگا۔ تکنیکی اصطلاحات انگریزی میں محفوظ رہیں گی۔
+                </p>
+              </div>
             </div>
 
             <div className={styles.modalFooter}>
