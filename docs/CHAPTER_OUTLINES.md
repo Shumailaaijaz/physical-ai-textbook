@@ -1554,7 +1554,7 @@ robot.execute(action)  # [x, y, z, roll, pitch, yaw, gripper]
 **13.3 Physical Safety**
 - **Collision avoidance**: Humans are unpredictable, must have safety margins
 - **Emergency stop**: Hardware kill switch (required by ISO 10218)
-- **Force limits**: Collaborative robots (cobots) must limit contact force (`<150N`)
+- **Force limits**: Collaborative robots (cobots) must limit contact force (less than 150N)
 - **Case study**: Tesla autopilot crashes, lessons learned
 
 **13.4 Bias in Embodied AI**
