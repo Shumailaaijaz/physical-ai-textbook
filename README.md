@@ -1,245 +1,169 @@
-# Physical AI & Humanoid Robotics: From Digital Brain to Embodied Intelligence
+# Physical AI & Humanoid Robotics
 
-> A comprehensive, bilingual (English/Urdu) open-source textbook on humanoid robotics, ROS 2, and physical AI — built with Docusaurus, featuring personalized learning paths and 40+ hands-on labs.
+![Physical AI & Humanoid Robotics](images/book-cover-image.jpeg)
 
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
-[![Docusaurus](https://img.shields.io/badge/Docusaurus-3.x-green.svg)](https://docusaurus.io/)
-[![TypeScript](https://img.shields.io/badge/TypeScript-5.x-blue.svg)](https://www.typescriptlang.org/)
+> **A comprehensive textbook for building intelligent robots that understand and act in the physical world**
 
-**Live Site**: [https://physical-ai.github.io/textbook](https://physical-ai.github.io/textbook) *(coming soon)*
-
-**Companion Labs**: [github.com/physical-ai/labs](https://github.com/physical-ai/labs)
-
----
-
-## 📚 What is This?
-
-A **free, open-source textbook** designed for:
-- **Advanced undergraduate and graduate students** in robotics, computer science, and electrical engineering
-- **Industry practitioners** upskilling in humanoid robotics and Physical AI
-- **Researchers** looking for a comprehensive ROS 2 + Isaac Sim reference
-
-### Key Features
-
-✅ **14 Chapters + Appendix** (90,000-120,000 words) covering:
-  - Part 0: Preface & Setup
-  - Part 1: Foundations of Physical AI
-  - Part 2: ROS 2, URDF, Gazebo, Unity (Weeks 1-7)
-  - Part 3: NVIDIA Isaac Sim + Isaac ROS (Weeks 8-10)
-  - Part 4: Locomotion, Manipulation, VLA, Capstone (Weeks 11-13)
-  - Part 5: Hardware Guide (3 budget tiers), Ethics, Future
-
-✅ **Bilingual Support**: Instant toggle between English and Urdu (≥95% human-rated translation accuracy)
-
-✅ **Personalized Learning**: Answer 5 questions (Python/ROS/Linux skill, GPU access, budget) → content adapts to your level
-
-✅ **40+ Companion Labs**: Hands-on ROS 2 packages and Isaac Sim scenes (all runnable via Docker on Windows 10/11, macOS, Linux)
-
-✅ **250+ Verified Citations**: ≥50% peer-reviewed papers (ICRA, IROS, RSS, CoRL), ≥30% official documentation
-
-✅ **Windows-First**: Primary platform is **Windows 10/11 + Docker Desktop** (no native Ubuntu required)
-
-✅ **Dark Mode**: Full support with high-contrast diagrams
+[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
+[![Chapters](https://img.shields.io/badge/Chapters-14-green.svg)](docs/)
+[![Word Count](https://img.shields.io/badge/Words-90K-orange.svg)](docs/)
+[![Labs](https://img.shields.io/badge/Labs-40+-purple.svg)](https://github.com/Shumailaaijaz/physical-ai-labs)
 
 ---
 
-## 🚀 Quick Start (5 Minutes)
+## 📖 About This Textbook
 
-### Prerequisites
-- **Windows 10/11** (primary), macOS, or Linux
-- **Node.js 20.x** or later
-- **Docker Desktop** ([download](https://www.docker.com/products/docker-desktop/))
-- **Supabase account** (free tier: [supabase.com](https://supabase.com))
-- **Vercel account** (free tier: [vercel.com](https://vercel.com))
+This **open-source textbook** provides a complete **13-week university curriculum** for Physical AI and Humanoid Robotics. Designed for advanced undergraduates, graduate students, and industry practitioners, it covers everything from ROS 2 fundamentals to vision-language-action models for autonomous humanoid robots.
 
-### Local Development Setup
+### What Makes This Textbook Unique?
 
-```powershell
-# 1. Clone repository
-git clone https://github.com/physical-ai/textbook.git
-cd textbook
-
-# 2. Install dependencies
-npm install
-
-# 3. Set up environment variables
-copy .env.example .env.local
-# Edit .env.local with your Supabase URL/key and Better-Auth secret
-
-# 4. Start development server
-npm run start
-# Site opens at http://localhost:3000
-
-# 5. (Optional) Start Vercel dev server for API endpoints
-npx vercel dev
-# API available at http://localhost:3001/api
-```
-
-### One-Click Cloud Alternative
-
-Click here to open in **GitHub Codespaces** (no installation required):
-
-[![Open in GitHub Codespaces](https://github.com/codespaces/badge.svg)](https://github.com/codespaces/new?hide_repo_select=true&ref=main&repo=physical-ai/textbook)
+✅ **Windows-First Approach** - Runs on Windows 10/11 + Docker (no Linux required)  
+✅ **Three Hardware Tiers** - Cloud-only ($205/quarter), Budget ($3,500), Research ($20,000+)  
+✅ **Real-World Focus** - Uses Unitree G1/Go2 humanoids, NVIDIA Isaac Sim, ROS 2  
+✅ **150+ Code Examples** - Every concept backed by working Python/C++ implementations  
+✅ **40+ Hands-On Labs** - Practical exercises with Docker/Codespaces support  
+✅ **Complete Open Source** - MIT licensed, community-driven  
 
 ---
 
-## 📖 Project Structure
+## 📚 Table of Contents
 
-```
-textbook/
-├── docs/                       # MDX chapter content (English only; Urdu lazy-loaded)
-│   ├── 00-preface.mdx
-│   ├── 01-introduction.mdx
-│   ├── 02-ros2-fundamentals.mdx
-│   ├── ...
-│   └── 13-ethics-future.mdx
-├── src/
-│   ├── components/
-│   │   ├── Auth/               # SignupForm, LoginForm, AuthProvider
-│   │   ├── Personalization/    # PersonalizeButton, PersonalizationProvider
-│   │   ├── Translation/        # UrduToggle, TranslationProvider
-│   │   └── MDX/                # Beginner, Advanced, SimulationOnly components
-│   ├── hooks/
-│   │   ├── useAuth.ts
-│   │   ├── usePersonalization.ts
-│   │   └── useUrduTranslation.ts
-│   ├── pages/
-│   │   ├── index.tsx           # Homepage with book cover
-│   │   ├── signup.tsx
-│   │   ├── login.tsx
-│   │   └── profile.tsx
-│   └── css/
-│       └── custom.css          # Dark-mode compatible styles
-├── api/                        # Vercel serverless functions
-│   ├── auth/
-│   │   ├── signup.ts
-│   │   ├── login.ts
-│   │   └── logout.ts
-│   ├── profile.ts
-│   ├── translation/
-│   │   └── [chapterId].ts
-│   └── session/
-│       ├── validate.ts
-│       └── state.ts
-├── static/
-│   ├── img/
-│   │   ├── book-cover-image.jpg  # 1600×840 px cover
-│   │   └── diagrams/             # SVG diagrams (dark-mode compatible)
-│   └── fonts/
-│       └── NotoNastaliqUrdu-Regular.ttf
-├── docs/planning/              # Design documents
-│   ├── spec.md
-│   ├── plan.md
-│   ├── research.md
-│   ├── data-model.md
-│   └── contracts/              # OpenAPI 3.0 specs
-│       ├── auth.openapi.yml
-│       ├── profile.openapi.yml
-│       ├── translation.openapi.yml
-│       └── session.openapi.yml
-├── .github/
-│   └── workflows/
-│       ├── build-deploy.yml    # Deploy to GitHub Pages
-│       ├── test-frontend.yml   # TypeScript + lint + build checks
-│       └── validate-citations.yml
-├── CLAUDE_SYSTEM_PROMPT.txt    # Windows-first instructions for AI assistants
-├── LICENSE                     # MIT License
-└── README.md                   # This file
-```
+### **Part 1: Foundations** (Weeks 1-2)
+
+- **[Chapter 0: Preface](docs/00-preface.mdx)** - Course overview, hardware requirements, setup
+- **[Chapter 1: Introduction to Physical AI](docs/01-introduction-to-physical-ai.mdx)** - From digital AI to embodied intelligence
+
+### **Part 2: The Robotic Nervous System** (Weeks 3-7)
+
+- **[Chapter 2: ROS 2 Fundamentals](docs/02-ros2-fundamentals.mdx)** (8,000 words)
+- **[Chapter 3: URDF & Robot Modeling](docs/03-urdf-robot-modeling.mdx)** (7,000 words)
+- **[Chapter 4: Gazebo Simulation](docs/04-gazebo-simulation.mdx)** (7,500 words)
+- **[Chapter 5: Unity Robotics Hub](docs/05-unity-robotics-hub.mdx)** (6,500 words)
+
+### **Part 3: The AI-Robot Brain** (Weeks 8-10)
+
+- **[Chapter 6: NVIDIA Isaac Sim Basics](docs/06-isaac-sim-basics.mdx)** (8,000 words)
+- **[Chapter 7: Isaac ROS Integration](docs/07-isaac-ros-integration.mdx)** (7,500 words)
+
+### **Part 4: Humanoid Control & Intelligence** (Weeks 11-13)
+
+- **[Chapter 8: Legged Locomotion](docs/08-legged-locomotion.mdx)** (7,000 words)
+- **[Chapter 9: Manipulation & Grasping](docs/09-manipulation-grasping.mdx)** (6,800 words)
+- **[Chapter 10: Vision-Language-Action Models](docs/10-vision-language-action.mdx)** (8,500 words)
+- **[Chapter 11: Capstone Project](docs/11-capstone-project.mdx)** (5,000 words)
+
+### **Part 5: Hardware, Ethics & Future** (Reference)
+
+- **[Chapter 12: Hardware Guide](docs/12-hardware-guide.mdx)** (9,000 words)
+- **[Chapter 13: Ethics & Future of Physical AI](docs/13-ethics-future-physical-ai.mdx)** (6,000 words)
 
 ---
 
-## 🎯 Technology Stack
+## 🎯 Learning Outcomes
 
-- **Frontend**: [Docusaurus 3](https://docusaurus.io/), React 18, TypeScript, MDX
-- **Authentication**: [Better-Auth](https://www.better-auth.com/) (email/password)
-- **Backend**: [Vercel](https://vercel.com/) serverless functions, Node.js 20.x
-- **Database**: [Supabase](https://supabase.com/) (PostgreSQL 15+) with Row-Level Security
-- **Deployment**: GitHub Pages (static site) + Vercel (API endpoints)
-- **Translation**: Custom lazy-loading system (Urdu fetched via API on first toggle, cached in localStorage)
-- **Personalization**: Client-side conditional MDX components based on user profile
+By completing this textbook, you will be able to:
+
+1. **Build ROS 2 systems** - Design distributed robot architectures
+2. **Simulate robots** - Create physics-accurate simulations
+3. **Deploy AI on edge** - Port code to NVIDIA Jetson
+4. **Control humanoid robots** - Implement locomotion and manipulation
+5. **Integrate VLA models** - Use LLMs for robot control
 
 ---
 
-## 🧪 Running Tests
+## 💻 Hardware Requirements
 
-```bash
-# Type checking
-npm run type-check
+### **Tier 1: Cloud-Only** ($205/quarter)
+- AWS g5.2xlarge + NVIDIA Jetson Orin Nano + RealSense D435i
 
-# Linting
-npm run lint
+### **Tier 2: Budget Workstation** ($3,500 one-time)
+- RTX 4070 Ti, i7 13th Gen, 32GB RAM, Jetson + sensors
 
-# Build (validates frontmatter + generates sidebar)
-npm run build
+### **Tier 3: Research Lab** ($20,000+)
+- RTX 4090, Unitree G1 Humanoid, advanced sensors
 
-# Citation validation (requires all chapters committed)
-npm run validate-citations
-```
+**See [Chapter 12](docs/12-hardware-guide.mdx) for detailed build guides.**
+
+---
+
+## 🚀 Quick Start
+
+### Windows 10/11 + Docker
+
+\`\`\`powershell
+# Install Docker Desktop
+# Pull ROS 2 Humble image
+docker pull osrf/ros:humble-desktop
+
+# Run container
+docker run -it --name ros2_dev osrf/ros:humble-desktop
+ros2 --version
+\`\`\`
+
+### GitHub Codespaces
+
+Click "Code" → "Codespaces" → "Create codespace" - Pre-configured environment ready!
+
+---
+
+## 🧪 Companion Labs
+
+🔗 **[Physical AI Labs Repository](https://github.com/Shumailaaijaz/physical-ai-labs)**
+
+- 40+ ROS 2 packages
+- Gazebo/Isaac Sim scenes
+- Docker configurations
+- Codespaces support
+
+---
+
+## 📅 13-Week Course Schedule
+
+| Week | Module | Topics | Chapters |
+|------|--------|--------|----------|
+| 1-2 | Foundations | Physical AI, sensors | 0-1 |
+| 3-5 | ROS 2 | Nodes, topics, URDF | 2-3 |
+| 6-7 | Simulation | Gazebo, Unity | 4-5 |
+| 8-10 | Isaac | Isaac Sim, SLAM, Nav2 | 6-7 |
+| 11-12 | Humanoid | Locomotion, manipulation | 8-9 |
+| 13 | VLA | Voice control, capstone | 10-11 |
 
 ---
 
 ## 🤝 Contributing
 
-We welcome contributions! See our [Contributing Guide](CONTRIBUTING.md) *(coming soon)* for:
-- Chapter authoring guidelines
-- MDX component usage
-- Citation requirements (APA 7, ≥50% peer-reviewed)
-- Urdu translation workflow
-- Code style and commit conventions
+We welcome contributions!
 
-### Quick Contribution Checklist
-
-- [ ] All new chapters use `templates/chapter-template.mdx`
-- [ ] Citations in APA 7 format with clickable links
-- [ ] Alt-text added to all images/diagrams
-- [ ] Frontmatter validates against `contracts/chapter-metadata-schema.json`
-- [ ] Windows-first setup instructions (see `CLAUDE_SYSTEM_PROMPT.txt`)
-- [ ] Dark-mode compatible diagrams (SVG preferred)
-- [ ] Tested on Windows 10/11 + Docker Desktop
+1. Report bugs - [Open an issue](https://github.com/Shumailaaijaz/physical-ai-textbook/issues)
+2. Fix errors - Submit a PR
+3. Share - Star ⭐ the repo
 
 ---
 
-## 📜 License
+## 📄 License
 
-MIT License - see [LICENSE](LICENSE) file.
+MIT License - Free to use for teaching and research.
 
-All textbook content (text, diagrams, code) is released under the MIT License, allowing free use, modification, and distribution. This aligns with our "Practicality & Inclusivity" principle by maximizing accessibility.
-
----
-
-## 🙏 Acknowledgments
-
-- **ROS 2 Community** for the foundational robotics framework
-- **NVIDIA Isaac Sim Team** for cutting-edge simulation tools
-- **Docusaurus Team** for the excellent static site generator
-- **Urdu Translators** (names TBD) for high-quality translations
-- **Beta Testers** (50+ students and researchers) for invaluable feedback
+**Attribution:** *Physical AI & Humanoid Robotics Textbook by Shumaila Aijaz*
 
 ---
 
-## 📞 Contact & Support
+## 📞 Contact
 
-- **Issues**: [GitHub Issues](https://github.com/physical-ai/textbook/issues)
-- **Discussions**: [GitHub Discussions](https://github.com/physical-ai/textbook/discussions)
-- **Email**: contact@physical-ai.org *(coming soon)*
-- **Twitter**: [@PhysicalAI](https://twitter.com/PhysicalAI) *(coming soon)*
+- [GitHub Discussions](https://github.com/Shumailaaijaz/physical-ai-textbook/discussions)
+- [Issues](https://github.com/Shumailaaijaz/physical-ai-textbook/issues)
 
 ---
 
-## 🗺️ Roadmap
+## 🚀 Start Learning
 
-- [x] T0: Repository setup (Today)
-- [ ] T1: Docusaurus + platform setup (14 Dec 2025)
-- [ ] T2: Chapter template + validation (16 Dec 2025)
-- [ ] T3: Chapters 0-1 complete (21 Dec 2025)
-- [ ] T4-T6: Chapters 2-11 complete (18 Jan 2026)
-- [ ] T7: MVP Beta Launch - ≥50 users (25 Jan 2026)
-- [ ] T8: Chapters 12-13 + PDF export (08 Feb 2026)
-- [ ] T9: Official 1.0 Release (28 Feb 2026)
-
-See [tasks.md](docs/planning/tasks.md) for detailed implementation plan (202 tasks).
+Ready to build your first robot? Start with **[Chapter 0: Preface](docs/00-preface.mdx)**
 
 ---
 
-**Built with ❤️ for the robotics community | Powered by Docusaurus**
+<p align="center">
+  <strong>Built with ❤️ by the Physical AI community</strong><br>
+  <a href="https://github.com/Shumailaaijaz/physical-ai-textbook/stargazers">⭐ Star</a> •
+  <a href="https://github.com/Shumailaaijaz/physical-ai-labs">🧪 Labs</a> •
+  <a href="https://github.com/Shumailaaijaz/physical-ai-textbook/discussions">💬 Discuss</a>
+</p>
