@@ -11,17 +11,25 @@ import styles from './index.module.css';
 function HomepageHeader() {
   const {siteConfig} = useDocusaurusContext();
   return (
-    <header className={clsx('hero hero--primary', styles.heroBanner)}>
+    <header className={clsx('hero', styles.heroBanner)}>
       <div className="container">
         <Heading as="h1" className="hero__title">
-          {siteConfig.title}
+          Physical AI & Humanoid Robotics
         </Heading>
-        <p className="hero__subtitle">{siteConfig.tagline}</p>
+        <p className="hero__subtitle">
+          A comprehensive 13-week university curriculum for building intelligent robots that understand and act in the physical world
+        </p>
         <div className={styles.buttons}>
           <Link
+            className="button button--primary button--lg"
+            to="/docs/00-preface">
+            Start Learning 🚀
+          </Link>
+          <Link
             className="button button--secondary button--lg"
-            to="/docs/intro">
-            Docusaurus Tutorial - 5min ⏱️
+            to="https://github.com/Shumailaaijaz/physical-ai-labs"
+            target="_blank">
+            View Labs 🧪
           </Link>
         </div>
       </div>
