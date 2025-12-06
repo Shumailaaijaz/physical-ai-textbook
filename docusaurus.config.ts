@@ -5,8 +5,8 @@ import type * as Preset from '@docusaurus/preset-classic';
 // This runs in Node.js - Don't use client-side code here (browser APIs, JSX...)
 
 const config: Config = {
-  title: 'My Site',
-  tagline: 'Dinosaurs are cool',
+  title: 'Physical AI & Humanoid Robotics',
+  tagline: 'A comprehensive 13-week university curriculum for building intelligent robots',
   favicon: 'img/favicon.ico',
 
   // Future flags, see https://docusaurus.io/docs/api/docusaurus-config#future
@@ -15,15 +15,18 @@ const config: Config = {
   },
 
   // Set the production url of your site here
-  url: 'https://your-docusaurus-site.example.com',
+  url: 'https://shumailaaijaz.github.io',
   // Set the /<baseUrl>/ pathname under which your site is served
   // For GitHub pages deployment, it is often '/<projectName>/'
-  baseUrl: '/',
+  baseUrl: '/physical-ai-textbook/',
 
   // GitHub pages deployment config.
   // If you aren't using GitHub pages, you don't need these.
-  organizationName: 'facebook', // Usually your GitHub org/user name.
-  projectName: 'docusaurus', // Usually your repo name.
+  organizationName: 'Shumailaaijaz', // Usually your GitHub org/user name.
+  projectName: 'physical-ai-textbook', // Usually your repo name.
+
+  deploymentBranch: 'gh-pages', // Branch for GitHub Pages deployment
+  trailingSlash: false,
 
   onBrokenLinks: 'throw',
 
@@ -41,10 +44,9 @@ const config: Config = {
       {
         docs: {
           sidebarPath: './sidebars.ts',
-          // Please change this to your repo.
-          // Remove this to remove the "edit this page" links.
+          // Edit this page links
           editUrl:
-            'https://github.com/facebook/docusaurus/tree/main/packages/create-docusaurus/templates/shared/',
+            'https://github.com/Shumailaaijaz/physical-ai-textbook/tree/main/',
         },
         blog: {
           showReadingTime: true,
@@ -75,9 +77,9 @@ const config: Config = {
       respectPrefersColorScheme: true,
     },
     navbar: {
-      title: 'My Site',
+      title: 'Physical AI Textbook',
       logo: {
-        alt: 'My Site Logo',
+        alt: 'Physical AI Logo',
         src: 'img/logo.svg',
       },
       items: [
@@ -85,11 +87,16 @@ const config: Config = {
           type: 'docSidebar',
           sidebarId: 'tutorialSidebar',
           position: 'left',
-          label: 'Tutorial',
+          label: 'Textbook',
         },
         {to: '/blog', label: 'Blog', position: 'left'},
         {
-          href: 'https://github.com/facebook/docusaurus',
+          href: 'https://github.com/Shumailaaijaz/physical-ai-labs',
+          label: 'Labs',
+          position: 'right',
+        },
+        {
+          href: 'https://github.com/Shumailaaijaz/physical-ai-textbook',
           label: 'GitHub',
           position: 'right',
         },
@@ -99,28 +106,32 @@ const config: Config = {
       style: 'dark',
       links: [
         {
-          title: 'Docs',
+          title: 'Textbook',
           items: [
             {
-              label: 'Tutorial',
-              to: '/docs/intro',
+              label: 'Start Learning',
+              to: '/docs/00-preface',
+            },
+            {
+              label: 'Chapter Outlines',
+              to: '/docs/CHAPTER_OUTLINES',
             },
           ],
         },
         {
-          title: 'Community',
+          title: 'Resources',
           items: [
             {
-              label: 'Stack Overflow',
-              href: 'https://stackoverflow.com/questions/tagged/docusaurus',
+              label: 'Labs Repository',
+              href: 'https://github.com/Shumailaaijaz/physical-ai-labs',
             },
             {
-              label: 'Discord',
-              href: 'https://discordapp.com/invite/docusaurus',
+              label: 'Textbook Repository',
+              href: 'https://github.com/Shumailaaijaz/physical-ai-textbook',
             },
             {
-              label: 'X',
-              href: 'https://x.com/docusaurus',
+              label: 'GitHub Discussions',
+              href: 'https://github.com/Shumailaaijaz/physical-ai-textbook/discussions',
             },
           ],
         },
@@ -132,13 +143,13 @@ const config: Config = {
               to: '/blog',
             },
             {
-              label: 'GitHub',
-              href: 'https://github.com/facebook/docusaurus',
+              label: 'Report Issues',
+              href: 'https://github.com/Shumailaaijaz/physical-ai-textbook/issues',
             },
           ],
         },
       ],
-      copyright: `Copyright © ${new Date().getFullYear()} My Project, Inc. Built with Docusaurus.`,
+      copyright: `Copyright © ${new Date().getFullYear()} Physical AI Textbook. Open source under MIT License.`,
     },
     prism: {
       theme: prismThemes.github,
