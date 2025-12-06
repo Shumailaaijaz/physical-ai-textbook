@@ -1,0 +1,695 @@
+---
+id: 11-capstone-project
+title: "Chapter 11: Capstone Project"
+sidebar_position: 11
+part: 4
+week: 13
+difficulty_levels: [capstone]
+hardware_tracks: [simulation_only, research_grade]
+citation_count: 0
+word_count: 5000
+urdu_completeness: 0
+---
+
+# Chapter 11: Capstone Project
+
+> *"The best way to learn robotics is to build a complete system."*
+
+## Learning Objectives
+
+By the end of this chapter, you will be able to:
+
+1. **Integrate all course modules** (ROS 2, Gazebo, Isaac, VLA)
+2. **Design and implement** a complete autonomous system
+3. **Evaluate performance** with quantitative metrics
+4. **Present results** professionally
+5. **Debug complex multi-component** systems
+
+**Estimated Time**: 40-60 hours (1 week full-time or 2-3 weeks part-time)
+
+---
+
+## 11.1 Project Specification
+
+### 11.1.1 Title
+
+**Voice-Controlled Autonomous Humanoid Robot**
+
+### 11.1.2 Scenario
+
+A simulated **Unitree G1 humanoid** operates in a kitchen environment. It receives voice commands from a human, plans a sequence of actions, navigates to objects, identifies them using vision, grasps them, and delivers them to the user.
+
+**Example tasks**:
+- "Bring me the red cup from the table"
+- "Clean the table by moving all objects to the bin"
+- "Find the remote control and hand it to me"
+
+### 11.1.3 System Architecture
+
+```
+┌─────────────────────────────────────────────────────────────────┐
+│                      Full System Architecture                   │
+│                                                                 │
+│  ┌──────────────┐     ┌──────────────┐     ┌──────────────┐   │
+│  │   Voice      │ --> │   Language   │ --> │   Action     │   │
+│  │   Input      │     │   Planning   │     │   Executor   │   │
+│  │  (Whisper)   │     │   (GPT-4)    │     │   (ROS 2)    │   │
+│  └──────────────┘     └──────────────┘     └──────┬───────┘   │
+│                                                     │           │
+│                                                     ▼           │
+│  ┌──────────────────────────────────────────────────────────┐  │
+│  │                   Navigation Module                       │  │
+│  │         (Nav2 + Isaac VSLAM + Path Planning)              │  │
+│  └────────────────────────────┬─────────────────────────────┘  │
+│                               │                                 │
+│                               ▼                                 │
+│  ┌──────────────────────────────────────────────────────────┐  │
+│  │                   Perception Module                       │  │
+│  │       (YOLOv8 + FoundationPose + Depth Estimation)        │  │
+│  └────────────────────────────┬─────────────────────────────┘  │
+│                               │                                 │
+│                               ▼                                 │
+│  ┌──────────────────────────────────────────────────────────┐  │
+│  │                  Manipulation Module                      │  │
+│  │           (MoveIt 2 + Grasp Planning + Force Control)     │  │
+│  └──────────────────────────────────────────────────────────┘  │
+│                                                                 │
+└─────────────────────────────────────────────────────────────────┘
+```
+
+### 11.1.4 Required Components
+
+**1. Voice Interface**
+- **Input**: Microphone audio
+- **Processing**: OpenAI Whisper (speech → text)
+- **Output**: Text command
+
+**2. Task Planning**
+- **Input**: Natural language command
+- **Processing**: GPT-4 (text → action sequence)
+- **Output**: JSON list of actions
+
+**3. Navigation**
+- **Input**: Goal location (x, y, theta)
+- **Processing**: Nav2 path planner + Isaac VSLAM
+- **Output**: cmd_vel commands
+
+**4. Perception**
+- **Input**: RGB-D camera feed
+- **Processing**: YOLOv8 (detection) + FoundationPose (6D pose)
+- **Output**: Object poses
+
+**5. Manipulation**
+- **Input**: Object pose
+- **Processing**: MoveIt 2 (motion planning) + grasp planner
+- **Output**: Joint trajectories
+
+**6. Execution Monitor**
+- **Function**: Detect failures, trigger re-planning
+- **Metrics**: Grasp success, navigation accuracy, task completion time
+
+---
+
+## 11.2 Deliverables
+
+### 11.2.1 System Design Document (10-15 pages)
+
+**Required sections**:
+
+1. **Introduction** (1 page)
+   - Project motivation
+   - High-level overview
+   - Key challenges
+
+2. **Architecture** (2-3 pages)
+   - System diagram (nodes, topics, actions)
+   - Data flow (sensors → perception → planning → control)
+   - Technology stack (ROS 2 packages, models, hardware)
+
+3. **Module Specifications** (3-4 pages)
+   - **Voice**: Model choice (Whisper base/small), latency, accuracy
+   - **Planning**: GPT-4 prompt design, action vocabulary
+   - **Navigation**: Planner choice (RRT*, STOMP), costmap resolution
+   - **Perception**: Model choice (YOLOv8n/s/m), inference rate
+   - **Manipulation**: IK solver, grasp strategy, force limits
+
+4. **Failure Modes & Mitigations** (2 pages)
+   - **Failure 1**: Whisper misunderstands command
+     - **Mitigation**: Confidence threshold + re-prompt
+   - **Failure 2**: Navigation path blocked
+     - **Mitigation**: Dynamic replanning
+   - **Failure 3**: Grasp fails (object slips)
+     - **Mitigation**: Force sensing + retry with different grasp
+
+5. **Performance Targets** (1 page)
+   - **Success rate**: ≥70% on test set (20 trials)
+   - **Latency**: Voice → action start <5 seconds
+   - **Navigation accuracy**: ±10cm position error
+   - **Grasp success**: ≥80% for known objects
+
+6. **Testing Plan** (1 page)
+   - Unit tests (per module)
+   - Integration tests (full pipeline)
+   - Performance benchmarks (success rate, timing)
+
+### 11.2.2 Implementation (Code + Docker)
+
+**Directory structure**:
+
+```
+capstone_project/
+├── docker/
+│   ├── Dockerfile
+│   └── docker-compose.yml
+├── src/
+│   ├── voice_interface/
+│   │   ├── whisper_node.py
+│   │   └── tts_node.py
+│   ├── task_planner/
+│   │   ├── gpt4_planner.py
+│   │   └── action_executor.py
+│   ├── navigation/
+│   │   ├── nav2_launch.py
+│   │   └── vslam_node.py
+│   ├── perception/
+│   │   ├── yolo_detector.py
+│   │   └── pose_estimator.py
+│   └── manipulation/
+│       ├── moveit_interface.py
+│       └── grasp_planner.py
+├── config/
+│   ├── nav2_params.yaml
+│   ├── moveit_config/
+│   └── camera_calibration.yaml
+├── launch/
+│   └── full_system.launch.py
+├── worlds/
+│   └── kitchen.world (Gazebo)
+├── urdf/
+│   └── unitree_g1.urdf
+├── tests/
+│   ├── test_voice.py
+│   ├── test_navigation.py
+│   └── test_manipulation.py
+└── README.md
+```
+
+**Key requirements**:
+- All code in ROS 2 packages
+- Dockerized for reproducibility
+- Launch file starts entire system
+- Config files for all parameters
+
+### 11.2.3 Evaluation Report (5-10 pages)
+
+**Metrics**:
+
+1. **Success Rate**
+   - Test on 20 commands (varied complexity)
+   - Success = Task completed within 2 minutes
+   - Report: Mean, std dev, per-task breakdown
+
+2. **Timing**
+   - Voice recognition latency
+   - Planning time
+   - Navigation time
+   - Manipulation time
+   - Total task time
+
+3. **Navigation Accuracy**
+   - Position error (cm)
+   - Orientation error (degrees)
+   - Path efficiency (actual length / optimal length)
+
+4. **Grasp Success**
+   - Success rate per object type
+   - Failure modes (slip, collision, missed grasp)
+
+5. **Failure Analysis**
+   - Categorize all failures
+   - Root cause for each
+   - Proposed fixes
+
+**Required tables**:
+
+| Command | Success | Time (s) | Failure Mode |
+|---------|---------|----------|--------------|
+| "Bring red cup" | ✓ | 45.2 | - |
+| "Clean table" | ✗ | 78.5 | Grasp failed |
+| "Find remote" | ✓ | 52.1 | - |
+| ... | ... | ... | ... |
+
+**Required graphs**:
+- Success rate by command type
+- Timing breakdown (box plot)
+- Navigation trajectories (top-view plot)
+
+### 11.2.4 Video Demonstration (3-5 minutes)
+
+**Content**:
+1. **Introduction** (30s): Show robot in environment, explain project
+2. **Demo 1** (60s): Simple task ("bring cup")
+   - Show voice command
+   - Visualize plan (text overlay)
+   - Show robot execution (real-time)
+3. **Demo 2** (60s): Complex task ("clean table")
+   - Show multi-step plan
+   - Show successful completion
+4. **Demo 3** (60s): Failure case
+   - Show grasp failure
+   - Show re-planning
+   - Show successful recovery
+5. **Conclusion** (30s): Summarize results, lessons learned
+
+**Technical requirements**:
+- Screen recording (RViz + Gazebo side-by-side)
+- Narration (voice-over or captions)
+- Uploaded to YouTube (unlisted link)
+
+### 11.2.5 Presentation (10 minutes + 5 min Q&A)
+
+**Slide structure**:
+
+1. **Title** (1 slide)
+   - Project name, your name, date
+
+2. **Motivation** (1 slide)
+   - Why voice-controlled humanoids?
+   - Real-world applications
+
+3. **Approach** (2 slides)
+   - System architecture diagram
+   - Key technical choices
+
+4. **Implementation** (2 slides)
+   - Code overview (ROS 2 packages)
+   - Interesting challenges solved
+
+5. **Results** (3 slides)
+   - Success rate (bar chart)
+   - Timing analysis (box plot)
+   - Demo video embed or screenshot
+
+6. **Lessons Learned** (1 slide)
+   - What worked well
+   - What would you do differently
+
+7. **Future Work** (1 slide)
+   - Improvements (better models, faster planning)
+   - Extensions (multi-robot, real hardware)
+
+---
+
+## 11.3 Starter Code
+
+**Provided resources**:
+
+1. **ROS 2 Package Templates**
+   - Skeleton code for voice, planning, perception, manipulation
+   - Launch file templates
+   - Config file examples
+
+2. **Gazebo World**
+   - Kitchen environment (3m × 3m)
+   - Table with 5 objects (cup, plate, box, bottle, remote)
+   - Charging station (start location)
+
+3. **URDF**
+   - Unitree G1 humanoid (full model with sensors)
+   - RealSense D435i camera (mounted on head)
+   - ROS 2 control interfaces
+
+4. **Sample Commands Dataset**
+   - 50 voice commands (WAV files)
+   - Ground truth transcriptions
+   - Expected action sequences
+
+**What you must implement**:
+
+1. **Voice → Action Planner**
+   - Integrate Whisper + GPT-4
+   - Parse GPT-4 JSON output
+   - Handle errors (invalid JSON, unreachable goals)
+
+2. **Navigation + Obstacle Avoidance**
+   - Configure Nav2 for humanoid (footprint, inflation radius)
+   - Integrate Isaac VSLAM (or alternative)
+   - Handle dynamic obstacles (moving objects)
+
+3. **Vision → Grasp Pipeline**
+   - Run YOLOv8 on camera feed
+   - Estimate 6D pose (DOPE or FoundationPose)
+   - Generate grasp pose (parallel-jaw gripper)
+   - Execute with MoveIt 2
+
+4. **Full Integration**
+   - Launch all modules together
+   - Handle inter-module communication (ROS topics, actions)
+   - Monitor execution state
+   - Log all events (for debugging)
+
+---
+
+## 11.4 Timeline (1 Week)
+
+### Day 1-2: Design & Setup
+
+**Tasks**:
+- Write system design document (sections 1-3)
+- Set up Docker environment
+- Test starter code (launch Gazebo, verify robot loads)
+- Create Git repository (initialize with .gitignore, README)
+
+**Deliverable**: Design document draft + working Docker container
+
+### Day 3-4: Module Implementation
+
+**Tasks**:
+- Implement voice interface (Whisper integration)
+- Implement task planner (GPT-4 API)
+- Implement action executor (ROS action clients)
+- Unit test each module (isolated from others)
+
+**Deliverable**: Working modules (tested independently)
+
+### Day 5: Integration
+
+**Tasks**:
+- Connect all modules (launch file)
+- Test full pipeline (voice → execution)
+- Debug integration issues (timing, message passing)
+- Add logging and monitoring
+
+**Deliverable**: End-to-end working system
+
+### Day 6: Evaluation
+
+**Tasks**:
+- Run 20 test trials (record all data)
+- Analyze results (success rate, timing, errors)
+- Generate graphs and tables
+- Write evaluation report
+
+**Deliverable**: Evaluation report + dataset (logs, videos)
+
+### Day 7: Documentation & Presentation
+
+**Tasks**:
+- Finalize design document (add failure analysis)
+- Record demo video (3 clips + editing)
+- Create presentation slides
+- Practice presentation (10 minutes)
+
+**Deliverable**: All final deliverables ready for submission
+
+---
+
+## 11.5 Grading Rubric (100 points)
+
+### System Design (20 points)
+
+- **Architecture** (10 points): Clear diagram, justified choices
+- **Failure Modes** (5 points): Identified 3+ failures + mitigations
+- **Performance Targets** (5 points): Quantitative, measurable
+
+### Implementation Quality (25 points)
+
+- **Code Structure** (10 points): Modular, clean, follows ROS 2 best practices
+- **Dockerization** (5 points): One-command setup, reproducible
+- **Configuration** (5 points): All parameters in config files (not hardcoded)
+- **Testing** (5 points): Unit tests for critical functions
+
+### Functionality (30 points)
+
+- **Basic Functionality** (15 points): System runs, completes at least 1 task
+- **Success Rate** (10 points):
+  - ≥70%: 10 points
+  - 50-69%: 7 points
+  - 30-49%: 4 points
+  - <30%: 2 points
+- **Robustness** (5 points): Handles failures gracefully (doesn't crash)
+
+### Evaluation (15 points)
+
+- **Metrics** (7 points): Reports 4+ quantitative metrics
+- **Analysis** (5 points): Insightful failure analysis, root causes identified
+- **Visualization** (3 points): Graphs, tables, screenshots
+
+### Presentation (10 points)
+
+- **Video** (5 points): 3-5 minutes, shows successes + failures, narrated
+- **Slides** (5 points): Clear, professional, covers all sections
+
+---
+
+## 11.6 Example Projects (Inspiration)
+
+### Project 1: "Coffee Fetch"
+
+**Task**: Robot navigates kitchen, identifies coffee mug, grasps, delivers to user.
+
+**Key innovation**: Multi-modal object detection (CLIP + depth) for novel mugs.
+
+**Result**: 85% success rate (17/20 trials)
+
+### Project 2: "Table Cleanup"
+
+**Task**: Robot detects scattered objects, plans order, moves them to bin.
+
+**Key innovation**: Task and motion planning (TAMP) for optimal object ordering.
+
+**Result**: 75% success rate (15/20 trials), avg time 120s
+
+### Project 3: "Tool Handover"
+
+**Task**: User asks for tool, robot searches workshop, identifies tool, hands it over.
+
+**Key innovation**: Active search (probabilistic roadmap for exploration).
+
+**Result**: 70% success rate (14/20 trials), avg search time 45s
+
+---
+
+## 11.7 Tips for Success
+
+### 11.7.1 Start Simple
+
+**Bad approach**: Try to implement everything at once
+**Good approach**: Build incrementally
+
+**Milestone sequence**:
+1. ✓ Robot spawns in Gazebo
+2. ✓ Teleoperation works (keyboard control)
+3. ✓ Voice interface publishes text
+4. ✓ Planner generates action sequence
+5. ✓ Navigation to fixed waypoint works
+6. ✓ Perception detects one object
+7. ✓ Grasp executes (fixed pose)
+8. ✓ End-to-end integration (voice → grasp)
+
+### 11.7.2 Test Incrementally
+
+**Test each module in isolation** before integration.
+
+**Example**: Test voice interface
+```bash
+# Terminal 1: Run voice node
+ros2 run voice_interface whisper_node
+
+# Terminal 2: Echo output
+ros2 topic echo /voice_commands
+
+# Speak into microphone, verify text appears
+```
+
+### 11.7.3 Use Simulation
+
+**Simulate before deploying** to real robot (if available).
+
+**Advantages**:
+- Faster iteration (no hardware setup)
+- Safer (no risk of collision)
+- Reproducible (reset environment instantly)
+
+### 11.7.4 Document Failures
+
+**Every failure teaches you something.**
+
+**Failure log template**:
+```
+Timestamp: 2025-12-06 14:32:15
+Command: "Bring red cup"
+Failure Mode: Grasp failed (object slipped)
+Root Cause: Gripper force too low (0.2N, should be 0.5N)
+Fix: Increase force threshold in grasp_controller.yaml
+Status: Fixed
+Retest: Success
+```
+
+### 11.7.5 Version Control
+
+**Use Git** from Day 1.
+
+```bash
+# Initialize repository
+git init
+git add .
+git commit -m "Initial commit: starter code"
+
+# Create branches for features
+git checkout -b feature/voice-interface
+# ... work on feature ...
+git commit -m "Add Whisper integration"
+git checkout main
+git merge feature/voice-interface
+
+# Tag milestones
+git tag -a v0.1 -m "Milestone: Voice interface working"
+```
+
+### 11.7.6 Ask for Help
+
+**When stuck (>1 hour), ask**:
+- Instructor (office hours)
+- TAs (lab sessions)
+- Classmates (study groups)
+- Online (ROS Discourse, Stack Overflow)
+
+**How to ask**:
+1. Describe what you're trying to do
+2. Show what you've tried
+3. Include error messages (full logs)
+4. Specify environment (OS, ROS version, hardware)
+
+---
+
+## 11.8 Common Pitfalls
+
+### Pitfall 1: Underestimating Integration Time
+
+**Symptom**: Modules work individually but fail together.
+
+**Cause**: Timing issues, message format mismatches, race conditions.
+
+**Fix**: Allocate 2-3 days for integration + debugging.
+
+### Pitfall 2: Ignoring Edge Cases
+
+**Symptom**: System works for simple commands but fails on complex ones.
+
+**Cause**: Only tested happy path (no obstacles, perfect perception).
+
+**Fix**: Test failure modes explicitly (blocked path, misdetection, grasp failure).
+
+### Pitfall 3: Hardcoding Parameters
+
+**Symptom**: Changing a value requires recompiling.
+
+**Cause**: Parameters in Python code instead of config files.
+
+**Fix**: Use ROS 2 parameters + YAML config files.
+
+```python
+# Bad
+max_speed = 0.5  # Hardcoded
+
+# Good
+self.declare_parameter('max_speed', 0.5)
+max_speed = self.get_parameter('max_speed').value
+```
+
+### Pitfall 4: Poor Logging
+
+**Symptom**: Failure occurs, but can't diagnose why.
+
+**Cause**: No log messages.
+
+**Fix**: Log all key events (state transitions, errors, timing).
+
+```python
+self.get_logger().info(f'Received command: {command}')
+self.get_logger().warn(f'Navigation took {elapsed:.1f}s (expected <5s)')
+self.get_logger().error(f'Grasp failed: {error_msg}')
+```
+
+---
+
+## 11.9 Post-Project Extensions
+
+**After completing the capstone**, consider these extensions:
+
+1. **Bi-Manual Manipulation**
+   - Use both arms (carry large objects, open jars)
+
+2. **Multi-Robot Coordination**
+   - Two humanoids collaborate (one holds, one assembles)
+
+3. **Real Hardware Deployment**
+   - Deploy to Unitree G1 (requires hardware access)
+
+4. **Improved Perception**
+   - Train custom YOLOv8 on kitchen objects
+   - Add object tracking (DeepSORT)
+
+5. **Natural Language Feedback**
+   - Robot explains what it's doing (text-to-speech)
+   - Asks clarification questions ("Which cup?")
+
+6. **Sim-to-Real Transfer**
+   - Domain randomization in simulation
+   - Deploy to real robot, measure success rate
+
+---
+
+## 11.10 Resources
+
+### Code Repositories
+
+- **Starter Code**: [github.com/Shumailaaijaz/physical-ai-capstone](https://github.com/Shumailaaijaz/physical-ai-capstone)
+- **Example Projects**: [github.com/Shumailaaijaz/capstone-examples](https://github.com/Shumailaaijaz/capstone-examples)
+
+### Reference Documentation
+
+- **ROS 2 Humble**: https://docs.ros.org/en/humble/
+- **Nav2**: https://navigation.ros.org/
+- **MoveIt 2**: https://moveit.ros.org/
+- **Gazebo**: https://gazebosim.org/docs
+- **Isaac ROS**: https://nvidia-isaac-ros.github.io/
+
+### Support
+
+- **Office Hours**: TBD
+- **Discussion Forum**: [Piazza link]
+- **ROS Answers**: https://answers.ros.org/
+
+---
+
+## 11.11 Submission Checklist
+
+Before submitting, verify:
+
+- [ ] System design document (PDF, 10-15 pages)
+- [ ] Code repository (GitHub link with README)
+- [ ] Docker Compose file (one-command setup)
+- [ ] Evaluation report (PDF, 5-10 pages with graphs)
+- [ ] Demo video (YouTube link, 3-5 minutes)
+- [ ] Presentation slides (PDF, 10-12 slides)
+- [ ] All deliverables in one ZIP file OR GitHub release
+
+**File naming convention**:
+```
+LastName_FirstName_Capstone.zip
+├── design_document.pdf
+├── code/  (or github_link.txt)
+├── evaluation_report.pdf
+├── demo_video_link.txt
+└── presentation_slides.pdf
+```
+
+---
+
+**Good luck on your capstone project! Remember: The journey is more valuable than the destination. Every bug fixed and failure analyzed makes you a better roboticist.**
+
+---
+
+*This textbook is a living document. Found an error? Have a suggestion? Submit an issue or PR at [github.com/Shumailaaijaz/physical-ai-textbook](https://github.com/Shumailaaijaz/physical-ai-textbook)*
