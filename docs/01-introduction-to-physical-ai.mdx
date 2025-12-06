@@ -168,7 +168,7 @@ Transforming raw sensor data into understanding:
 - **Object Detection**: YOLO, Mask R-CNN identify objects (cups, doors, humans)
 - **Semantic Segmentation**: Label every pixel (floor, wall, obstacle, person)
 
-**Example**: NVIDIA Isaac ROS accelerates VSLAM (Visual SLAM) on Jetson Orin to <50ms latency using GPU-optimized algorithms.
+**Example**: NVIDIA Isaac ROS accelerates VSLAM (Visual SLAM) on Jetson Orin to `<50ms` latency using GPU-optimized algorithms.
 
 ### Layer 5: Task Planning (The Tactics)
 
@@ -259,9 +259,9 @@ Humanoid robots need **multimodal sensing** to perceive the world:
 
 **Code Example: Reading Depth from RealSense D435i**
 
-<Beginner>
-**For Python beginners**: This code uses the `pyrealsense2` library to connect to an Intel RealSense camera and read depth data.
-</Beginner>
+:::info For Beginners
+This code uses the `pyrealsense2` library to connect to an Intel RealSense camera and read depth data.
+:::
 
 ```python
 import pyrealsense2 as rs
@@ -301,9 +301,9 @@ finally:
 Object at center is 1.23 meters away
 ```
 
-<Advanced>
+:::tip Advanced
 **Optimization tip**: Use `rs.align` to align depth and color frames for pixel-perfect correspondence. Enable post-processing filters (decimation, spatial, temporal) to reduce noise.
-</Advanced>
+:::
 
 ### 1.4.2 LIDAR (Laser Eyes)
 
@@ -355,7 +355,7 @@ lidar.disconnect()
 Closest obstacle: 450mm at 32.5°
 ```
 
-<SimulationOnly>
+:::note Simulation Only
 **No LIDAR hardware?** Use Gazebo's simulated LIDAR sensor:
 ```bash
 # Inside WSL2 terminal:
@@ -363,7 +363,7 @@ docker run -it osrf/ros:humble-desktop
 ros2 launch gazebo_ros gazebo.launch.py
 # Add LIDAR sensor to robot in Gazebo GUI
 ```
-</SimulationOnly>
+:::
 
 ### 1.4.3 IMU (The Inner Ear)
 
@@ -422,9 +422,9 @@ Robot orientation: Roll=2.3°, Pitch=-1.5°, Yaw=45.2°
 Angular velocity: 0.01, -0.02, 0.00 rad/s
 ```
 
-<Advanced>
+:::tip Advanced
 **Sensor fusion**: Combine IMU + camera + LIDAR for robust state estimation. Use Extended Kalman Filter (EKF) or Unscented Kalman Filter (UKF). NVIDIA Isaac ROS provides optimized Visual-Inertial Odometry (VIO) nodes.
-</Advanced>
+:::
 
 ### 1.4.4 Force/Torque Sensors (The Touch)
 
@@ -492,9 +492,9 @@ Target grasp force: 15.0N
 ✅ Grasp successful at 15.0N
 ```
 
-<ResearchGrade>
+:::tip Research Grade
 **Tactile sensing**: Advanced robots use tactile sensors (e.g., GelSight) that provide high-resolution contact geometry. Meta's ReSkin sensor (2022) measures shear forces and vibration for texture recognition.
-</ResearchGrade>
+:::
 
 ---
 
@@ -528,9 +528,9 @@ Target grasp force: 15.0N
 
 **NVIDIA Isaac Sim** has built-in domain randomization tools (Chapter 6).
 
-<Advanced>
+:::tip Advanced
 **Research frontier**: Use real-world data to fine-tune sim-trained policies (Sim2Real2Sim). Collect 1 hour of real robot data → update simulator physics → retrain policy → deploy. Iterative loop closes sim-to-real gap (Tan et al., ICRA 2018).
-</Advanced>
+:::
 
 ---
 
@@ -626,9 +626,9 @@ lsb_release -a
 
 **Cost**: ~$1.50/hour (spot instances ~$0.50/hour)
 
-<BudgetHardware>
+:::tip Budget Tip
 **Save money**: Use spot instances (70% cheaper), only run when actively working, stop instance when done (storage still costs ~$10/month).
-</BudgetHardware>
+:::
 
 ### Option 3: GitHub Codespaces (Easiest)
 
@@ -747,23 +747,23 @@ Position: [1. 0.], Heading: 0.0°
 ...
 ```
 
-<Beginner>
+:::info For Beginners
 **What this code does**:
 1. `sense_lidar()`: Casts 360 rays, measures distance to obstacles (like real LIDAR)
 2. `avoid_obstacle()`: Finds closest obstacle, turns away
 3. `move()`: Updates position based on heading and speed
 
 This is a simplified version of **reactive navigation**—robots that respond to immediate sensor input without planning.
-</Beginner>
+:::
 
-<Advanced>
+:::tip Advanced
 **Limitations of reactive control**:
 - Gets stuck in local minima (U-shaped obstacles)
 - No goal-directed behavior (just avoids, doesn't navigate)
 - No memory (doesn't build map)
 
 **Better approach**: Use **deliberative planning** (Nav2 with costmaps, A* path planning). We'll cover this in Chapter 7 (Isaac ROS Navigation).
-</Advanced>
+:::
 
 ---
 
