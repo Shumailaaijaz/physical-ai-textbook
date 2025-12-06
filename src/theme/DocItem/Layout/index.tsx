@@ -7,7 +7,7 @@ import UrduTranslate from '../../../components/UrduTranslate';
 
 type Props = WrapperProps<typeof LayoutType>;
 
-export default function LayoutWrapper(props: Props): JSX.Element {
+export default function LayoutWrapper(props: Props): React.JSX.Element {
   // Extract metadata from props
   const metadata = (props as any)?.children?.type?.metadata || {};
   const chapterId = metadata.id || 'unknown';

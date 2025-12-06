@@ -7,7 +7,7 @@ interface UrduTranslateProps {
   chapterTitle: string;
 }
 
-export default function UrduTranslate({ chapterId, chapterTitle }: UrduTranslateProps): JSX.Element {
+export default function UrduTranslate({ chapterId, chapterTitle }: UrduTranslateProps): React.JSX.Element {
   const [isTranslated, setIsTranslated] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
