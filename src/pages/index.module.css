@@ -4,15 +4,85 @@
  */
 
 .heroBanner {
-  padding: 4rem 0;
+  padding: 8rem 0;
   text-align: center;
   position: relative;
   overflow: hidden;
+  min-height: 85vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-image: url('/img/book-cover.jpeg');
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+}
+
+/* Dark overlay for better text readability */
+.heroBanner::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(
+    135deg,
+    rgba(0, 0, 0, 0.7) 0%,
+    rgba(0, 0, 0, 0.5) 50%,
+    rgba(0, 0, 0, 0.7) 100%
+  );
+  z-index: 1;
+}
+
+/* Ensure content appears above overlay */
+.heroBanner > * {
+  position: relative;
+  z-index: 2;
+}
+
+/* Make text white and more prominent */
+.heroBanner h1,
+.heroBanner p {
+  color: white !important;
+  text-shadow: 2px 2px 8px rgba(0, 0, 0, 0.8);
+}
+
+.heroBanner h1 {
+  font-size: 3.5rem;
+  font-weight: 800;
+  margin-bottom: 1rem;
+}
+
+.heroBanner p {
+  font-size: 1.5rem;
+  max-width: 800px;
+  margin: 0 auto 2rem;
+  line-height: 1.6;
 }
 
 @media screen and (max-width: 996px) {
   .heroBanner {
-    padding: 2rem;
+    padding: 4rem 2rem;
+    min-height: 70vh;
+  }
+
+  .heroBanner h1 {
+    font-size: 2.5rem;
+  }
+
+  .heroBanner p {
+    font-size: 1.2rem;
+  }
+}
+
+@media screen and (max-width: 768px) {
+  .heroBanner h1 {
+    font-size: 2rem;
+  }
+
+  .heroBanner p {
+    font-size: 1rem;
   }
 }
 
@@ -20,4 +90,6 @@
   display: flex;
   align-items: center;
   justify-content: center;
+  gap: 1rem;
+  flex-wrap: wrap;
 }
