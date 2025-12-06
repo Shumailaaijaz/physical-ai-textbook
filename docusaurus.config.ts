@@ -80,7 +80,12 @@ const config: Config = {
       title: 'Physical AI Textbook',
       logo: {
         alt: 'Physical AI Logo',
-        src: 'img/logo.svg',
+        src: 'img/logo.jpeg',
+        style: {
+          borderRadius: '50%',
+          width: '40px',
+          height: '40px',
+        },
       },
       items: [
         {
