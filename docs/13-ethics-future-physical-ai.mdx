@@ -1,0 +1,638 @@
+---
+id: 13-ethics-future-physical-ai
+title: "Chapter 13: Ethics & Future of Physical AI"
+sidebar_position: 13
+part: 5
+week: reference
+difficulty_levels: [all]
+hardware_tracks: [simulation_only, budget_hardware, research_grade]
+citation_count: 15
+word_count: 6000
+urdu_completeness: 0
+---
+
+# Chapter 13: Ethics & Future of Physical AI
+
+> *"With great computational power comes great responsibility."*
+
+## Learning Objectives
+
+By the end of this chapter, you will be able to:
+
+1. **Identify ethical challenges** in embodied AI (safety, bias, job displacement)
+2. **Understand AI safety principles** for physical systems
+3. **Analyze societal impact** of humanoid robots
+4. **Predict future directions** of Physical AI research
+5. **Apply ethical frameworks** to robot design decisions
+
+**Estimated Time**: 3-4 hours (reading + reflection)
+
+---
+
+## 13.1 Introduction: When AI Enters the Physical World
+
+**Digital AI** (ChatGPT, image generators) operates in a virtual sandbox:
+- **Failure mode**: Wrong answer, offensive output, hallucination
+- **Consequence**: User dissatisfaction, reputational damage
+- **Recovery**: Regenerate response, fine-tune model
+
+**Physical AI** (humanoid robots) operates in the real world:
+- **Failure mode**: Collision, grasp failure, navigation error
+- **Consequence**: Property damage, human injury, legal liability
+- **Recovery**: Emergency stop, physical repair, safety redesign
+
+**The stakes are higher.** A self-driving car's perception error can cause a fatal accident. A surgical robot's control glitch can harm a patient. A delivery robot's navigation bug can block a wheelchair ramp.
+
+---
+
+## 13.2 Safety: The Asimov Problem
+
+### 13.2.1 Three Laws of Robotics (Isaac Asimov, 1942)
+
+1. **First Law**: A robot may not injure a human being or, through inaction, allow a human being to come to harm.
+2. **Second Law**: A robot must obey orders given by human beings except where such orders would conflict with the First Law.
+3. **Third Law**: A robot must protect its own existence as long as such protection does not conflict with the First or Second Law.
+
+**Appealing**, but **impossible to implement**:
+
+**Problem 1: Ambiguity**
+- What is "harm"? (Physical injury, psychological distress, financial loss?)
+- What is "inaction"? (Robot sees drowning person but isn't programmed to swim—violates First Law?)
+
+**Problem 2: Prediction**
+- How does a robot predict **all** consequences of an action?
+- **Example**: Robot moves heavy box. Box falls on person's foot 10 seconds later. Is the robot responsible?
+
+**Problem 3: Conflicting Orders**
+- Two humans give contradictory orders (both comply with First Law). Which to obey?
+
+### 13.2.2 Modern Safety Principles
+
+Instead of Asimov's laws, modern robotics uses **engineering safety**:
+
+**Principle 1: Fail-Safe Design**
+- **Hardware kill switch**: Red emergency stop button (required by ISO 10218)
+- **Watchdog timer**: If robot doesn't receive heartbeat signal → motors disable
+- **Force limits**: Collaborative robots (cobots) must limit contact force <150N (ISO/TS 15066)
+
+**Principle 2: Redundancy**
+- **Dual sensors**: If one camera fails, use backup
+- **Redundant safety circuits**: Independent safety PLCs
+
+**Principle 3: Verification & Validation**
+- **V&V process**: Formal methods prove controller satisfies safety properties
+- **Example**: MIT's Drake framework verifies collision avoidance constraints
+
+**Principle 4: Human-in-the-Loop**
+- **Supervised autonomy**: Human approves critical decisions (e.g., surgical robot waits for surgeon confirmation before cutting)
+- **Shared control**: Human and robot co-pilot (e.g., Tesla Autopilot)
+
+---
+
+## 13.3 Physical Safety
+
+### 13.3.1 Collision Avoidance
+
+**Challenge**: Humans are unpredictable (walk into robot's path).
+
+**Approaches**:
+
+1. **Safety zones**: Robots slow down near humans (< 1 m/s within 1.5m)
+2. **Predictive models**: Forecast human motion (Gaussian processes, neural networks)
+3. **Conservative planning**: Assume worst-case human trajectory
+
+**Code Example**: Safety zone (speed limiting)
+
+```python
+def compute_safe_velocity(robot_pos, human_pos, max_speed=1.0, safety_radius=1.5):
+    """
+    Limit robot speed near humans.
+
+    Args:
+        robot_pos: (x, y)
+        human_pos: (x, y)
+        max_speed: Maximum allowed speed (m/s)
+        safety_radius: Slow down within this distance (m)
+
+    Returns:
+        safe_speed: Speed limit (m/s)
+    """
+    distance = np.linalg.norm(np.array(robot_pos) - np.array(human_pos))
+
+    if distance < safety_radius:
+        # Linear scaling: 0 speed at 0 distance, max_speed at safety_radius
+        safe_speed = max_speed * (distance / safety_radius)
+    else:
+        safe_speed = max_speed
+
+    return safe_speed
+```
+
+### 13.3.2 Emergency Stop
+
+**ISO 10218 requirement**: All industrial robots must have **Category 0** stop (immediate power cut) or **Category 1** stop (controlled deceleration).
+
+**Hardware**: Hardwired safety relay (independent of main controller).
+
+**Software failsafe**: If robot doesn't receive heartbeat for 100ms → trigger emergency stop.
+
+```python
+import time
+import threading
+
+class SafetyMonitor:
+    def __init__(self, timeout=0.1):
+        self.last_heartbeat = time.time()
+        self.timeout = timeout
+        self.stop_triggered = False
+
+        # Start watchdog thread
+        self.watchdog_thread = threading.Thread(target=self.watchdog, daemon=True)
+        self.watchdog_thread.start()
+
+    def heartbeat(self):
+        """Called by main control loop every cycle."""
+        self.last_heartbeat = time.time()
+
+    def watchdog(self):
+        """Runs in background, triggers stop if heartbeat missed."""
+        while True:
+            time.sleep(0.01)  # Check every 10ms
+            if time.time() - self.last_heartbeat > self.timeout:
+                if not self.stop_triggered:
+                    self.emergency_stop()
+                    self.stop_triggered = True
+
+    def emergency_stop(self):
+        """Trigger hardware emergency stop."""
+        print("EMERGENCY STOP TRIGGERED!")
+        # In real system: Send signal to safety relay
+        robot.disable_motors()
+```
+
+### 13.3.3 Force Limits (Cobots)
+
+**ISO/TS 15066** specifies maximum allowable force for human-robot contact:
+
+| **Body Part** | **Max Force (N)** | **Max Pressure (N/cm²)** |
+|---------------|-------------------|--------------------------|
+| Head | 130 | 110 |
+| Torso | 140 | 110 |
+| Upper arm | 150 | 140 |
+| Hand | 140 | 210 |
+
+**Implementation**: Torque sensors in all joints. If contact detected → retract.
+
+```python
+def contact_detection(joint_torques, torque_threshold=5.0):
+    """
+    Detect unexpected contact (collision or human touch).
+
+    Args:
+        joint_torques: Measured torques (Nm)
+        torque_threshold: Threshold above expected value (Nm)
+
+    Returns:
+        contact_detected: bool
+    """
+    expected_torques = compute_expected_torques()  # From dynamics model
+    residual = np.abs(joint_torques - expected_torques)
+
+    if np.any(residual > torque_threshold):
+        return True
+    return False
+```
+
+### 13.3.4 Case Study: Tesla Autopilot Crashes
+
+**Incident** (May 2016, Florida):
+- Tesla Model S in Autopilot mode
+- Tractor-trailer crosses highway (perpendicular)
+- Autopilot's camera fails to detect white truck against bright sky
+- No braking → fatal collision
+
+**Root cause**: Over-reliance on vision (no LIDAR redundancy).
+
+**Lessons learned**:
+1. **Sensor fusion**: Use multiple sensor modalities (camera + LIDAR + radar)
+2. **Graceful degradation**: If one sensor fails, others compensate
+3. **Clear user expectations**: Autopilot is "driver assistance," not "self-driving"
+
+**Regulatory response**: NHTSA (US) requires transparent reporting of autonomous vehicle crashes.
+
+---
+
+## 13.4 Bias in Embodied AI
+
+**Problem**: AI systems reflect biases in training data.
+
+### 13.4.1 Perception Bias
+
+**Example 1: Facial Recognition**
+- Study (Buolamwini & Gebru, 2018): Commercial facial recognition systems have **error rates 34% higher** for dark-skinned women than light-skinned men.
+- **Cause**: Training datasets (e.g., FaceNet) predominantly white, male faces.
+- **Impact on robotics**: Social robots may fail to recognize or respond to certain demographics.
+
+**Example 2: Hand Soap Dispenser**
+- Viral video (2017): Automatic soap dispenser doesn't detect dark skin.
+- **Cause**: Infrared sensor calibrated for lighter skin (higher reflectance).
+- **Fix**: Recalibrate sensor threshold OR use ultrasonic sensor.
+
+### 13.4.2 Behavior Bias
+
+**Example**: Home assistant robots trained on data from wealthy households may fail in low-income environments (different furniture, layouts, objects).
+
+**Mitigation**:
+1. **Diverse training data**: Include images/scenarios from all demographics
+2. **Fairness audits**: Test model performance across demographic groups
+3. **Participatory design**: Involve end-users (especially marginalized groups) in design process
+
+### 13.4.3 Cultural Bias
+
+**Example**: Social robot gestures
+- Head nod = "yes" (most cultures)
+- But in Bulgaria, head nod = "no"
+
+**Mitigation**: Localize robot behavior (cultural adaptation).
+
+---
+
+## 13.5 Privacy & Surveillance
+
+**Problem**: Robots with cameras/microphones constantly record environments.
+
+### 13.5.1 Data Collection
+
+**Scenario**: Delivery robot in office building
+- Cameras record employees at desks
+- Microphones record conversations
+- LIDAR maps office layout
+
+**Questions**:
+- Who owns this data? (Robot company, building owner, individuals?)
+- Can employees opt out of being recorded?
+- How long is data stored?
+
+### 13.5.2 Regulation
+
+**GDPR (EU)** applies to robots:
+- **Right to be informed**: Individuals must know they're being recorded
+- **Data minimization**: Only collect necessary data (e.g., navigation doesn't need face recognition)
+- **Right to erasure**: Individuals can request deletion of their data
+
+**CCPA (California)** similar requirements:
+- Businesses must disclose data collection practices
+- Consumers can opt out of data sale
+
+**Best practices**:
+1. **Visual indicators**: LED lights when camera is recording
+2. **Data anonymization**: Blur faces in stored footage
+3. **Edge processing**: Process data on robot (don't upload to cloud unless necessary)
+
+---
+
+## 13.6 Job Displacement
+
+**Prediction (World Economic Forum, 2020)**: By 2025, automation will displace **85 million jobs** but create **97 million new jobs**.
+
+### 13.6.1 At-Risk Jobs
+
+**High risk** (>70% of tasks automatable):
+- **Warehouse pickers**: Amazon robots (Kiva, now Amazon Robotics)
+- **Food service**: Flippy (burger-flipping robot), robotic pizza makers
+- **Manufacturing**: Industrial robots (welding, assembly)
+- **Delivery**: Autonomous trucks, drones
+
+**Medium risk** (30-70%):
+- **Retail**: Self-checkout, inventory robots
+- **Healthcare**: Robotic surgery assistants (augment, not replace)
+- **Agriculture**: Harvesting robots
+
+**Low risk** (<30%):
+- **Creative professions**: Artists, writers (though AI is challenging this)
+- **Care work**: Elderly care (requires human empathy)
+- **Complex problem-solving**: Researchers, engineers
+
+### 13.6.2 Job Creation
+
+**New jobs** enabled by robotics:
+- **Robot technicians**: Maintenance, repair (1M+ jobs by 2030, per IFR)
+- **AI trainers**: Labeling data, fine-tuning models
+- **Robot ethicists**: Design safety protocols, audit fairness
+- **Telepresence operators**: Remote-control robots for dangerous tasks
+
+### 13.6.3 Social Safety Net
+
+**Policy proposals**:
+1. **Universal Basic Income (UBI)**: Government pays all citizens (e.g., $1,000/month) to offset job losses
+2. **Retraining programs**: Teach displaced workers new skills (coding, robotics)
+3. **Robot tax**: Tax companies for using robots (funds UBI or retraining)
+
+**Debate**: Economists disagree on effectiveness.
+
+---
+
+## 13.7 Dual-Use Concerns
+
+**Dual-use technology**: Can be used for civilian OR military purposes.
+
+### 13.7.1 Military Robotics
+
+**Boston Dynamics Spot** (2021 controversy):
+- French army mounted **gun** on Spot robot (autonomous patrol)
+- Public outcry → Boston Dynamics issued statement prohibiting weaponization
+
+**Autonomous weapons** (loitering munitions):
+- **Definition**: Weapons that select and engage targets without human intervention
+- **Example**: KARGU-2 (Turkey) reportedly used in Libya (2020) to autonomously attack retreating soldiers
+- **Concern**: Accountability (who is responsible if autonomous weapon kills civilian?)
+
+### 13.7.2 Campaign to Stop Killer Robots
+
+**Goal**: Ban fully autonomous weapons.
+
+**Arguments**:
+1. **Accountability gap**: No human in the loop → no one to blame
+2. **Arms race**: Countries race to deploy before regulations exist
+3. **Lowered threshold for war**: If no soldiers at risk, wars become easier to start
+
+**Counter-arguments**:
+1. **Precision**: Robots may have better accuracy than humans (fewer civilian casualties)
+2. **Defense**: Countries need autonomous systems to defend against adversary's autonomous systems
+
+**Status** (2024): No international treaty. UN discussions ongoing.
+
+---
+
+## 13.8 Alignment: What Do We Want Robots to Do?
+
+**Value alignment problem**: Whose values should robots follow?
+
+### 13.8.1 Cultural Differences
+
+**Example**: Autonomous car's trolley problem
+- Scenario: Brake failure. Steer left → kill 1 pedestrian. Steer right → kill 5 pedestrians. What to do?
+- **Western cultures**: Utilitarian (minimize deaths → kill 1)
+- **Eastern cultures**: May prioritize elderly or authority figures
+
+**Implication**: Global companies (Tesla, Waymo) must decide whose ethics to encode.
+
+### 13.8.2 Should Robots Lie?
+
+**Scenario**: Elderly care robot. Patient asks, "Do I look sick?"
+- **Honest answer**: "Yes, you look very ill."
+- **Compassionate answer**: "You look fine today."
+
+**Debate**:
+- **Pro-honesty**: Trust requires honesty
+- **Pro-compassion**: Sometimes kindness > truth (human caregivers do this)
+
+**Current approach**: Let designers choose (no consensus).
+
+---
+
+## 13.9 Regulation & Standards
+
+### 13.9.1 ISO 10218 (Industrial Robots)
+
+**Requirements**:
+- Emergency stop buttons (easily accessible)
+- Safety-rated monitored stop (if human enters workspace)
+- Force/speed limits for collaborative robots
+
+**Compliance**: Mandatory in EU, voluntary in US (but liability insurance requires it).
+
+### 13.9.2 IEEE 7000 (Ethical Design)
+
+**Process**: 10-step framework for embedding values in system design:
+1. Identify stakeholders
+2. Elicit values (interviews, surveys)
+3. Prioritize values (stakeholder workshop)
+4. Translate values into requirements (e.g., "Privacy" → "No cloud upload without consent")
+5. Design system to meet requirements
+6. Verify (testing, audits)
+
+**Adoption**: Voluntary, but gaining traction (Uber uses it for self-driving cars).
+
+### 13.9.3 EU AI Act (2024)
+
+**Risk-based approach**:
+- **Unacceptable risk**: Banned (e.g., social credit scoring, subliminal manipulation)
+- **High risk**: Requires conformity assessment (e.g., hiring algorithms, medical devices, autonomous vehicles)
+- **Limited risk**: Transparency obligations (e.g., chatbots must disclose they're AI)
+- **Minimal risk**: No regulation (e.g., spam filters)
+
+**Humanoid robots**: Likely "high risk" (requires CE marking, audit trail, human oversight).
+
+**Penalties**: Up to €30M or 6% of global revenue.
+
+---
+
+## 13.10 Future: Next 10 Years
+
+### 13.10.1 2025-2030: Warehouse & Factory Robots
+
+**Trend**: Humanoid robots replace human workers in structured environments.
+
+**Examples**:
+- **Agility Robotics Digit** (2023): Already deployed in Amazon warehouses (picking, sorting)
+- **Figure 01** (2024): Demo at BMW plant (assembling car parts)
+
+**Key enabler**: Imitation learning (robots learn from human demonstrations, not hand-coded programs).
+
+### 13.10.2 2030-2035: Home Assistants
+
+**Trend**: Robots perform household tasks (cleaning, cooking, laundry).
+
+**Technical challenges**:
+- **Dexterity**: Human hands have 27 DOF. Current grippers: 2-3 DOF.
+- **Generalization**: Every home is different (layout, objects).
+- **Cost**: Target price ~$5,000 (compare to Roomba: $300).
+
+**Candidate robots**:
+- **Tesla Optimus** (2024): Musk claims $20k by 2027 (skepticism warranted)
+- **1X NEO Beta** (Norway): Humanoid home assistant (prototype)
+
+### 13.10.3 2035+: Human-Level Dexterity
+
+**Goal**: Match human manipulation ability (tie shoelaces, fold fitted sheet, assemble IKEA furniture).
+
+**Approaches**:
+1. **Better hardware**: Soft grippers, tactile sensors (GelSight)
+2. **Better learning**: Foundation models (OpenVLA scaled to 100B+ parameters)
+3. **Better data**: 1 billion robot demonstrations (Open X-Embodiment at scale)
+
+**Prediction**: Human-level dexterity by **2040** (optimistic) or **2050** (realistic).
+
+---
+
+## 13.11 Research Frontiers
+
+### 13.11.1 Soft Robotics
+
+**Idea**: Build robots from compliant materials (rubber, silicone).
+
+**Advantages**:
+- **Safety**: Soft robots can't exert high forces (inherently safe)
+- **Adaptability**: Conform to irregular shapes (better grasping)
+
+**Example**: Harvard's Octobot (fully soft, pneumatic robot).
+
+**Challenge**: Control is harder (infinite DOF).
+
+### 13.11.2 Morphological Computation
+
+**Idea**: Body design contributes to intelligence (not just brain/software).
+
+**Example**: Passive-dynamic walker (Cornell, 2005)
+- No motors, no computer
+- Walks down slope using only gravity + leg shape
+- **Insight**: Leg geometry encodes walking gait
+
+**Application**: Design robot bodies to simplify control (exploit natural dynamics).
+
+### 13.11.3 Lifelong Learning
+
+**Problem**: Current robots are trained once, then frozen (no learning from experience).
+
+**Goal**: Robots that continuously improve:
+- Learn new tasks (never-ending learning)
+- Adapt to new environments (domain shift)
+- Remember past experiences (episodic memory)
+
+**Approaches**:
+- **Continual learning**: Train on new data without forgetting old tasks (Elastic Weight Consolidation)
+- **Meta-learning**: Learn to learn (MAML algorithm)
+
+---
+
+## 13.12 Call to Action
+
+**For students**:
+1. **Build responsibly**: Prioritize safety, test failure modes
+2. **Think critically**: Question assumptions (whose values are encoded? who benefits?)
+3. **Stay informed**: Read AI safety research (arXiv, Alignment Forum)
+
+**For researchers**:
+1. **Engage with policy**: Inform regulation (testify at hearings, write policy briefs)
+2. **Publish transparently**: Share failure modes, not just successes
+3. **Collaborate broadly**: Work with ethicists, social scientists, lawyers
+
+**For society**:
+1. **Demand accountability**: Companies should disclose robot capabilities/limitations
+2. **Participate in design**: Provide feedback on robot behavior (via public pilots)
+3. **Support education**: Fund robotics education (STEM programs, community colleges)
+
+---
+
+## Discussion Questions
+
+### Question 1: Anthropomorphism
+
+**Should humanoid robots look human-like or clearly robotic?**
+
+**Arguments for human-like**:
+- Easier to interact (people naturally read facial expressions)
+- Less intimidating (cute robots reduce anxiety)
+
+**Arguments against**:
+- Uncanny valley (slightly off looks creepy)
+- Deception (people may trust robot too much)
+
+**Case study**: Sophia (Hanson Robotics) generates controversy for appearing too human.
+
+### Question 2: Liability
+
+**Who is liable when a robot causes harm?**
+
+**Options**:
+1. **Manufacturer**: Robot had design flaw → company pays
+2. **Operator**: User misused robot → user pays
+3. **Robot itself**: Treat robot as legal entity (like corporations) → robot's "assets" pay
+
+**Current law**: Unclear. Most cases settled out of court.
+
+**Proposal** (EU): Robot liability directive (strict liability for manufacturers).
+
+### Question 3: Limits on Capability
+
+**Should there be limits on robot capabilities?**
+
+**Example**: Ban autonomous weapons.
+
+**Arguments for limits**:
+- Prevent misuse (military, surveillance)
+- Give society time to adapt (job displacement)
+
+**Arguments against**:
+- Innovation stifled
+- Other countries won't comply (arms race continues)
+- Defensive use justified
+
+**Your position**: Discuss with classmates.
+
+---
+
+## Citations
+
+1. Asimov, I. (1950). *I, Robot.* Gnome Press.
+
+2. Calo, R. (2015). *Robotics and the Lessons of Cyberlaw.* California Law Review, 103, 513-563.
+
+3. Buolamwini, J., & Gebru, T. (2018). *Gender Shades: Intersectional Accuracy Disparities in Commercial Gender Classification.* Conference on Fairness, Accountability, and Transparency (FAT*).
+
+4. World Economic Forum. (2020). *The Future of Jobs Report 2020.* https://www.weforum.org/publications/the-future-of-jobs-report-2020/
+
+5. Campaign to Stop Killer Robots. (2024). *Key Arguments.* https://www.stopkillerrobots.org/
+
+6. ISO 10218-1:2011. *Robots and robotic devices — Safety requirements for industrial robots — Part 1: Robots.* International Organization for Standardization.
+
+7. ISO/TS 15066:2016. *Robots and robotic devices — Collaborative robots.* International Organization for Standardization.
+
+8. IEEE. (2021). *IEEE 7000-2021: Model Process for Addressing Ethical Concerns During System Design.* IEEE Standards Association.
+
+9. European Commission. (2024). *EU AI Act.* https://digital-strategy.ec.europa.eu/en/policies/regulatory-framework-ai
+
+10. Sharkey, A., & Sharkey, N. (2012). *Granny and the robots: Ethical issues in robot care for the elderly.* Ethics and Information Technology, 14(1), 27-40.
+
+11. Lin, P., Abney, K., & Bekey, G. A. (Eds.). (2014). *Robot Ethics: The Ethical and Social Implications of Robotics.* MIT Press.
+
+12. Wallach, W., & Allen, C. (2008). *Moral Machines: Teaching Robots Right from Wrong.* Oxford University Press.
+
+13. Bryson, J. J., Diamantis, M. E., & Grant, T. D. (2017). *Of, for, and by the people: The legal lacuna of synthetic persons.* Artificial Intelligence and Law, 25(3), 273-291.
+
+14. Russell, S., Dewey, D., & Tegmark, M. (2015). *Research Priorities for Robust and Beneficial Artificial Intelligence.* AI Magazine, 36(4), 105-114.
+
+15. Bostrom, N. (2014). *Superintelligence: Paths, Dangers, Strategies.* Oxford University Press.
+
+---
+
+## Epilogue: The Path Forward
+
+**Robotics is at an inflection point.** The next decade will see humanoid robots transition from research labs to factories, homes, and streets.
+
+**Our responsibility**:
+- **Build safely**: Engineer systems that fail gracefully
+- **Build fairly**: Test on diverse populations, audit for bias
+- **Build transparently**: Publish failure modes, share data
+- **Build ethically**: Prioritize human well-being over efficiency
+
+**The future is not predetermined.** Every design decision—what sensors to use, what data to train on, what tasks to automate—shapes the world we'll live in.
+
+**You are part of this story.** The robots you build today will define tomorrow.
+
+---
+
+**Congratulations on completing the Physical AI & Humanoid Robotics textbook!**
+
+**Next steps**:
+1. Build a capstone project (Chapter 11)
+2. Contribute to open-source robotics (Isaac ROS, MoveIt, Nav2)
+3. Join a research lab or startup
+4. Share your knowledge (teach, mentor, write)
+
+**Stay curious. Stay humble. Build robots that help.**
+
+---
+
+*This textbook is a living document. Found an error? Have a suggestion? Submit an issue or PR at [github.com/Shumailaaijaz/physical-ai-textbook](https://github.com/Shumailaaijaz/physical-ai-textbook)*
