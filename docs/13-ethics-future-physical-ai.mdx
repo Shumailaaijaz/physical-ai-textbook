@@ -73,7 +73,7 @@ Instead of Asimov's laws, modern robotics uses **engineering safety**:
 **Principle 1: Fail-Safe Design**
 - **Hardware kill switch**: Red emergency stop button (required by ISO 10218)
 - **Watchdog timer**: If robot doesn't receive heartbeat signal → motors disable
-- **Force limits**: Collaborative robots (cobots) must limit contact force <150N (ISO/TS 15066)
+- **Force limits**: Collaborative robots (cobots) must limit contact force `<150N` (ISO/TS 15066)
 
 **Principle 2: Redundancy**
 - **Dual sensors**: If one camera fails, use backup
@@ -308,7 +308,7 @@ def contact_detection(joint_torques, torque_threshold=5.0):
 - **Healthcare**: Robotic surgery assistants (augment, not replace)
 - **Agriculture**: Harvesting robots
 
-**Low risk** (<30%):
+**Low risk** (`<30%`):
 - **Creative professions**: Artists, writers (though AI is challenging this)
 - **Care work**: Elderly care (requires human empathy)
 - **Complex problem-solving**: Researchers, engineers
