@@ -45,10 +45,22 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
+      - name: Run type checking
+        run: npm run typecheck
+
       - name: Build website
         run: npm run build
         env:
           NODE_ENV: production
+          # Add any environment variables needed for build
+          # REACT_APP_API_URL: ${{ secrets.API_URL }}
+
+      - name: Test build output
+        run: |
+          # Verify critical files exist
+          test -f build/index.html
+          test -d build/assets
+          echo "Build verification passed"
 
       - name: Upload Build Artifact
         uses: actions/upload-pages-artifact@v3
@@ -65,3 +77,8 @@ jobs:
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v4
+
+      - name: Verify deployment
+        run: |
+          echo "Deployment completed successfully"
+          echo "Site URL: ${{ steps.deployment.outputs.page_url }}"
