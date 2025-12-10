@@ -39,4 +39,31 @@ GIT_USER=<Your GitHub username> yarn deploy
 ```
 
 If you are using GitHub pages for hosting, this command is a convenient way to build the website and push to the `gh-pages` branch.
-"# Textbook-for-Teaching-Physical-AI-Humanoid-Robotics-Course" 
+
+## Project Structure
+
+This project consists of:
+- **Frontend** (`/`): Docusaurus-based website with integrated chatbot
+- **Backend** (`/backend`): Python-based RAG API server using FastAPI and LangChain
+- **API** (`/api`): Additional API endpoints
+- **Server** (`/server`): Node.js/Express server for other services
+
+## Chatbot Integration
+
+The website includes an AI-powered chatbot that uses RAG (Retrieval-Augmented Generation) to answer questions about the Physical AI textbook content. The chatbot is integrated as a floating action button that appears on all pages.
+
+## Running the Full Application
+
+1. **Frontend**:
+   ```bash
+   yarn start
+   ```
+
+2. **Backend**:
+   ```bash
+   cd backend
+   pip install -r requirements.txt
+   uvicorn main:app --host 0.0.0.0 --port 8000
+   ```
+
+The chatbot will automatically connect to the backend API. 
