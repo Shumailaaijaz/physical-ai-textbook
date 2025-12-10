@@ -1,8 +1,13 @@
 {
-  // This file is not used in compilation. It is here just for a nice editor experience.
   "extends": "@docusaurus/tsconfig",
   "compilerOptions": {
-    "baseUrl": "."
+    "baseUrl": ".",
+    "ignoreDeprecations": "6.0"
   },
-  "exclude": [".docusaurus", "build", "server", "repos"]
+  "exclude": [
+    ".docusaurus",
+    "build",
+    "server",
+    "repos"
+  ]
 }
