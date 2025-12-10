@@ -2,11 +2,16 @@ import os
 import glob
 from pathlib import Path
 from dotenv import load_dotenv
+import logging
 from langchain.text_splitter import RecursiveCharacterTextSplitter
 from langchain_community.document_loaders import UnstructuredMarkdownLoader
 from langchain_openai import OpenAIEmbeddings
 from langchain_community.vectorstores import Qdrant
 from qdrant_client import QdrantClient, models
+
+# Set up logging
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
 
 load_dotenv()
 
@@ -14,7 +19,7 @@ def load_documents_from_docs_folder():
     """Load all markdown files from the /docs folder"""
     docs_path = Path("../docs")  # Relative to backend folder
     if not docs_path.exists():
-        print(f"Docs folder not found at {docs_path.absolute()}")
+        logger.error(f"Docs folder not found at {docs_path.absolute()}")
         return []
 
     # Find all markdown files in docs and subdirectories

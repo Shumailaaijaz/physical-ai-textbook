@@ -70,6 +70,79 @@ uvicorn main:app --host 0.0.0.0 --port 8000 --reload
 
 The API will be available at `http://localhost:8000`.
 
+## Deployment Options
+
+### Option 1: Deploy to Render.com (Recommended)
+
+1. Create a free Render account at [https://render.com](https://render.com)
+
+2. Install the Render CLI or connect your GitHub repository directly
+
+3. Create a `render.yaml` file in your backend directory (already provided)
+
+4. Push your backend code to a GitHub repository
+
+5. In Render dashboard:
+   - Create a new Web Service
+   - Connect to your GitHub repository
+   - Set the environment variables in Render dashboard:
+     - `QDRANT_URL` - Your Qdrant URL
+     - `QDRANT_API_KEY` - Your Qdrant API key
+     - `OPENAI_API_KEY` - Your OpenAI API key
+     - `LITELLM_API_KEY` - Your LiteLLM API key
+
+6. Render will automatically deploy your backend using the `render.yaml` configuration
+
+7. Once deployed, you'll get a URL like `https://your-app-name.onrender.com`
+
+### Option 2: Deploy to Railway
+
+1. Create a free Railway account at [https://railway.app](https://railway.app)
+
+2. Install Railway CLI: `npm install -g @railway/cli`
+
+3. Create a `Dockerfile` in your backend directory (already provided)
+
+4. Navigate to your backend directory and run:
+   ```bash
+   railway login
+   railway init
+   railway up
+   ```
+
+5. Set your environment variables in the Railway dashboard
+
+6. You'll get a URL for your deployed backend
+
+### Option 3: Deploy to Heroku
+
+1. Create a free Heroku account
+
+2. Install Heroku CLI
+
+3. Create a `Procfile` in your backend directory:
+   ```
+   web: uvicorn main:app --host=0.0.0.0 --port=${PORT:-8000}
+   ```
+
+4. Deploy using Heroku CLI
+
+## Updating Frontend for Production
+
+After deploying your backend, update the API URL in `src/pages/chatbot.js`:
+
+Change from:
+```javascript
+const response = await fetch('http://localhost:8000/chat', {
+```
+
+To your deployed backend URL:
+```javascript
+const response = await fetch('https://your-deployed-backend-url.onrender.com/chat', {
+```
+
+Then rebuild and redeploy your Docusaurus site to GitHub Pages.
+
 ### API Endpoints
 
 - `GET /` - Health check
