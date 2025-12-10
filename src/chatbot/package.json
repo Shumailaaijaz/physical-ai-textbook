@@ -1,0 +1,15 @@
+{
+  "name": "@physical-ai/chatbot",
+  "version": "1.0.0",
+  "description": "ChatKit Gemini RAG Chatbot for Physical AI Textbook",
+  "main": "index.tsx",
+  "types": "index.tsx",
+  "peerDependencies": {
+    "react": "^18.0.0",
+    "react-dom": "^18.0.0"
+  },
+  "devDependencies": {
+    "@types/react": "^18.0.0",
+    "@types/react-dom": "^18.0.0"
+  }
+}

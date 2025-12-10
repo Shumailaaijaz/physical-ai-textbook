@@ -19,6 +19,7 @@
     "@docusaurus/preset-classic": "3.9.2",
     "@docusaurus/theme-mermaid": "^3.9.2",
     "@mdx-js/react": "^3.0.0",
+    "@openai/chatkit": "^1.1.0",
     "@supabase/supabase-js": "^2.86.2",
     "better-auth": "^1.4.5",
     "clsx": "^2.0.0",

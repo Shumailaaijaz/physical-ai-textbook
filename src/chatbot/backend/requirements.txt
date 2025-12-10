@@ -1,5 +1,9 @@
-fastapi==0.115.6
-uvicorn[standard]==0.32.1
-openai-chatkit<=1.4.0
+fastapi>=0.115.6
+uvicorn[standard]>=0.32.1
 openai-agents[litellm]>=0.6.2
-python-dotenv==1.0.1
+openai-chatkit<=1.4.0
+langchain>=0.1.0
+langchain-openai>=0.0.2
+langchain-community>=0.0.10
+qdrant-client>=1.7.0
+python-dotenv>=1.0.1
