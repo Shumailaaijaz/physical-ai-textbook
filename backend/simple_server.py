@@ -1,7 +1,7 @@
-from fastapi import FastAPI, HTTPException
+from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
-from typing import List, Optional
+from typing import List
 import uvicorn
 import os
 from dotenv import load_dotenv
@@ -13,7 +13,7 @@ logger = logging.getLogger(__name__)
 
 load_dotenv()
 
-app = FastAPI(title="Physical AI Textbook RAG API", version="1.0.0")
+app = FastAPI(title="Physical AI Textbook API", version="1.0.0")
 
 # Add CORS middleware
 app.add_middleware(
@@ -34,7 +34,7 @@ class ChatResponse(BaseModel):
 
 @app.get("/")
 def read_root():
-    return {"message": "Physical AI Textbook RAG API", "status": "running"}
+    return {"message": "Physical AI Textbook API", "status": "running"}
 
 @app.get("/health")
 def health_check():
