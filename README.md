@@ -63,7 +63,15 @@ The website includes an AI-powered chatbot that uses RAG (Retrieval-Augmented Ge
    ```bash
    cd backend
    pip install -r requirements.txt
-   uvicorn main:app --host 0.0.0.0 --port 8000
+   # Make sure to set up your .env file first
+   python main.py
+   # or: uvicorn main:app --host 0.0.0.0 --port 8000
    ```
 
-The chatbot will automatically connect to the backend API. 
+3. **Ingest Textbook Content** (run once after setup):
+   ```bash
+   cd backend
+   python ingest.py
+   ```
+
+The chatbot page will be available at `/chatbot` and will connect to the backend API at `http://localhost:8000`. 

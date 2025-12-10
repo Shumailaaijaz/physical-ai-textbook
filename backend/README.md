@@ -1,85 +1,149 @@
 # Physical AI Textbook RAG Backend
 
-This is the RAG (Retrieval-Augmented Generation) backend for the Physical AI Textbook project. It uses Python, FastAPI, LangChain, and Qdrant to provide AI-powered responses based on the textbook content.
+This backend provides a RAG (Retrieval-Augmented Generation) API for the Physical AI & Humanoid Robotics textbook. It uses FastAPI, LangChain, Qdrant, and Gemini to answer questions based on the textbook content.
 
 ## Prerequisites
 
-- Python 3.9 or higher
-- pip (Python package installer)
-- Node.js and npm (for scripts management)
+- Python 3.9+
+- Node.js and npm (for the Docusaurus frontend)
 
 ## Setup
 
-1. Install Python dependencies:
-   ```bash
-   cd backend
-   pip install -r requirements.txt
-   ```
+### 1. Install Python Dependencies
 
-   Or using the npm script:
-   ```bash
-   npm run install
-   ```
-
-2. Set up environment variables:
-   ```bash
-   cp .env.example .env
-   ```
-
-   Then edit `.env` with your configuration:
-   - `QDRANT_URL`: Your Qdrant vector database URL
-   - `QDRANT_API_KEY`: Your Qdrant API key
-   - `OPENAI_API_KEY`: Your OpenAI API key (for embeddings)
-   - `LITELLM_API_KEY`: Your LiteLLM provider API key (for Gemini access)
-
-3. Ingest the textbook content into the vector database:
-   ```bash
-   python ingest.py
-   ```
-
-   Or using the npm script:
-   ```bash
-   npm run ingest
-   ```
-
-## Running the Server
-
-Start the backend server:
 ```bash
-python -m uvicorn main:app --host 0.0.0.0 --port 8000 --reload
+cd backend
+pip install -r requirements.txt
 ```
 
-Or using the npm script:
+### 2. Set Up Environment Variables
+
 ```bash
-npm run dev
+cp .env.example .env
 ```
 
-The server will be available at `http://localhost:8000`.
+Edit the `.env` file with your API keys:
 
-## API Endpoints
+- `QDRANT_URL`: URL for your Qdrant instance (default: `http://localhost:6333` for local)
+- `QDRANT_API_KEY`: API key if using cloud Qdrant (leave empty for local)
+- `OPENAI_API_KEY`: Your OpenAI API key for embeddings
+- `LITELLM_API_KEY`: Your LiteLLM API key for Gemini access
 
-- `GET /health` - Health check endpoint
-- `POST /chatkit` - Main RAG chat endpoint using ChatKit protocol
-- `POST /chatkit/ask-selected` - Selected-text mode endpoint
-- `GET /chatkit/threads/{thread_id}/messages` - Thread message history
-- `GET /debug/threads` - Debug endpoint for viewing all threads
+### 3. Install and Run Qdrant (Local Option)
 
-## Frontend Integration
+If you prefer to run Qdrant locally:
 
-The frontend is configured to connect to this backend via the `REACT_APP_CHATBOT_API_URL` environment variable in `.env`. By default, it connects to `http://localhost:8000`.
+```bash
+# Option 1: Using Docker
+docker run -d -p 6333:6333 --name qdrant qdrant/qdrant
+
+# Option 2: Download binary from https://github.com/qdrant/qdrant/releases
+```
+
+### 4. Ingest Textbook Content
+
+Run the ingestion script to process all markdown files from the `/docs` folder:
+
+```bash
+python ingest.py
+```
+
+This will:
+- Read all `.md` and `.mdx` files from the `/docs` folder
+- Split them into chunks
+- Generate embeddings
+- Store them in Qdrant
+
+## Running the Backend
+
+Start the FastAPI server:
+
+```bash
+python main.py
+```
+
+Or using uvicorn directly:
+
+```bash
+uvicorn main:app --host 0.0.0.0 --port 8000 --reload
+```
+
+The API will be available at `http://localhost:8000`.
+
+### API Endpoints
+
+- `GET /` - Health check
+- `GET /health` - Health status
+- `POST /chat` - Chat endpoint that accepts a JSON with `message` field
+
+Example request to `/chat`:
+```json
+{
+  "message": "What is Physical AI?"
+}
+```
+
+## Running the Frontend
+
+From the project root directory:
+
+```bash
+# Install dependencies
+npm install
+
+# Start the Docusaurus development server
+npm start
+```
+
+The frontend will be available at `http://localhost:3000`, and the chatbot page will be at `http://localhost:3000/chatbot`.
+
+## Testing the Chatbot
+
+1. Make sure the backend is running on `http://localhost:8000`
+2. Make sure the frontend is running on `http://localhost:3000`
+3. Navigate to `http://localhost:3000/chatbot`
+4. Ask questions about your textbook content
+
+## Troubleshooting
+
+### Common Issues
+
+1. **Connection Error**: Make sure both frontend and backend are running
+2. **No Documents Found**: Ensure your textbook files are in the `/docs` folder
+3. **Qdrant Connection**: Check that Qdrant is running and accessible
+4. **API Keys**: Verify all required API keys are set in `.env`
+
+### For Local Embeddings (Free Option)
+
+If you want to use local embeddings instead of OpenAI, install additional packages:
+
+```bash
+pip install sentence-transformers
+```
+
+And modify the embeddings in `main.py` and `ingest.py`:
+
+```python
+from langchain_huggingface import HuggingFaceEmbeddings
+
+embeddings = HuggingFaceEmbeddings(
+    model_name="sentence-transformers/all-MiniLM-L6-v2"
+)
+```
 
 ## Architecture
 
 - **FastAPI**: Web framework for the backend API
 - **LangChain**: Framework for RAG implementation
-- **Qdrant**: Vector database for storing textbook embeddings
+- **Qdrant**: Vector database for storing document embeddings
 - **Gemini**: LLM for generating responses via LiteLLM
-- **ChatKit Protocol**: Streaming response protocol for the chat interface
+- **Docusaurus**: Frontend framework with chatbot page
 
-## Troubleshooting
+## Environment Variables
 
-If you encounter issues:
-1. Verify all environment variables are properly set
-2. Ensure the Qdrant database is accessible
-3. Check that the vector database has been populated with textbook content
-4. Confirm the frontend and backend are both running
+| Variable | Description | Default |
+|----------|-------------|---------|
+| QDRANT_URL | Qdrant instance URL | http://localhost:6333 |
+| QDRANT_API_KEY | Qdrant API key (for cloud) | - |
+| OPENAI_API_KEY | OpenAI API key for embeddings | - |
+| LITELLM_API_KEY | LiteLLM API key for Gemini | - |
