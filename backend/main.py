@@ -5,6 +5,7 @@ from typing import List, Optional
 import uvicorn
 import os
 from dotenv import load_dotenv
+import logging
 
 # Import for LangChain and RAG
 from langchain.chains import RetrievalQA
@@ -16,6 +17,10 @@ from langchain.document_loaders import DirectoryLoader, UnstructuredMarkdownLoad
 
 # Import for Qdrant
 from qdrant_client import QdrantClient, models
+
+# Set up logging
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
 
 load_dotenv()
 
