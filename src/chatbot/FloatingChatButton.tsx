@@ -14,7 +14,7 @@ const FloatingChatButton: React.FC = () => {
   if (!isVisible) return null;
 
   return (
-    <>
+    <div style={{ position: 'relative', zIndex: 10000 }}>
       {/* Floating Action Button */}
       {!isChatOpen && (
         <button
@@ -37,8 +37,20 @@ const FloatingChatButton: React.FC = () => {
             zIndex: 10000,
             fontSize: '24px',
           }}
-          onMouseOver={(e) => (e.currentTarget.style.transform = 'scale(1.1)')}
-          onMouseOut={(e) => (e.currentTarget.style.transform = 'scale(1)')}
+          onMouseOver={(e) => {
+            try {
+              e.currentTarget.style.transform = 'scale(1.1)';
+            } catch (err) {
+              console.error('Mouse over error:', err);
+            }
+          }}
+          onMouseOut={(e) => {
+            try {
+              e.currentTarget.style.transform = 'scale(1)';
+            } catch (err) {
+              console.error('Mouse out error:', err);
+            }
+          }}
         >
           <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2">
             <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
@@ -109,7 +121,7 @@ const FloatingChatButton: React.FC = () => {
           </div>
         </div>
       )}
-    </>
+    </div>
   );
 };
 
