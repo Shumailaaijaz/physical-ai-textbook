@@ -1,91 +1,81 @@
-import React, { createContext, useState, ReactNode, useEffect } from 'react';
+import React, { createContext, useContext, ReactNode, useState, useEffect } from 'react';
 
-export type ExperienceLevel = 'Novice' | 'Professional';
-export type Language = 'English' | 'Urdu';
+interface PersonalizationPreferences {
+  experienceLevel?: 'Novice' | 'Professional';
+  language?: 'English' | 'Urdu';
+  pythonSkill?: 'beginner' | 'intermediate' | 'advanced';
+  rosExperience?: 'beginner' | 'intermediate' | 'advanced';
+  linuxFamiliarity?: 'beginner' | 'intermediate' | 'advanced';
+  gpuAccess?: 'none' | 'local' | 'cloud';
+  budgetTier?: 'simulation_only' | 'budget_hobbyist' | 'enthusiast' | 'research_grade';
+}
 
 interface PersonalizationContextType {
-  experienceLevel: ExperienceLevel;
-  setExperienceLevel: (level: ExperienceLevel) => void;
-  language: Language;
-  setLanguage: (lang: Language) => void;
-  isQuizCompleted: boolean;
-  completeQuiz: () => void;
+  preferences: PersonalizationPreferences;
+  setPreferences: (prefs: PersonalizationPreferences) => void;
+  updatePreference: (key: keyof PersonalizationPreferences, value: any) => void;
   resetPreferences: () => void;
 }
 
-export const PersonalizationContext = createContext<PersonalizationContextType | undefined>(undefined);
+const PersonalizationContext = createContext<PersonalizationContextType | undefined>(undefined);
 
 interface PersonalizationProviderProps {
   children: ReactNode;
 }
 
-const PersonalizationProvider = ({ children }: PersonalizationProviderProps) => {
-  // Initialize with defaults for SSR safety
-  const [experienceLevel, setExperienceLevel] = useState<ExperienceLevel>('Novice');
-  const [language, setLanguage] = useState<Language>('English');
-  const [isQuizCompleted, setIsQuizCompleted] = useState(false);
-
-  // Load from localStorage on client-side mount
-  useEffect(() => {
-    try {
-      const savedLevel = localStorage.getItem('pai_pref_level') as ExperienceLevel;
-      if (savedLevel) setExperienceLevel(savedLevel);
-
-      const savedLang = localStorage.getItem('pai_pref_lang') as Language;
-      if (savedLang) setLanguage(savedLang);
-
-      const savedQuiz = localStorage.getItem('pai_quiz_done');
-      if (savedQuiz) setIsQuizCompleted(savedQuiz === 'true');
-    } catch (e) {
-      console.warn('Failed to load personalization settings:', e);
+export const PersonalizationProvider: React.FC<PersonalizationProviderProps> = ({ children }) => {
+  const [preferences, setPreferences] = useState<PersonalizationPreferences>(() => {
+    // Load from localStorage on initial load
+    if (typeof window !== 'undefined') {
+      const savedPrefs = localStorage.getItem('personalization_preferences');
+      return savedPrefs ? JSON.parse(savedPrefs) : {};
     }
-  }, []);
+    return {};
+  });
 
-  // Persist changes
+  // Save to localStorage whenever preferences change
   useEffect(() => {
     if (typeof window !== 'undefined') {
-      localStorage.setItem('pai_pref_level', experienceLevel);
+      localStorage.setItem('personalization_preferences', JSON.stringify(preferences));
     }
-  }, [experienceLevel]);
+  }, [preferences]);
 
-  useEffect(() => {
-    if (typeof window !== 'undefined') {
-      localStorage.setItem('pai_pref_lang', language);
-    }
-  }, [language]);
-
-  useEffect(() => {
-    if (typeof window !== 'undefined') {
-      localStorage.setItem('pai_quiz_done', String(isQuizCompleted));
-    }
-  }, [isQuizCompleted]);
-
-  const completeQuiz = () => setIsQuizCompleted(true);
+  const updatePreference = (key: keyof PersonalizationPreferences, value: any) => {
+    setPreferences(prev => ({
+      ...prev,
+      [key]: value
+    }));
+  };
 
   const resetPreferences = () => {
-    setExperienceLevel('Novice');
-    setLanguage('English');
-    setIsQuizCompleted(false);
+    setPreferences({});
     if (typeof window !== 'undefined') {
-      localStorage.removeItem('pai_pref_level');
-      localStorage.removeItem('pai_pref_lang');
-      localStorage.removeItem('pai_quiz_done');
+      localStorage.removeItem('personalization_preferences');
     }
   };
 
+  const value: PersonalizationContextType = {
+    preferences,
+    setPreferences,
+    updatePreference,
+    resetPreferences
+  };
+
   return (
-    <PersonalizationContext.Provider value={{ 
-      experienceLevel, 
-      setExperienceLevel, 
-      language, 
-      setLanguage, 
-      isQuizCompleted,
-      completeQuiz,
-      resetPreferences
-    }}>
+    <PersonalizationContext.Provider value={value}>
       {children}
     </PersonalizationContext.Provider>
   );
 };
 
-export default PersonalizationProvider;
+export const usePersonalization = () => {
+  const context = useContext(PersonalizationContext);
+  if (context === undefined) {
+    throw new Error('usePersonalization must be used within a PersonalizationProvider');
+  }
+  return context;
+};
+
+// Export both the Provider and the Context for different import patterns
+export default PersonalizationProvider; // For the component
+export { PersonalizationContext }; // For the context itself

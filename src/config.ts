@@ -1,7 +1,7 @@
 // Configuration file for API settings and feature flags
 
 // Determine if we should use mock API (for development/testing)
-export const USE_MOCK_API = process.env.REACT_APP_USE_MOCK_API === 'true';
+export const USE_MOCK_API = process.env.REACT_APP_USE_MOCK_API === 'true' || false;
 
 // Get the base API URL based on environment
 export const getApiBaseUrl = (): string => {
@@ -25,6 +25,9 @@ export const getApiBaseUrl = (): string => {
   // For server-side rendering
   return process.env.API_BASE_URL || 'http://localhost:8000';
 };
+
+// Chatbot Configuration
+export const CHATBOT_API_URL = process.env.REACT_APP_CHATBOT_API_URL || 'http://localhost:8000';
 
 // Additional configuration options
 export const API_TIMEOUT = 30000; // 30 seconds
