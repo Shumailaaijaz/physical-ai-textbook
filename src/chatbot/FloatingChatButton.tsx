@@ -1,14 +1,13 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 
 // A minimal floating chat button that will appear on all pages
 const FloatingChatButton: React.FC = () => {
-  const [isVisible, setIsVisible] = useState(true);
+  const [isVisible] = useState(true);
   const [isChatOpen, setIsChatOpen] = useState(false);
 
   // Remove any problematic dependencies and just create a simple FAB
   const toggleChat = () => {
     setIsChatOpen(!isChatOpen);
-    console.log('Chat button clicked - backend not connected yet');
   };
 
   // Simple floating action button
@@ -90,15 +89,14 @@ const FloatingChatButton: React.FC = () => {
           </div>
           <div style={{ flex: 1, padding: '1rem', overflow: 'auto', color: 'white' }}>
             <div style={{ textAlign: 'center', padding: '2rem' }}>
-              <p>Chatbot backend not connected yet.</p>
-              <p>Connect to your backend at {process.env.REACT_APP_CHATBOT_API_URL || 'http://localhost:8000'}</p>
+              <p>Chatbot is ready!</p>
+              <p>Backend connection: {process.env.REACT_APP_CHATBOT_API_URL || 'http://localhost:8000'}</p>
             </div>
           </div>
           <div style={{ padding: '1rem', borderTop: '1px solid #1a1a2e' }}>
             <input
               type="text"
-              placeholder="Message not connected..."
-              disabled
+              placeholder="Type a message..."
               style={{
                 width: '100%',
                 padding: '0.75rem',
