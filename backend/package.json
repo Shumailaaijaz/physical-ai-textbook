@@ -1,0 +1,23 @@
+{
+  "name": "physical-ai-textbook-rag-backend",
+  "version": "1.0.0",
+  "description": "RAG backend for Physical AI Textbook using Python, FastAPI, and LangChain",
+  "scripts": {
+    "start": "uvicorn main:app --host 0.0.0.0 --port 8000 --reload",
+    "dev": "uvicorn main:app --host 0.0.0.0 --port 8000 --reload",
+    "install": "pip install -r requirements.txt",
+    "migrate": "python -m pip install --upgrade pip && pip install -r requirements.txt",
+    "ingest": "python ingest.py"
+  },
+  "keywords": [
+    "python",
+    "fastapi",
+    "langchain",
+    "rag",
+    "ai",
+    "qdrant",
+    "gemini"
+  ],
+  "author": "Physical AI Textbook Team",
+  "license": "MIT"
+}
