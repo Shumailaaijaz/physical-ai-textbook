@@ -1,7 +1,7 @@
 import React, { ReactNode } from 'react';
 import { AuthProvider } from '../components/Auth/AuthProvider';
 import { PersonalizationProvider } from '../components/Personalization/PersonalizationProvider';
-import { ChatbotWidget } from '../chatbot';
+import ChatbotWidget from '../chatbot/frontend/src/components/ChatbotWidget';
 
 // This component wraps the entire app
 // It provides authentication and personalization context to all pages
