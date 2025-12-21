@@ -1,4 +1,5 @@
 import React, { ReactNode } from 'react';
+import BrowserOnly from '@docusaurus/BrowserOnly';
 import FloatingChatButton from '../chatbot/FloatingChatButton';
 
 // This component wraps the entire app
@@ -7,7 +8,9 @@ export default function Root({ children }: { children: ReactNode }) {
   return (
     <>
       {children}
-      <FloatingChatButton />
+      <BrowserOnly>
+        {() => <FloatingChatButton />}
+      </BrowserOnly>
     </>
   );
 }

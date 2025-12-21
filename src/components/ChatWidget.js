@@ -8,21 +8,28 @@ export default function ChatWidget() {
   const [input, setInput] = useState("");
   const [loading, setLoading] = useState(false);
 
+  // Use localhost for development, production backend for production
+  const API_URL = typeof window !== 'undefined' && window.location.hostname === 'localhost'
+    ? 'http://localhost:8000/chat'
+    : 'https://shumailaaijaz-hackathon-book.hf.space/ask';
+
   const sendMessage = async () => {
     if (!input.trim()) return;
-    
+
     const userMessage = { sender: "user", text: input };
     const currentInput = input;
-    
+
     setMessages(prev => [...prev, userMessage]);
     setInput("");
     setLoading(true);
-    
+
     try {
-      console.log("Sending message:", currentInput);
-      
-      const res = await axios.post("https://shumailaaijaz-hackathon-book.hf.space/ask", {
-        message: currentInput
+      console.log("Sending message to:", API_URL);
+      console.log("Message:", currentInput);
+
+      const res = await axios.post(API_URL, {
+        message: currentInput,
+        history: []
       }, {
         headers: {
           'Content-Type': 'application/json'

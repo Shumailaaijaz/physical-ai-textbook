@@ -51,3 +51,5 @@ src/chatbot/backend/.env
 # Logs
 *.log
 logs/
+backend/node_modules/
+backend/package-lock.json
