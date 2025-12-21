@@ -4,16 +4,6 @@ on:
   push:
     branches:
       - main
-    # Only run on pushes that modify the website
-    paths:
-      - 'docs/**'
-      - 'blog/**'
-      - 'src/**'
-      - 'static/**'
-      - 'docusaurus.config.ts'
-      - 'sidebars.ts'
-      - 'package.json'
-      - 'package-lock.json'
   # Allow manual workflow trigger
   workflow_dispatch:
 
