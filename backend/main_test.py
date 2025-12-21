@@ -71,8 +71,8 @@ if QDRANT_AVAILABLE:
         )
 
         # Initialize LLM
-        llm = ChatLiteLLM(
-            model="gemini/gemini-2.0-flash",  # Using Gemini via LiteLLM
+        llm = OpenRouter(
+            model="mistralai/devstral-2512:free",  # Using Mistral via LiteLLM
             temperature=0.2,
             max_tokens=500
         )
