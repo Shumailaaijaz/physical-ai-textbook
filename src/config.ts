@@ -27,7 +27,27 @@ export const getApiBaseUrl = (): string => {
 };
 
 // Chatbot Configuration
-export const CHATBOT_API_URL = process.env.REACT_APP_CHATBOT_API_URL || 'http://localhost:8000';
+// Auto-detect environment and use appropriate backend URL
+export const CHATBOT_API_URL = (() => {
+  // If environment variable is set, use it
+  if (process.env.REACT_APP_CHATBOT_API_URL) {
+    return process.env.REACT_APP_CHATBOT_API_URL;
+  }
+
+  // Check if we're in browser and production
+  if (typeof window !== 'undefined') {
+    // Production: GitHub Pages
+    if (window.location.hostname === 'shumailaaijaz.github.io') {
+      // TODO: Replace with your Vercel backend URL after deployment
+      return 'https://physical-ai-backend.vercel.app';
+    }
+    // Development: localhost
+    return 'http://localhost:8000';
+  }
+
+  // Fallback for SSR
+  return 'http://localhost:8000';
+})();
 
 // Additional configuration options
 export const API_TIMEOUT = 30000; // 30 seconds

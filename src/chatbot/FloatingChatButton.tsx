@@ -13,6 +13,11 @@ const FloatingChatButton: React.FC = () => {
   const [connectionStatus, setConnectionStatus] = useState<'checking' | 'connected' | 'disconnected'>('checking');
   const [sessionId] = useState<string>(() => {
     // Generate a unique session ID or retrieve from localStorage
+    // Check if we're in browser environment
+    if (typeof window === 'undefined' || typeof localStorage === 'undefined') {
+      return `session_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+    }
+
     const storedSessionId = localStorage.getItem('chatbot-session-id');
     if (storedSessionId) return storedSessionId;
 
