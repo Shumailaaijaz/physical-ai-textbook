@@ -38,8 +38,8 @@ export const CHATBOT_API_URL = (() => {
   if (typeof window !== 'undefined') {
     // Production: GitHub Pages
     if (window.location.hostname === 'shumailaaijaz.github.io') {
-      // TODO: Replace with your Vercel backend URL after deployment
-      return 'https://physical-ai-backend.vercel.app';
+      // Using HuggingFace Space backend
+      return 'https://shumailaaijaz-hackathon-book.hf.space';
     }
     // Development: localhost
     return 'http://localhost:8000';

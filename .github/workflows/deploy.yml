@@ -41,8 +41,8 @@ jobs:
         run: npm run build
         env:
           NODE_ENV: production
-          # Add any environment variables needed for build
-          # REACT_APP_API_URL: ${{ secrets.API_URL }}
+          # Chatbot backend URL for production
+          REACT_APP_CHATBOT_API_URL: https://shumailaaijaz-hackathon-book.hf.space
 
       - name: Test build output
         run: |
