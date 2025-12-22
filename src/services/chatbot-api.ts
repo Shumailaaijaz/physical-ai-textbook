@@ -59,12 +59,20 @@ export interface ChatRequest {
 // Function to try different possible endpoints for the chatbot
 const tryChatEndpoints = async (request: ChatRequest) => {
   // List of possible endpoints to try
-  const endpoints = ['/chat', '/api/chat', '/query', '/ask', '/generate'];
+  const endpoints = ['/chat', '/api/chat', '/ask', '/query', '/generate'];
 
   for (const endpoint of endpoints) {
     try {
       console.log(`Trying endpoint: ${endpoint}`);
-      const response = await chatbotApi.post(endpoint, request);
+
+      // Transform request format based on endpoint
+      let requestBody = request;
+      if (endpoint === '/ask') {
+        // HuggingFace backend expects {query: string}
+        requestBody = { query: request.message } as any;
+      }
+
+      const response = await chatbotApi.post(endpoint, requestBody);
 
       // If successful, return the response
       // Handle different response formats that might come from the backend
