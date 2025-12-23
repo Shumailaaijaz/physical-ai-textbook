@@ -9,8 +9,15 @@ export default function Root({ children }: { children: ReactNode }) {
   return (
     <PersonalizationProvider>
       {children}
-      <BrowserOnly>
-        {() => <FloatingChatButton />}
+      <BrowserOnly fallback={<div />}>
+        {() => {
+          try {
+            return <FloatingChatButton />;
+          } catch (error) {
+            console.error('FloatingChatButton error:', error);
+            return null;
+          }
+        }}
       </BrowserOnly>
     </PersonalizationProvider>
   );
