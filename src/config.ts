@@ -27,27 +27,8 @@ export const getApiBaseUrl = (): string => {
 };
 
 // Chatbot Configuration
-// Auto-detect environment and use appropriate backend URL
-export const CHATBOT_API_URL = (() => {
-  // If environment variable is set, use it
-  if (process.env.REACT_APP_CHATBOT_API_URL) {
-    return process.env.REACT_APP_CHATBOT_API_URL;
-  }
-
-  // Check if we're in browser and production
-  if (typeof window !== 'undefined') {
-    // Production: GitHub Pages
-    if (window.location.hostname === 'shumailaaijaz.github.io') {
-      // Using HuggingFace Space backend
-      return 'https://shumailaaijaz-hackathon-book.hf.space';
-    }
-    // Development: localhost
-    return 'http://localhost:8000';
-  }
-
-  // Fallback for SSR
-  return 'http://localhost:8000';
-})();
+// Hardcoded for production deployment (Docusaurus doesn't support REACT_APP_ prefix)
+export const CHATBOT_API_URL = 'https://shumailaaijaz-hackathon-book.hf.space';
 
 // Additional configuration options
 export const API_TIMEOUT = 30000; // 30 seconds
