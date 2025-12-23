@@ -1,9 +1,12 @@
 import React, { useState } from 'react';
+import Link from '@docusaurus/Link';
+import useBaseUrl from '@docusaurus/useBaseUrl';
 import { useAuth } from './AuthProvider';
 import styles from './Auth.module.css';
 
 export default function LoginForm() {
   const { signIn } = useAuth();
+  const baseUrl = useBaseUrl('/');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
@@ -17,7 +20,7 @@ export default function LoginForm() {
     try {
       await signIn(email, password);
       // Redirect to homepage or where they came from
-      const returnUrl = new URLSearchParams(window.location.search).get('returnUrl') || '/';
+      const returnUrl = new URLSearchParams(window.location.search).get('returnUrl') || baseUrl;
       window.location.href = returnUrl;
     } catch (err: any) {
       setError('Invalid email or password');
@@ -71,7 +74,7 @@ export default function LoginForm() {
 
       <p className={styles.switchForm}>
         Don't have an account?{' '}
-        <a href="/signup">Create one here</a>
+        <Link to="/signup">Create one here</Link>
       </p>
     </form>
   );
