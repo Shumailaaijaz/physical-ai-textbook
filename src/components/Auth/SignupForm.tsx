@@ -1,9 +1,12 @@
 import React, { useState } from 'react';
+import Link from '@docusaurus/Link';
+import useBaseUrl from '@docusaurus/useBaseUrl';
 import { useAuth } from './AuthProvider';
 import styles from './Auth.module.css';
 
 export default function SignupForm() {
   const { signUp } = useAuth();
+  const baseUrl = useBaseUrl('/');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
@@ -36,7 +39,7 @@ export default function SignupForm() {
 
       setSuccess(true);
       // Redirect to homepage or dashboard
-      window.location.href = '/';
+      window.location.href = baseUrl;
     } catch (err: any) {
       setError(err.message || 'Failed to create account');
     } finally {
@@ -177,7 +180,7 @@ export default function SignupForm() {
 
       <p className={styles.switchForm}>
         Already have an account?{' '}
-        <a href="/login">Sign in here</a>
+        <Link to="/login">Sign in here</Link>
       </p>
     </form>
   );
