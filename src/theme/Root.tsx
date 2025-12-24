@@ -5,6 +5,7 @@ import { PersonalizationProvider } from '../contexts/PersonalizationProvider';
 
 // This component wraps the entire app
 // It provides the floating chat button to all pages and PersonalizationProvider for MDX components
+// Updated: Chatbot with Qdrant + OpenRouter
 export default function Root({ children }: { children: ReactNode }) {
   return (
     <PersonalizationProvider>
