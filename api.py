@@ -243,3 +243,37 @@ def health_check():
         "version": "1.0.0",
         "environment_configured": env_vars is not None
     }
+
+
+class QueryRequest(BaseModel):
+    """Request model for /query endpoint (frontend compatibility)."""
+    query: str = Field(..., min_length=1, max_length=1000)
+
+
+@app.post("/query")
+def query_endpoint(request: QueryRequest):
+    """
+    POST /query - Frontend-compatible endpoint
+
+    Request: {query: str}
+    Response: {answer: str, citations: [...], timestamp: int}
+    """
+    import time
+
+    # Call the chat endpoint internally
+    chat_request = ChatRequest(query=request.query)
+    result = chat_endpoint(chat_request)
+
+    # Transform response to frontend format
+    if "text" in result:  # GroundedAnswer
+        return {
+            "answer": result["text"],
+            "citations": result["citations"],
+            "timestamp": int(time.time())
+        }
+    else:  # RefusalMessage
+        return {
+            "answer": result["reason"],
+            "citations": [],
+            "timestamp": int(time.time())
+        }

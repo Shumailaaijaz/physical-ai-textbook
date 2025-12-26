@@ -40,7 +40,7 @@ export default function Home(): ReactNode {
       description="Description will go into a meta tag in <head />">
       <Head>
         <script
-          src="/assets/chatbot-widget.js"
+          src="/physical-ai-textbook/assets/chatbot-widget.js"
           data-api="https://huggingface.co/spaces/shumailaaijaz/hackathon-book"
           defer
         />
