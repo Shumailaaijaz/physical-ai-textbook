@@ -3,6 +3,7 @@ import clsx from 'clsx';
 import Link from '@docusaurus/Link';
 import useDocusaurusContext from '@docusaurus/useDocusaurusContext';
 import Layout from '@theme/Layout';
+import Head from '@docusaurus/Head';
 import HomepageFeatures from '@site/src/components/HomepageFeatures';
 import Heading from '@theme/Heading';
 
@@ -37,6 +38,13 @@ export default function Home(): ReactNode {
     <Layout
       title={`Hello from ${siteConfig.title}`}
       description="Description will go into a meta tag in <head />">
+      <Head>
+        <script
+          src="/assets/chatbot-widget.js"
+          data-api="https://huggingface.co/spaces/shumailaaijaz/hackathon-book"
+          defer
+        />
+      </Head>
       <HomepageHeader />
       <main>
         <HomepageFeatures />
