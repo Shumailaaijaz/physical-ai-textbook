@@ -1,0 +1,397 @@
+openapi: 3.0.3
+info:
+  title: RAG Answer Generation API
+  description: |
+    Book-embedded chatbot API for Physical AI textbook with strict grounding constraints.
+
+    **Key Features**:
+    - Standard RAG answering with citations
+    - Selected-text-only mode for precision learning
+    - Zero hallucination tolerance (refuses when grounding insufficient)
+    - Rate-limited to prevent abuse
+
+    **Authentication**: None (public chatbot)
+    **Base URL**: https://api.example.com/v1 (TBD based on deployment)
+
+  version: 1.0.0
+  contact:
+    name: API Support
+    url: https://github.com/your-repo/issues
+
+servers:
+  - url: https://api.example.com/v1
+    description: Production
+  - url: http://localhost:8000/v1
+    description: Local development
+
+paths:
+  /query:
+    post:
+      summary: Submit question to RAG chatbot
+      description: |
+        Query the book-embedded chatbot with optional selected-text mode.
+
+        **Modes**:
+        - **Standard RAG**: Retrieve top-k chunks from Qdrant, synthesize answer
+        - **Selected-Text-Only**: Use only user-highlighted text (strict mode)
+
+        **Response Types**:
+        - `success`: Grounded answer with citations
+        - `refused`: Insufficient grounding (out-of-scope question)
+        - `error`: System failure (Qdrant timeout, etc.)
+
+      operationId: queryRagAgent
+      tags:
+        - Query
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/QueryRequest'
+            examples:
+              standard_rag:
+                summary: Standard RAG query
+                value:
+                  query: "How does ROS 2 work?"
+                  top_k: 5
+                  session_id: "550e8400-e29b-41d4-a716-446655440000"
+              selected_text:
+                summary: Selected-text-only query
+                value:
+                  query: "What are topics?"
+                  selected_text: "Nodes in ROS 2 communicate via topics"
+                  session_id: "550e8400-e29b-41d4-a716-446655440000"
+
+      responses:
+        '200':
+          description: Successful response (includes success, refused, or error status)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/QueryResponse'
+              examples:
+                success:
+                  summary: Successful answer with citations
+                  value:
+                    status: "success"
+                    answer:
+                      text: "ROS 2 is the nervous system of modern robots, connecting sensors, actuators, and AI into a unified organism. It provides a publish-subscribe messaging framework."
+                      citations:
+                        - chapter: "Chapter 2: ROS 2 Fundamentals"
+                          section: "Learning Objectives"
+                          source_url: "https://shumailaaijaz.github.io/physical-ai-textbook/docs/02-ros2-fundamentals"
+                          referenced_text: "ROS 2 is the nervous system of modern robots"
+                      mode: "standard_rag"
+                    metadata:
+                      chunks_retrieved: 5
+                      processing_time_ms: 1234
+                      session_id: "550e8400-e29b-41d4-a716-446655440000"
+                      request_id: "a1b2c3d4-e5f6-7890-abcd-ef1234567890"
+                refused:
+                  summary: Refusal due to insufficient grounding
+                  value:
+                    status: "refused"
+                    refusal:
+                      reason: "The provided book content does not contain sufficient information to answer this question"
+                      refusal_type: "empty_retrieval"
+                    metadata:
+                      chunks_retrieved: 0
+                      processing_time_ms: 456
+                      session_id: "550e8400-e29b-41d4-a716-446655440000"
+                      request_id: "b2c3d4e5-f6a7-8901-bcde-f12345678901"
+
+        '400':
+          description: Invalid request (validation failure)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              example:
+                status: "error"
+                error:
+                  code: "VALIDATION_ERROR"
+                  message: "Query must be between 1 and 500 characters"
+                  details: "Provided query length: 512"
+
+        '429':
+          description: Rate limit exceeded
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              example:
+                status: "error"
+                error:
+                  code: "RATE_LIMIT_EXCEEDED"
+                  message: "Too many requests. Please wait before trying again."
+                  retry_after: 60
+
+        '503':
+          description: Service unavailable (Qdrant, Cohere, or OpenRouter failure)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              example:
+                status: "error"
+                error:
+                  code: "QDRANT_TIMEOUT"
+                  message: "The search service is temporarily unavailable. Please try again."
+                  details: "Qdrant connection timeout after 5s"
+
+  /health:
+    get:
+      summary: Health check endpoint
+      description: Check system health (Qdrant, OpenRouter, PostgreSQL connectivity)
+      operationId: healthCheck
+      tags:
+        - Health
+      responses:
+        '200':
+          description: System healthy
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    enum: [healthy]
+                  services:
+                    type: object
+                    properties:
+                      qdrant:
+                        type: string
+                        enum: [healthy, unhealthy]
+                      openrouter:
+                        type: string
+                        enum: [healthy, unhealthy]
+                      postgresql:
+                        type: string
+                        enum: [healthy, unhealthy]
+              example:
+                status: "healthy"
+                services:
+                  qdrant: "healthy"
+                  openrouter: "healthy"
+                  postgresql: "healthy"
+
+        '503':
+          description: System unhealthy
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    enum: [unhealthy]
+                  services:
+                    type: object
+
+components:
+  schemas:
+    QueryRequest:
+      type: object
+      required:
+        - query
+      properties:
+        query:
+          type: string
+          minLength: 1
+          maxLength: 500
+          description: User's question or request
+          example: "How does ROS 2 work?"
+        selected_text:
+          type: string
+          minLength: 10
+          maxLength: 5000
+          nullable: true
+          description: User-highlighted text from book (triggers selected-text-only mode)
+          example: "Nodes in ROS 2 communicate via topics"
+        top_k:
+          type: integer
+          minimum: 1
+          maximum: 20
+          default: 5
+          description: Number of chunks to retrieve (standard RAG mode only)
+          example: 5
+        session_id:
+          type: string
+          format: uuid
+          nullable: true
+          description: Session identifier for tracking and rate limiting
+          example: "550e8400-e29b-41d4-a716-446655440000"
+
+    QueryResponse:
+      type: object
+      required:
+        - status
+        - metadata
+      properties:
+        status:
+          type: string
+          enum: [success, refused, error]
+          description: Response status
+        answer:
+          $ref: '#/components/schemas/GroundedAnswer'
+          nullable: true
+          description: Present if status=success
+        refusal:
+          $ref: '#/components/schemas/RefusalMessage'
+          nullable: true
+          description: Present if status=refused
+        error:
+          $ref: '#/components/schemas/ErrorDetail'
+          nullable: true
+          description: Present if status=error
+        metadata:
+          $ref: '#/components/schemas/ResponseMetadata'
+
+    GroundedAnswer:
+      type: object
+      required:
+        - text
+        - citations
+        - mode
+      properties:
+        text:
+          type: string
+          minLength: 1
+          maxLength: 2000
+          description: Synthesized answer using only book content
+          example: "ROS 2 is the nervous system of modern robots, connecting sensors, actuators, and AI into a unified organism."
+        citations:
+          type: array
+          items:
+            $ref: '#/components/schemas/Citation'
+          minItems: 1
+          description: Source attributions (at least one required)
+        mode:
+          type: string
+          enum: [standard_rag, selected_text_only]
+          description: Workflow mode used to generate answer
+          example: "standard_rag"
+
+    Citation:
+      type: object
+      properties:
+        chapter:
+          type: string
+          nullable: true
+          description: Chapter name from book
+          example: "Chapter 2: ROS 2 Fundamentals"
+        section:
+          type: string
+          nullable: true
+          description: Section heading from book
+          example: "Learning Objectives"
+        source_url:
+          type: string
+          format: uri
+          nullable: true
+          description: Textbook page URL
+          example: "https://shumailaaijaz.github.io/physical-ai-textbook/docs/02-ros2-fundamentals"
+        referenced_text:
+          type: string
+          maxLength: 500
+          nullable: true
+          description: Specific claim from answer attributed to this source
+          example: "ROS 2 is the nervous system of modern robots"
+
+    RefusalMessage:
+      type: object
+      required:
+        - reason
+        - refusal_type
+      properties:
+        reason:
+          type: string
+          description: Standardized refusal message
+          enum:
+            - "The provided book content does not contain sufficient information to answer this question"
+            - "The selected text does not contain this information"
+          example: "The provided book content does not contain sufficient information to answer this question"
+        refusal_type:
+          type: string
+          enum: [empty_retrieval, low_relevance, insufficient_grounding, selected_text_missing]
+          description: Classification of refusal reason
+          example: "empty_retrieval"
+
+    ErrorDetail:
+      type: object
+      required:
+        - code
+        - message
+      properties:
+        code:
+          type: string
+          enum: [QDRANT_TIMEOUT, COHERE_FAILURE, OPENROUTER_TIMEOUT, VALIDATION_FAILED, RATE_LIMIT_EXCEEDED]
+          description: Machine-readable error code
+          example: "QDRANT_TIMEOUT"
+        message:
+          type: string
+          minLength: 1
+          maxLength: 200
+          description: Human-readable error message
+          example: "The search service is temporarily unavailable. Please try again."
+        details:
+          type: string
+          maxLength: 500
+          nullable: true
+          description: Technical details for debugging
+          example: "Qdrant connection timeout after 5s"
+        retry_after:
+          type: integer
+          nullable: true
+          minimum: 0
+          description: Seconds to wait before retry (for rate limiting)
+          example: 60
+
+    ResponseMetadata:
+      type: object
+      required:
+        - chunks_retrieved
+        - processing_time_ms
+        - request_id
+      properties:
+        chunks_retrieved:
+          type: integer
+          minimum: 0
+          description: Number of chunks retrieved from Qdrant
+          example: 5
+        processing_time_ms:
+          type: integer
+          minimum: 0
+          description: Total processing time in milliseconds
+          example: 1234
+        session_id:
+          type: string
+          format: uuid
+          nullable: true
+          description: Session identifier (if provided in request)
+          example: "550e8400-e29b-41d4-a716-446655440000"
+        request_id:
+          type: string
+          format: uuid
+          description: Unique identifier for this request (for debugging)
+          example: "a1b2c3d4-e5f6-7890-abcd-ef1234567890"
+
+    ErrorResponse:
+      type: object
+      required:
+        - status
+        - error
+      properties:
+        status:
+          type: string
+          enum: [error]
+        error:
+          $ref: '#/components/schemas/ErrorDetail'
+
+tags:
+  - name: Query
+    description: Chatbot query operations
+  - name: Health
+    description: System health monitoring

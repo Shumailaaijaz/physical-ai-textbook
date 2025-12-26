@@ -1,8 +1,0 @@
-venv/
-__pycache__/
-*.pyc
-.env.example
-test_api.py
-test_openrouter.py
-*.log
-.pytest_cache/
