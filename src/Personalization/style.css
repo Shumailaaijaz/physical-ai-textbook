@@ -1,9 +1,0 @@
-/* Styles for Personalization component */
-
-/* Ensure proper direction for RTL content */
-[dir="rtl"] .personalization-content {
-  direction: rtl;
-  text-align: right;
-}
-
-/* Optional: Add to the div in index.tsx if we use this class */

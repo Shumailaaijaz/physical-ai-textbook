@@ -1,121 +1,218 @@
-(function () {
-  const API_URL =
-    document.currentScript.getAttribute("data-api") ||
-    "https://YOUR-HF-SPACE.hf.space/chat";
+/**
+ * Chatbot Widget for Physical AI Textbook
+ * Loads a floating chatbot button that opens an iframe to the chatbot interface
+ */
 
-  /* ---------- Styles ---------- */
-  const style = document.createElement("style");
-  style.innerHTML = `
-    #chatbot-btn {
-      position: fixed;
-      bottom: 20px;
-      right: 20px;
-      background: #111;
-      color: #fff;
-      border-radius: 50%;
-      width: 56px;
-      height: 56px;
-      cursor: pointer;
-      font-size: 22px;
-      border: none;
-      z-index: 9999;
-    }
-    #chatbot-box {
-      position: fixed;
-      bottom: 90px;
-      right: 20px;
-      width: 320px;
-      height: 420px;
-      background: #fff;
-      border: 1px solid #ccc;
-      border-radius: 8px;
-      display: none;
-      flex-direction: column;
-      z-index: 9999;
-      font-family: sans-serif;
-    }
-    #chatbot-messages {
-      flex: 1;
-      padding: 10px;
-      overflow-y: auto;
-      font-size: 14px;
-    }
-    #chatbot-input {
-      display: flex;
-      border-top: 1px solid #ccc;
-    }
-    #chatbot-input input {
-      flex: 1;
-      padding: 8px;
-      border: none;
-      outline: none;
-    }
-    #chatbot-input button {
-      padding: 8px 12px;
-      border: none;
-      background: #111;
-      color: #fff;
-      cursor: pointer;
-    }
-  `;
-  document.head.appendChild(style);
+(function() {
+  'use strict';
 
-  /* ---------- HTML ---------- */
-  const btn = document.createElement("button");
-  btn.id = "chatbot-btn";
-  btn.innerText = "💬";
+  // Get API URL from script data attribute
+  const script = document.currentScript;
+  const apiUrl = script?.getAttribute('data-api') || 'https://huggingface.co/spaces/shumailaaijaz/hackathon-book';
 
-  const box = document.createElement("div");
-  box.id = "chatbot-box";
-  box.innerHTML = `
-    <div id="chatbot-messages"></div>
-    <div id="chatbot-input">
-      <input type="text" placeholder="Ask about the book..." />
-      <button>Send</button>
-    </div>
-  `;
-
-  document.body.appendChild(btn);
-  document.body.appendChild(box);
-
-  /* ---------- Logic ---------- */
-  btn.onclick = () => {
-    box.style.display = box.style.display === "none" ? "flex" : "none";
-  };
-
-  const input = box.querySelector("input");
-  const sendBtn = box.querySelector("button");
-  const messages = box.querySelector("#chatbot-messages");
-
-  function addMessage(text, sender) {
-    const div = document.createElement("div");
-    div.style.marginBottom = "8px";
-    div.innerHTML = `<strong>${sender}:</strong> ${text}`;
-    messages.appendChild(div);
-    messages.scrollTop = messages.scrollHeight;
+  // Wait for DOM to be ready
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initWidget);
+  } else {
+    initWidget();
   }
 
-  sendBtn.onclick = async () => {
-    const query = input.value.trim();
-    if (!query) return;
+  function initWidget() {
+    // Create widget container
+    const widgetContainer = document.createElement('div');
+    widgetContainer.id = 'chatbot-widget-container';
+    widgetContainer.innerHTML = `
+      <style>
+        #chatbot-widget-container {
+          position: fixed;
+          bottom: 20px;
+          right: 20px;
+          z-index: 9999;
+        }
 
-    addMessage(query, "You");
-    input.value = "";
-    addMessage("Thinking...", "Bot");
+        .chatbot-toggle-btn {
+          width: 60px;
+          height: 60px;
+          border-radius: 50%;
+          background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+          border: none;
+          cursor: pointer;
+          box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          transition: transform 0.3s ease, box-shadow 0.3s ease;
+          color: white;
+          font-size: 28px;
+        }
 
-    try {
-      const res = await fetch(API_URL, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ query }),
-      });
+        .chatbot-toggle-btn:hover {
+          transform: scale(1.1);
+          box-shadow: 0 6px 20px rgba(0, 0, 0, 0.2);
+        }
 
-      const data = await res.json();
-      messages.lastChild.remove();
-      addMessage(data.answer || "No response", "Bot");
-    } catch (err) {
-      messages.lastChild.remove();
-      addMessage("Error connecting to server", "Bot");
-    }
-  };
+        .chatbot-toggle-btn:active {
+          transform: scale(0.95);
+        }
+
+        .chatbot-modal {
+          display: none;
+          position: fixed;
+          bottom: 100px;
+          right: 20px;
+          width: 400px;
+          height: 600px;
+          background: white;
+          border-radius: 12px;
+          box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+          overflow: hidden;
+          flex-direction: column;
+          z-index: 10000;
+        }
+
+        .chatbot-modal.open {
+          display: flex;
+        }
+
+        .chatbot-modal-header {
+          background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+          color: white;
+          padding: 16px;
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+        }
+
+        .chatbot-modal-header h3 {
+          margin: 0;
+          font-size: 18px;
+          font-weight: 600;
+        }
+
+        .chatbot-close-btn {
+          background: rgba(255, 255, 255, 0.2);
+          border: none;
+          color: white;
+          font-size: 24px;
+          width: 32px;
+          height: 32px;
+          border-radius: 50%;
+          cursor: pointer;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          transition: background 0.2s ease;
+        }
+
+        .chatbot-close-btn:hover {
+          background: rgba(255, 255, 255, 0.3);
+        }
+
+        .chatbot-modal-body {
+          flex: 1;
+          overflow: hidden;
+        }
+
+        .chatbot-iframe {
+          width: 100%;
+          height: 100%;
+          border: none;
+        }
+
+        @media (max-width: 768px) {
+          .chatbot-modal {
+            width: calc(100vw - 40px);
+            height: calc(100vh - 140px);
+            bottom: 90px;
+            right: 20px;
+          }
+        }
+
+        @media (max-width: 480px) {
+          .chatbot-modal {
+            width: calc(100vw - 20px);
+            height: calc(100vh - 100px);
+            bottom: 80px;
+            right: 10px;
+          }
+
+          #chatbot-widget-container {
+            bottom: 10px;
+            right: 10px;
+          }
+        }
+      </style>
+
+      <button class="chatbot-toggle-btn" id="chatbot-toggle" aria-label="Open chatbot" title="Ask a question">
+        💬
+      </button>
+
+      <div class="chatbot-modal" id="chatbot-modal">
+        <div class="chatbot-modal-header">
+          <h3>Physical AI Assistant</h3>
+          <button class="chatbot-close-btn" id="chatbot-close" aria-label="Close chatbot">
+            ×
+          </button>
+        </div>
+        <div class="chatbot-modal-body">
+          <iframe
+            class="chatbot-iframe"
+            id="chatbot-iframe"
+            src=""
+            title="Physical AI Chatbot"
+            allow="clipboard-write"
+            loading="lazy"
+          ></iframe>
+        </div>
+      </div>
+    `;
+
+    // Append to body
+    document.body.appendChild(widgetContainer);
+
+    // Get elements
+    const toggleBtn = document.getElementById('chatbot-toggle');
+    const modal = document.getElementById('chatbot-modal');
+    const closeBtn = document.getElementById('chatbot-close');
+    const iframe = document.getElementById('chatbot-iframe');
+
+    // Set iframe src to API URL
+    iframe.src = apiUrl;
+
+    // Toggle modal
+    toggleBtn.addEventListener('click', function() {
+      const isOpen = modal.classList.contains('open');
+      if (isOpen) {
+        modal.classList.remove('open');
+        toggleBtn.setAttribute('aria-expanded', 'false');
+      } else {
+        modal.classList.add('open');
+        toggleBtn.setAttribute('aria-expanded', 'true');
+      }
+    });
+
+    // Close modal
+    closeBtn.addEventListener('click', function() {
+      modal.classList.remove('open');
+      toggleBtn.setAttribute('aria-expanded', 'false');
+    });
+
+    // Close on Escape key
+    document.addEventListener('keydown', function(e) {
+      if (e.key === 'Escape' && modal.classList.contains('open')) {
+        modal.classList.remove('open');
+        toggleBtn.setAttribute('aria-expanded', 'false');
+      }
+    });
+
+    // Close when clicking outside
+    document.addEventListener('click', function(e) {
+      if (modal.classList.contains('open') &&
+          !modal.contains(e.target) &&
+          !toggleBtn.contains(e.target)) {
+        modal.classList.remove('open');
+        toggleBtn.setAttribute('aria-expanded', 'false');
+      }
+    });
+  }
 })();
