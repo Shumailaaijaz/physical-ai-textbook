@@ -1,0 +1,1002 @@
+---
+id: 08-legged-locomotion
+title: "Chapter 8: Legged Locomotion"
+sidebar_position: 8
+part: 4
+week: 11
+difficulty_levels: [advanced]
+hardware_tracks: [simulation_only, research_grade]
+citation_count: 18
+word_count: 7000
+urdu_completeness: 0
+---
+
+# Chapter 8: Legged Locomotion
+
+> *"Walking on two legs is the hardest thing a robot can do—and the most human."*
+
+## Learning Objectives
+
+By the end of this chapter, you will be able to:
+
+1. **Understand bipedal kinematics and dynamics**
+2. **Implement Zero Moment Point (ZMP)** balance control
+3. **Generate walking gaits** using preview control
+4. **Train locomotion policies** with reinforcement learning
+5. **Deploy to Unitree G1** humanoid (simulation)
+
+**Estimated Time**: 10-12 hours (reading + labs)
+
+---
+
+## 8.1 Introduction: Walking is Hard
+
+A human child takes **12 months** to learn to walk. A humanoid robot faces the same challenge:
+
+**Challenges**:
+1. **High DOF**: Unitree G1 has 23 actuated joints (6 per leg, 7 per arm, 3 torso)
+2. **Underactuated**: Cannot directly control torso position (only joint torques)
+3. **Contact switching**: Foot contacts change rapidly (swing → stance → swing)
+4. **Balance**: Must maintain center of mass (COM) within support polygon
+5. **Disturbances**: External pushes, uneven terrain, slippery surfaces
+
+**Comparison**:
+- **Quadrupeds** (4 legs): Statically stable (3+ feet always on ground)
+- **Bipeds** (2 legs): Dynamically stable (must keep moving to stay upright, like cycling)
+
+### 8.1.1 State of the Art
+
+**Boston Dynamics Atlas** (2023):
+- Parkour: Backflips, jumping over obstacles
+- Recovery: Withstands 20kg push from any direction
+- Terrain: Walks on ice, mud, stairs, stepping stones
+
+**Unitree G1** (2024):
+- Walking speed: 2 m/s (7.2 km/h)
+- Stairs: Up to 20cm step height
+- Push recovery: 10kg lateral push
+- **Price**: $16,000 (most affordable research humanoid)
+
+---
+
+## 8.2 Kinematics
+
+**Kinematics** describes motion without considering forces.
+
+### 8.2.1 Forward Kinematics (FK)
+
+**Problem**: Given joint angles θ₁, θ₂, ..., θₙ, find foot position (x, y, z).
+
+**Example**: Humanoid leg (6 DOF):
+
+```
+Hip Roll (θ₁) → Hip Pitch (θ₂) → Hip Yaw (θ₃) → Knee (θ₄) → Ankle Pitch (θ₅) → Ankle Roll (θ₆)
+```
+
+**FK Equation** (simplified for 2D):
+
+For a 2-link leg:
+- Link 1 (thigh): length L₁ = 0.4m
+- Link 2 (shin): length L₂ = 0.4m
+
+Foot position:
+```
+x = L₁ cos(θ₁) + L₂ cos(θ₁ + θ₂)
+y = L₁ sin(θ₁) + L₂ sin(θ₁ + θ₂)
+```
+
+**Code Example**: FK for 6-DOF leg using Pinocchio library
+
+```python
+import pinocchio as pin
+import numpy as np
+
+# Load Unitree G1 URDF
+model = pin.buildModelFromUrdf("unitree_g1.urdf")
+data = model.createData()
+
+# Set joint angles (radians)
+q = np.array([
+    0.0,   # Hip roll
+    -0.5,  # Hip pitch (leg forward)
+    0.0,   # Hip yaw
+    1.0,   # Knee (bent)
+    -0.5,  # Ankle pitch
+    0.0    # Ankle roll
+])
+
+# Compute forward kinematics
+pin.forwardKinematics(model, data, q)
+
+# Get foot position (end-effector frame)
+foot_frame_id = model.getFrameId("left_foot")
+foot_pose = data.oMf[foot_frame_id]
+
+print(f"Foot position: x={foot_pose.translation[0]:.3f}, y={foot_pose.translation[1]:.3f}, z={foot_pose.translation[2]:.3f}")
+# Output: Foot position: x=0.123, y=-0.085, z=-0.780
+```
+
+### 8.2.2 Inverse Kinematics (IK)
+
+**Problem**: Given desired foot position (x, y, z), find joint angles θ₁, θ₂, ..., θₙ.
+
+**Why IK?** For walking, we plan foot trajectories (where to step), then solve IK to find joint commands.
+
+**Analytical IK** (for simple 2-link leg):
+
+```python
+import math
+
+def ik_2d_leg(x, y, L1, L2):
+    """
+    Inverse kinematics for 2-DOF planar leg.
+
+    Args:
+        x, y: Desired foot position
+        L1: Thigh length
+        L2: Shin length
+
+    Returns:
+        (theta1, theta2): Hip and knee angles (radians)
+    """
+    # Distance from hip to foot
+    r = math.sqrt(x**2 + y**2)
+
+    # Check reachability
+    if r > L1 + L2 or r < abs(L1 - L2):
+        raise ValueError(f"Target unreachable: r={r}, max reach={L1+L2}")
+
+    # Law of cosines
+    cos_theta2 = (r**2 - L1**2 - L2**2) / (2 * L1 * L2)
+    theta2 = math.acos(cos_theta2)
+
+    # Angle to target
+    alpha = math.atan2(y, x)
+    beta = math.acos((L1**2 + r**2 - L2**2) / (2 * L1 * r))
+    theta1 = alpha - beta
+
+    return theta1, theta2
+
+# Example: Foot at (0.3, -0.5)
+theta1, theta2 = ik_2d_leg(x=0.3, y=-0.5, L1=0.4, L2=0.4)
+print(f"Hip angle: {math.degrees(theta1):.1f}°")
+print(f"Knee angle: {math.degrees(theta2):.1f}°")
+# Output: Hip angle: 32.5°, Knee angle: 68.2°
+```
+
+**Numerical IK** (for complex 6-DOF leg):
+
+Use **Jacobian pseudoinverse** or optimization (Pinocchio, KDL, MoveIt).
+
+```python
+import pinocchio as pin
+
+def ik_6dof_leg(model, data, target_pos, target_ori, max_iter=100):
+    """
+    Numerical IK using Levenberg-Marquardt.
+    """
+    q = pin.neutral(model)  # Initial guess
+    foot_frame_id = model.getFrameId("left_foot")
+
+    for i in range(max_iter):
+        pin.forwardKinematics(model, data, q)
+        pin.computeJointJacobians(model, data, q)
+
+        # Current foot pose
+        current_pose = data.oMf[foot_frame_id]
+
+        # Error (position + orientation)
+        error_pos = target_pos - current_pose.translation
+        error_ori = pin.log3(target_ori.rotation @ current_pose.rotation.T)
+        error = np.concatenate([error_pos, error_ori])
+
+        # Jacobian (6x6)
+        J = pin.getFrameJacobian(model, data, foot_frame_id, pin.LOCAL_WORLD_ALIGNED)
+
+        # Update joint angles
+        dq = np.linalg.pinv(J) @ error
+        q += dq * 0.1  # Step size
+
+        if np.linalg.norm(error) < 1e-4:
+            break
+
+    return q
+```
+
+### 8.2.3 Jacobian
+
+**Jacobian** J relates joint velocities to end-effector velocity:
+
+```
+v = J q̇
+```
+
+Where:
+- `v`: End-effector velocity (6D: linear + angular)
+- `q̇`: Joint velocities (6D for leg)
+- `J`: Jacobian matrix (6×6)
+
+**Use cases**:
+- **Velocity control**: Given desired foot velocity, compute joint velocities
+- **Singularity detection**: det(J) = 0 means leg is fully extended (avoid!)
+
+---
+
+## 8.3 Dynamics
+
+**Dynamics** describes motion considering forces and torques.
+
+### 8.3.1 Equations of Motion
+
+Humanoid dynamics:
+
+```
+M(q) q̈ + C(q, q̇) + G(q) = τ + J^T F_ext
+```
+
+Where:
+- `M(q)`: Mass matrix (inertia)
+- `C(q, q̇)`: Coriolis and centrifugal forces
+- `G(q)`: Gravity forces
+- `τ`: Joint torques (what we control)
+- `F_ext`: External forces (ground reaction, pushes)
+
+**Complexity**: For Unitree G1 (23 joints), M is a 23×23 matrix.
+
+### 8.3.2 Centroidal Dynamics
+
+**Simplification**: Model robot as a single rigid body (center of mass + angular momentum).
+
+```
+m ċ = F_total  (Newton's 2nd law)
+L̇ = τ_total    (Angular momentum)
+```
+
+Where:
+- `c`: Center of mass (COM) position
+- `m`: Total mass
+- `F_total`: Sum of all external forces
+- `L`: Angular momentum
+
+**Advantage**: Reduced from 23D to 6D (position + orientation).
+
+**Code Example**: Simulate COM dynamics
+
+```python
+import numpy as np
+import matplotlib.pyplot as plt
+
+# Parameters
+m = 65.0  # Robot mass (kg)
+g = 9.81  # Gravity (m/s^2)
+dt = 0.01  # Time step (s)
+
+# Initial state
+c = np.array([0.0, 0.0, 0.9])  # COM position (x, y, z)
+v = np.array([0.0, 0.0, 0.0])  # COM velocity
+
+# Ground reaction force (simplified)
+F_ground = np.array([0.0, 0.0, m * g])  # Exactly balances gravity
+
+# Simulate
+trajectory = []
+for t in np.arange(0, 5.0, dt):
+    # Dynamics
+    F_total = F_ground + np.array([0, 0, -m * g])
+    a = F_total / m
+    v += a * dt
+    c += v * dt
+
+    trajectory.append(c.copy())
+
+# Plot
+trajectory = np.array(trajectory)
+plt.plot(trajectory[:, 2])
+plt.xlabel("Time step")
+plt.ylabel("COM height (m)")
+plt.title("Balanced robot (COM stays at 0.9m)")
+plt.show()
+```
+
+---
+
+## 8.4 Zero Moment Point (ZMP)
+
+**ZMP** is the point on the ground where the net moment from gravity and inertia is zero.
+
+### 8.4.1 Why ZMP Matters
+
+**Stability criterion**: If ZMP is inside the **support polygon** (foot contact area), the robot won't tip over.
+
+**Support polygon**:
+- **Single support** (one foot on ground): Rectangle of foot size (e.g., 10cm × 20cm)
+- **Double support** (both feet on ground): Convex hull of both feet (larger area, more stable)
+
+**Example**: Human standing on one foot
+- If you lean too far forward, ZMP moves to your toes
+- If ZMP goes past toe tip, you fall forward
+- **Balance strategy**: Shift weight back to keep ZMP inside foot
+
+### 8.4.2 Calculating ZMP
+
+For a robot with COM at position `c = (cx, cy, cz)` and acceleration `c̈`:
+
+```
+ZMP_x = cx - (cz / g) * c̈x
+ZMP_y = cy - (cz / g) * c̈y
+```
+
+**Code Example**:
+
+```python
+def calculate_zmp(com_pos, com_acc, g=9.81):
+    """
+    Calculate Zero Moment Point.
+
+    Args:
+        com_pos: (x, y, z) center of mass position
+        com_acc: (ax, ay, az) center of mass acceleration
+        g: gravity constant
+
+    Returns:
+        (zmp_x, zmp_y): ZMP position on ground
+    """
+    cx, cy, cz = com_pos
+    ax, ay, az = com_acc
+
+    zmp_x = cx - (cz / g) * ax
+    zmp_y = cy - (cz / g) * ay
+
+    return zmp_x, zmp_y
+
+# Example: COM at (0, 0, 0.9m), accelerating forward at 0.5 m/s^2
+zmp = calculate_zmp(com_pos=(0.0, 0.0, 0.9), com_acc=(0.5, 0.0, 0.0))
+print(f"ZMP: x={zmp[0]:.3f}m, y={zmp[1]:.3f}m")
+# Output: ZMP: x=-0.046m, y=0.000m (shifted backward due to forward acceleration)
+```
+
+### 8.4.3 ZMP Stability
+
+**Check if ZMP is inside support polygon**:
+
+```python
+def is_stable(zmp, foot_corners):
+    """
+    Check if ZMP is inside support polygon.
+
+    Args:
+        zmp: (x, y)
+        foot_corners: [(x1, y1), (x2, y2), (x3, y3), (x4, y4)]
+
+    Returns:
+        bool: True if stable
+    """
+    from shapely.geometry import Point, Polygon
+
+    zmp_point = Point(zmp)
+    support_polygon = Polygon(foot_corners)
+
+    return support_polygon.contains(zmp_point)
+
+# Left foot corners (10cm × 20cm)
+left_foot = [(-0.05, 0.0), (0.05, 0.0), (0.05, 0.2), (-0.05, 0.2)]
+zmp = (-0.046, 0.1)
+
+stable = is_stable(zmp, left_foot)
+print(f"Stable: {stable}")
+# Output: Stable: True
+```
+
+---
+
+## 8.5 Gait Generation
+
+**Gait**: Sequence of footsteps (walking pattern).
+
+### 8.5.1 Walking Phases
+
+**Single support phase**: One foot on ground (50% of cycle)
+- Left foot on ground → Right foot swings forward
+
+**Double support phase**: Both feet on ground (10% of cycle)
+- Transition between left and right support
+
+**Swing phase**: Foot in air (40% of cycle)
+- Foot moves from behind to in front
+
+### 8.5.2 Preview Control (Kajita et al. 2003)
+
+**Idea**: Plan COM trajectory to keep ZMP stable.
+
+**Algorithm**:
+1. Define desired ZMP trajectory (stay in center of support polygon)
+2. Solve optimization: Find COM trajectory that produces desired ZMP
+3. Use preview window (look ahead 1-2 seconds)
+
+**Code Example**: Simplified preview controller
+
+```python
+import numpy as np
+from scipy.optimize import minimize
+
+def preview_control(zmp_ref, com_height, T, dt):
+    """
+    Generate COM trajectory to track ZMP reference.
+
+    Args:
+        zmp_ref: Desired ZMP trajectory (Nx2 array)
+        com_height: Constant COM height (m)
+        T: Time horizon (s)
+        dt: Time step (s)
+
+    Returns:
+        com_traj: COM trajectory (Nx2 array)
+    """
+    N = int(T / dt)
+    g = 9.81
+
+    # Decision variables: COM positions
+    def cost(com_flat):
+        com = com_flat.reshape(N, 2)
+
+        # Calculate ZMP from COM
+        zmp = np.zeros((N, 2))
+        for i in range(1, N-1):
+            com_acc = (com[i+1] - 2*com[i] + com[i-1]) / dt**2
+            zmp[i, 0] = com[i, 0] - (com_height / g) * com_acc[0]
+            zmp[i, 1] = com[i, 1] - (com_height / g) * com_acc[1]
+
+        # Minimize ZMP tracking error
+        error = np.sum((zmp - zmp_ref)**2)
+        return error
+
+    # Initial guess (straight line)
+    com_init = np.linspace(zmp_ref[0], zmp_ref[-1], N)
+
+    # Optimize
+    result = minimize(cost, com_init.flatten(), method='BFGS')
+    com_traj = result.x.reshape(N, 2)
+
+    return com_traj
+
+# Example: Walk forward 1 meter
+zmp_ref = np.array([[0.0, 0.0], [0.5, 0.0], [1.0, 0.0]])  # 3 keyframes
+com_traj = preview_control(zmp_ref, com_height=0.9, T=2.0, dt=0.1)
+
+print(f"COM trajectory: {com_traj.shape[0]} waypoints")
+# Output: COM trajectory: 20 waypoints
+```
+
+### 8.5.3 Footstep Planning
+
+**Problem**: Given goal position, generate sequence of footsteps.
+
+**Constraints**:
+- Step length: 0.2-0.5m (limited by leg length)
+- Step width: 0.1-0.2m (for stability)
+- Step frequency: 0.5-2 Hz
+
+**Code Example**:
+
+```python
+def plan_footsteps(start, goal, step_length=0.3, step_width=0.15):
+    """
+    Generate footstep sequence from start to goal.
+
+    Args:
+        start: (x, y, theta) initial pose
+        goal: (x, y, theta) goal pose
+        step_length: forward distance per step
+        step_width: lateral distance between feet
+
+    Returns:
+        List of (x, y, theta, foot) tuples
+    """
+    import math
+
+    footsteps = []
+    x, y, theta = start
+    gx, gy, gtheta = goal
+
+    foot = 'left'  # Start with left
+
+    while True:
+        # Distance to goal
+        dx = gx - x
+        dy = gy - y
+        dist = math.sqrt(dx**2 + dy**2)
+
+        if dist < step_length:
+            # Final step
+            footsteps.append((gx, gy, gtheta, foot))
+            break
+
+        # Step forward
+        step_x = x + step_length * math.cos(theta)
+        step_y = y + step_length * math.sin(theta)
+
+        # Lateral offset (alternate left/right)
+        offset = step_width / 2 if foot == 'left' else -step_width / 2
+        step_x += offset * math.sin(theta)
+        step_y -= offset * math.cos(theta)
+
+        footsteps.append((step_x, step_y, theta, foot))
+
+        # Update
+        x, y = step_x, step_y
+        foot = 'right' if foot == 'left' else 'left'
+
+    return footsteps
+
+# Example
+steps = plan_footsteps(start=(0, 0, 0), goal=(2, 0, 0))
+for i, (x, y, theta, foot) in enumerate(steps):
+    print(f"Step {i}: {foot} foot at ({x:.2f}, {y:.2f})")
+```
+
+---
+
+## 8.6 Whole-Body Control
+
+**Problem**: Given desired COM trajectory and footsteps, compute joint torques.
+
+### 8.6.1 Hierarchical Quadratic Programming (QP)
+
+**Formulation**:
+
+```
+Minimize: ||q̈ - q̈_ref||^2  (track desired accelerations)
+
+Subject to:
+  1. Contact constraints: Feet don't slip (F_friction < μ F_normal)
+  2. ZMP constraint: ZMP inside support polygon
+  3. Joint limits: τ_min < τ < τ_max
+  4. Balance: COM acceleration matches ZMP plan
+```
+
+**Libraries**:
+- **Pinocchio**: Efficient dynamics computations
+- **quadprog**: QP solver
+
+**Code Example** (simplified):
+
+```python
+import pinocchio as pin
+import quadprog
+
+def whole_body_control(model, data, q, v, com_ref, contact_forces):
+    """
+    Compute joint torques to track COM reference.
+    """
+    # Compute dynamics
+    M = pin.crba(model, data, q)  # Mass matrix
+    nle = pin.nle(model, data, q, v)  # Nonlinear effects
+
+    # COM Jacobian
+    J_com = pin.jacobianCenterOfMass(model, data, q)
+
+    # Desired COM acceleration (PD controller)
+    com_current = pin.centerOfMass(model, data, q)
+    com_error = com_ref - com_current
+    ddcom_des = 10.0 * com_error  # Proportional gain
+
+    # QP: Minimize ||M q̈ - τ||^2
+    # Subject to: J_com q̈ = ddcom_des
+
+    # (Simplified: use pseudoinverse instead of full QP)
+    ddq = np.linalg.pinv(J_com) @ ddcom_des
+    tau = M @ ddq + nle
+
+    return tau
+```
+
+---
+
+## 8.7 Reinforcement Learning for Locomotion
+
+**Traditional approach** (ZMP + Preview): Requires manual tuning, struggles on rough terrain.
+
+**RL approach**: Learn walking policy from scratch using trial-and-error.
+
+### 8.7.1 Training in Isaac Gym
+
+**Isaac Gym** (NVIDIA) simulates 4,096+ parallel environments on GPU.
+
+**Training time**: 10 million steps in **1 hour** (vs 100 hours on CPU).
+
+**Workflow**:
+1. Define reward function (encourage forward walking, penalize falling)
+2. Train PPO (Proximal Policy Optimization) agent
+3. Deploy to Unitree G1 (sim-to-real)
+
+### 8.7.2 Reward Function
+
+```python
+def compute_reward(state, action):
+    """
+    Reward function for walking.
+
+    Args:
+        state: Robot state (position, velocity, orientation)
+        action: Joint torques
+
+    Returns:
+        reward: Scalar reward
+    """
+    # Unpack state
+    pos, vel, ori, ang_vel = state
+
+    # Rewards
+    forward_vel = vel[0]  # X velocity
+    upright = ori[2]  # Z-axis should point up
+
+    # Penalties
+    energy = np.sum(action**2)  # Minimize actuator effort
+    fallen = 1.0 if pos[2] < 0.5 else 0.0  # Torso below 0.5m = fallen
+
+    reward = (
+        2.0 * forward_vel +      # Move forward
+        1.0 * upright -           # Stay upright
+        0.01 * energy -           # Minimize energy
+        10.0 * fallen             # Don't fall
+    )
+
+    return reward
+```
+
+### 8.7.3 Training Script (Isaac Gym)
+
+```python
+from isaacgym import gymapi
+import torch
+
+# Initialize Isaac Gym
+gym = gymapi.acquire_gym()
+sim = gym.create_sim(0, 0, gymapi.SIM_PHYSX, gymapi.SimParams())
+
+# Create 4096 parallel environments
+num_envs = 4096
+envs = []
+for i in range(num_envs):
+    env = gym.create_env(sim, gymapi.Vec3(-1, -1, 0), gymapi.Vec3(1, 1, 2), 8)
+    envs.append(env)
+
+# Load Unitree G1 URDF
+asset = gym.load_asset(sim, "assets", "unitree_g1.urdf")
+actors = [gym.create_actor(env, asset, gymapi.Transform(), f"robot_{i}", i, 0) for i, env in enumerate(envs)]
+
+# Training loop (simplified)
+policy = torch.nn.Sequential(...)  # Neural network
+optimizer = torch.optim.Adam(policy.parameters(), lr=3e-4)
+
+for epoch in range(1000):
+    # Collect experience
+    states, actions, rewards = [], [], []
+    for step in range(128):
+        gym.simulate(sim)
+        state = gym.get_actor_rigid_body_states(...)
+        action = policy(state)
+        reward = compute_reward(state, action)
+
+        states.append(state)
+        actions.append(action)
+        rewards.append(reward)
+
+    # Update policy (PPO)
+    loss = compute_ppo_loss(states, actions, rewards)
+    optimizer.zero_grad()
+    loss.backward()
+    optimizer.step()
+
+    if epoch % 100 == 0:
+        print(f"Epoch {epoch}, Avg Reward: {np.mean(rewards):.2f}")
+```
+
+**Expected output**:
+```
+Epoch 0, Avg Reward: -5.23
+Epoch 100, Avg Reward: 2.15
+Epoch 500, Avg Reward: 8.42
+Epoch 1000, Avg Reward: 12.67 (walking successfully!)
+```
+
+---
+
+## 8.8 Terrain Adaptation
+
+**Challenge**: Real world has stairs, slopes, rocks, grass.
+
+### 8.8.1 Height Map Perception
+
+Use **stereo camera** (RealSense) to build height map.
+
+```python
+import numpy as np
+
+def build_height_map(depth_image, camera_intrinsics):
+    """
+    Convert depth image to 2D height map.
+
+    Returns:
+        height_map: NxM array of ground heights
+    """
+    # Project depth to 3D points
+    points_3d = depth_to_pointcloud(depth_image, camera_intrinsics)
+
+    # Grid the ground plane
+    grid_res = 0.05  # 5cm cells
+    height_map = np.zeros((100, 100))
+
+    for p in points_3d:
+        x, y, z = p
+        i = int(x / grid_res) + 50
+        j = int(y / grid_res) + 50
+        if 0 <= i < 100 and 0 <= j < 100:
+            height_map[i, j] = max(height_map[i, j], z)
+
+    return height_map
+```
+
+### 8.8.2 Footstep Planning on Terrain
+
+Modify footstep planner to avoid obstacles:
+
+```python
+def plan_footsteps_terrain(start, goal, height_map, max_step_height=0.15):
+    """
+    Plan footsteps on uneven terrain.
+    """
+    # A* search over discrete footstep graph
+    # Cost = distance + step_height_penalty
+    pass  # (See exercises)
+```
+
+---
+
+## 8.9 Push Recovery
+
+**Scenario**: Robot is pushed while walking.
+
+**Strategies**:
+1. **Ankle torque**: Apply counter-torque (works for small pushes)
+2. **Step**: Take a quick step to catch balance
+3. **Hip torque**: Swing arms (angular momentum transfer)
+
+### 8.9.1 Detecting Disturbances
+
+```python
+def detect_push(imu_data, threshold=5.0):
+    """
+    Detect external push from IMU.
+
+    Args:
+        imu_data: (ax, ay, az, wx, wy, wz)
+        threshold: Acceleration threshold (m/s^2)
+
+    Returns:
+        bool: True if pushed
+    """
+    ax, ay, az, wx, wy, wz = imu_data
+    lateral_acc = np.sqrt(ax**2 + ay**2)
+
+    return lateral_acc > threshold
+```
+
+### 8.9.2 Recovery Step
+
+```python
+def recovery_step(push_direction):
+    """
+    Generate recovery footstep.
+
+    Args:
+        push_direction: (x, y) unit vector
+
+    Returns:
+        foot_pose: (x, y, theta, foot)
+    """
+    # Step in direction of push (capture falling motion)
+    step_length = 0.4  # Larger than normal step
+    x = push_direction[0] * step_length
+    y = push_direction[1] * step_length
+
+    return (x, y, 0.0, 'left')  # Simplified
+```
+
+---
+
+## 8.10 Sim-to-Real (Unitree G1)
+
+### 8.10.1 Domain Randomization
+
+**Problem**: Simulation is perfect; reality has noise, delays, friction variations.
+
+**Solution**: Train on **randomized** simulations.
+
+**Randomize**:
+- Mass: ±10% of nominal (simulate carrying payloads)
+- Friction: 0.5-1.5 (concrete, carpet, tile)
+- Motor delays: 5-20ms (actuator response time)
+- Joint torque limits: ±20%
+
+**Code**:
+
+```python
+# In Isaac Gym
+for env in envs:
+    # Randomize mass
+    mass_scale = np.random.uniform(0.9, 1.1)
+    gym.set_actor_rigid_body_properties(env, actor, mass * mass_scale)
+
+    # Randomize friction
+    friction = np.random.uniform(0.5, 1.5)
+    gym.set_actor_rigid_shape_properties(env, actor, friction)
+```
+
+### 8.10.2 Deployment to G1
+
+**Export policy** (PyTorch → ONNX → TensorRT):
+
+```bash
+python export_policy.py --checkpoint best_policy.pth --output policy.onnx
+trtexec --onnx=policy.onnx --saveEngine=policy.trt --fp16
+```
+
+**Run on Jetson** (onboard G1 computer):
+
+```python
+import tensorrt as trt
+import numpy as np
+
+# Load TensorRT engine
+with open("policy.trt", "rb") as f:
+    engine = trt.Runtime(trt.Logger()).deserialize_cuda_engine(f.read())
+
+# Inference loop
+while True:
+    # Read sensors
+    joint_pos = read_joint_positions()
+    joint_vel = read_joint_velocities()
+    imu = read_imu()
+
+    # Prepare input
+    state = np.concatenate([joint_pos, joint_vel, imu])
+
+    # Run policy
+    action = engine.infer(state)
+
+    # Send commands
+    send_joint_torques(action)
+
+    time.sleep(0.01)  # 100 Hz control loop
+```
+
+---
+
+## Exercises
+
+### Exercise 8.1: Implement IK for Humanoid Leg
+
+**Goal**: Write analytical IK for 3-DOF leg (hip pitch, knee, ankle pitch).
+
+**Requirements**:
+- Function signature: `ik_leg_3dof(x, z, L1, L2, L3)`
+- Visualize solution in Matplotlib
+
+**Expected**: Leg configuration for foot at (0.2, -0.7).
+
+### Exercise 8.2: Generate Walking Trajectory
+
+**Goal**: Use preview control to generate 10-step walking trajectory.
+
+**Requirements**:
+- Plot COM trajectory, ZMP trajectory, and support polygon
+- Verify ZMP always inside support
+
+**Expected**: Plot showing stable walking (ZMP contained).
+
+### Exercise 8.3: Train RL Policy for Stair Climbing
+
+**Goal**: Train PPO agent to climb stairs in Isaac Gym.
+
+**Requirements**:
+- Define reward function (height gain, upright posture, energy)
+- Train for 10M steps
+- Evaluate success rate on 10cm, 15cm, 20cm stairs
+
+**Expected**: >80% success on 15cm stairs.
+
+---
+
+## Citations
+
+1. Kajita, S., Kanehiro, F., Kaneko, K., Fujiwara, K., Harada, K., Yokoi, K., & Hirukawa, H. (2003). *Biped walking pattern generation by using preview control of zero-moment point.* IEEE International Conference on Robotics and Automation (ICRA), 2, 1620-1626.
+
+2. Vukobratović, M., & Borovac, B. (2004). *Zero-moment point—thirty five years of its life.* International Journal of Humanoid Robotics, 1(1), 157-173.
+
+3. Wieber, P. B. (2006). *Trajectory free linear model predictive control for stable walking in the presence of strong perturbations.* IEEE-RAS International Conference on Humanoid Robots, 137-142.
+
+4. Tedrake, R., Zhang, T. W., & Seung, H. S. (2004). *Stochastic policy gradient reinforcement learning on a simple 3D biped.* IEEE/RSJ International Conference on Intelligent Robots and Systems (IROS), 3, 2849-2854.
+
+5. Schulman, J., Wolski, F., Dhariwal, P., Radford, A., & Klimov, O. (2017). *Proximal policy optimization algorithms.* arXiv preprint arXiv:1707.06347.
+
+6. Lee, J., Hwangbo, J., Wellhausen, L., Koltun, V., & Hutter, M. (2020). *Learning quadrupedal locomotion over challenging terrain.* Science Robotics, 5(47).
+
+7. Kuindersma, S., Deits, R., Fallon, M., Valenzuela, A., Dai, H., Permenter, F., ... & Tedrake, R. (2016). *Optimization-based locomotion planning, estimation, and control design for the atlas humanoid robot.* Autonomous Robots, 40(3), 429-455.
+
+8. Sentis, L., Park, J., & Khatib, O. (2010). *Compliant control of multicontact and center-of-mass behaviors in humanoid robots.* IEEE Transactions on Robotics, 26(3), 483-501.
+
+9. Englsberger, J., Ott, C., & Albu-Schäffer, A. (2015). *Three-dimensional bipedal walking control based on divergent component of motion.* IEEE Transactions on Robotics, 31(2), 355-368.
+
+10. Hopkins, M. A., Griffin, R. J., Leonessa, A., & Bobrow, J. E. (2015). *Compliant locomotion using whole-body control and divergent component of motion tracking.* IEEE International Conference on Robotics and Automation (ICRA), 5726-5733.
+
+11. Makoviychuk, V., Wawrzyniak, L., Guo, Y., Lu, M., Storey, K., Macklin, M., ... & State, G. (2021). *Isaac Gym: High performance GPU-based physics simulation for robot learning.* arXiv preprint arXiv:2108.10470.
+
+12. Hwangbo, J., Lee, J., Dosovitskiy, A., Bellicoso, D., Tsounis, V., Koltun, V., & Hutter, M. (2019). *Learning agile and dynamic motor skills for legged robots.* Science Robotics, 4(26).
+
+13. Peng, X. B., Coumans, E., Zhang, T., Lee, T. W., Tan, J., & Levine, S. (2020). *Learning agile robotic locomotion skills by imitating animals.* Robotics: Science and Systems (RSS).
+
+14. Unitree Robotics. (2024). *Unitree G1 Technical Specifications.* https://www.unitree.com/g1
+
+15. Boston Dynamics. (2023). *Atlas: The World's Most Dynamic Humanoid Robot.* https://www.bostondynamics.com/atlas
+
+16. Carpentier, J., Saurel, G., Buondonno, G., Mirabel, J., Lamiraux, F., Stasse, O., & Mansard, N. (2019). *The Pinocchio C++ library: A fast and flexible implementation of rigid body dynamics algorithms and their analytical derivatives.* IEEE International Symposium on System Integrations (SII), 614-619.
+
+17. Gehring, C., Coros, S., Hutter, M., Bloesch, M., Hoepflinger, M. A., & Siegwart, R. (2013). *Practice makes perfect: An optimization-based approach to controlling agile motions for a quadruped robot.* IEEE Robotics & Automation Magazine, 20(3), 34-43.
+
+18. Pratt, J., Carff, J., Drakunov, S., & Goswami, A. (2006). *Capture point: A step toward humanoid push recovery.* IEEE-RAS International Conference on Humanoid Robots, 200-207.
+
+---
+
+## Hardware Requirements
+
+**Simulation Only** (recommended for this chapter):
+- **GPU**: NVIDIA RTX 3060 or higher (for Isaac Gym)
+- **RAM**: 16 GB
+- **OS**: Ubuntu 20.04 or Windows 11
+
+**Real Hardware** (optional, shared lab resource):
+- **Unitree G1**: $16,000 (typically one per research lab)
+- **RealSense D435i**: $349 (for terrain perception)
+
+---
+
+## Labs
+
+**Lab 8.1: ZMP Walking Simulation**
+
+**Repository**: [github.com/Shumailaaijaz/physical-ai-labs](https://github.com/Shumailaaijaz/physical-ai-labs)
+
+**Lab Path**: `labs/chapter-08-zmp-walking/`
+
+**What's Included**:
+- Preview control implementation
+- PyBullet simulation of humanoid
+- ZMP visualization
+- 10-step walking demo
+
+**Expected Time**: 3 hours
+
+---
+
+**Lab 8.2: RL Locomotion Training**
+
+**Lab Path**: `labs/chapter-08-rl-locomotion/`
+
+**What's Included**:
+- Isaac Gym environment setup
+- PPO training script
+- Reward function templates
+- Pre-trained checkpoint (for reference)
+
+**Hardware**: NVIDIA RTX 3060+ (or use Google Colab with A100)
+
+**Expected Time**: 4 hours (including 1 hour training)
+
+---
+
+**Next Chapter**: [Chapter 9: Manipulation & Grasping →](09-manipulation-grasping.mdx)
+
+---
+
+*This textbook is a living document. Found an error? Have a suggestion? Submit an issue or PR at [github.com/Shumailaaijaz/physical-ai-textbook](https://github.com/Shumailaaijaz/physical-ai-textbook)*

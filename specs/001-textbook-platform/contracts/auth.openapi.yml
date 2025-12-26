@@ -1,0 +1,412 @@
+openapi: 3.0.3
+info:
+  title: Physical AI Textbook - Authentication API
+  description: |
+    Authentication endpoints for user registration, login, and logout.
+    Uses Better-Auth library with Supabase backend for session management.
+  version: 1.0.0
+  contact:
+    name: Physical AI Team
+    url: https://github.com/physical-ai/textbook
+
+servers:
+  - url: https://physical-ai-textbook.vercel.app/api
+    description: Production (Vercel)
+  - url: http://localhost:3001/api
+    description: Local Development
+
+tags:
+  - name: Authentication
+    description: User registration, login, and logout operations
+
+paths:
+  /auth/signup:
+    post:
+      summary: Register a new user
+      description: |
+        Creates a new user account with email, password, and 5 required personalization questions.
+        Automatically creates a PersonalizationProfile and Session.
+        Returns session token as HTTP-only cookie.
+      operationId: signup
+      tags:
+        - Authentication
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SignupRequest'
+            examples:
+              beginner:
+                summary: Beginner student profile
+                value:
+                  email: student@university.edu
+                  password: SecurePassword123!
+                  profile:
+                    python_skill: beginner
+                    ros_experience: none
+                    linux_familiarity: some
+                    gpu_access: no
+                    budget_tier: simulation_only
+              advanced:
+                summary: Advanced researcher profile
+                value:
+                  email: researcher@lab.edu
+                  password: SecurePassword456!
+                  profile:
+                    python_skill: advanced
+                    ros_experience: experienced
+                    linux_familiarity: proficient
+                    gpu_access: yes
+                    budget_tier: research_grade
+      responses:
+        '201':
+          description: User created successfully
+          headers:
+            Set-Cookie:
+              description: HTTP-only session cookie (90-day expiration, 7-day idle timeout)
+              schema:
+                type: string
+                example: session_token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...; Path=/; HttpOnly; Secure; SameSite=Strict; Max-Age=7776000
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SignupResponse'
+              example:
+                user:
+                  id: 550e8400-e29b-41d4-a716-446655440000
+                  email: student@university.edu
+                  created_at: '2025-12-05T14:30:00Z'
+                profile:
+                  python_skill: beginner
+                  ros_experience: none
+                  linux_familiarity: some
+                  gpu_access: no
+                  budget_tier: simulation_only
+                session:
+                  expires_at: '2026-03-05T14:30:00Z'
+                  personalization_enabled: false
+                  language_preference: en
+        '400':
+          description: Invalid request (missing fields, weak password)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              examples:
+                missing_profile:
+                  summary: Missing personalization question
+                  value:
+                    error: Validation failed
+                    message: All 5 personalization questions are required
+                    details:
+                      - field: profile.python_skill
+                        message: Required field
+                weak_password:
+                  summary: Password too weak
+                  value:
+                    error: Validation failed
+                    message: Password must be at least 8 characters with uppercase, lowercase, and number
+        '409':
+          description: User already exists
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              example:
+                error: Conflict
+                message: Email already registered
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /auth/login:
+    post:
+      summary: Log in an existing user
+      description: |
+        Authenticates a user with email and password.
+        Returns session token as HTTP-only cookie.
+        Updates user.last_login timestamp.
+      operationId: login
+      tags:
+        - Authentication
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LoginRequest'
+            example:
+              email: student@university.edu
+              password: SecurePassword123!
+      responses:
+        '200':
+          description: Login successful
+          headers:
+            Set-Cookie:
+              description: HTTP-only session cookie
+              schema:
+                type: string
+                example: session_token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...; Path=/; HttpOnly; Secure; SameSite=Strict; Max-Age=7776000
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LoginResponse'
+              example:
+                user:
+                  id: 550e8400-e29b-41d4-a716-446655440000
+                  email: student@university.edu
+                  last_login: '2025-12-05T14:30:00Z'
+                profile:
+                  python_skill: beginner
+                  ros_experience: none
+                  linux_familiarity: some
+                  gpu_access: no
+                  budget_tier: simulation_only
+                session:
+                  expires_at: '2026-03-05T14:30:00Z'
+                  personalization_enabled: false
+                  language_preference: en
+        '401':
+          description: Invalid credentials
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              example:
+                error: Unauthorized
+                message: Invalid email or password
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /auth/logout:
+    post:
+      summary: Log out the current user
+      description: |
+        Invalidates the current session by setting is_active = FALSE in database.
+        Clears session cookie.
+      operationId: logout
+      tags:
+        - Authentication
+      security:
+        - cookieAuth: []
+      responses:
+        '200':
+          description: Logout successful
+          headers:
+            Set-Cookie:
+              description: Clears session cookie
+              schema:
+                type: string
+                example: session_token=; Path=/; HttpOnly; Secure; SameSite=Strict; Max-Age=0
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  message:
+                    type: string
+                    example: Logged out successfully
+        '401':
+          description: Not authenticated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              example:
+                error: Unauthorized
+                message: No active session
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+components:
+  schemas:
+    SignupRequest:
+      type: object
+      required:
+        - email
+        - password
+        - profile
+      properties:
+        email:
+          type: string
+          format: email
+          description: User's email address
+          example: student@university.edu
+        password:
+          type: string
+          format: password
+          minLength: 8
+          description: User's password (min 8 chars, must include uppercase, lowercase, number)
+          example: SecurePassword123!
+        profile:
+          $ref: '#/components/schemas/PersonalizationProfile'
+
+    PersonalizationProfile:
+      type: object
+      required:
+        - python_skill
+        - ros_experience
+        - linux_familiarity
+        - gpu_access
+        - budget_tier
+      properties:
+        python_skill:
+          type: string
+          enum: [none, beginner, intermediate, advanced]
+          description: Python programming skill level
+          example: beginner
+        ros_experience:
+          type: string
+          enum: [none, basic, experienced]
+          description: ROS (Robot Operating System) experience level
+          example: none
+        linux_familiarity:
+          type: string
+          enum: [none, some, proficient]
+          description: Linux operating system familiarity
+          example: some
+        gpu_access:
+          type: string
+          enum: [yes, no, cloud_only]
+          description: GPU access availability
+          example: no
+        budget_tier:
+          type: string
+          enum: [simulation_only, under_500, under_2000, research_grade]
+          description: Hardware budget tier
+          example: simulation_only
+
+    SignupResponse:
+      type: object
+      properties:
+        user:
+          type: object
+          properties:
+            id:
+              type: string
+              format: uuid
+              description: Unique user identifier
+              example: 550e8400-e29b-41d4-a716-446655440000
+            email:
+              type: string
+              format: email
+              example: student@university.edu
+            created_at:
+              type: string
+              format: date-time
+              example: '2025-12-05T14:30:00Z'
+        profile:
+          $ref: '#/components/schemas/PersonalizationProfile'
+        session:
+          type: object
+          properties:
+            expires_at:
+              type: string
+              format: date-time
+              description: Absolute session expiration (90 days from creation)
+              example: '2026-03-05T14:30:00Z'
+            personalization_enabled:
+              type: boolean
+              description: Whether "Personalise this chapter" is active
+              example: false
+            language_preference:
+              type: string
+              enum: [en, ur]
+              description: Current language preference
+              example: en
+
+    LoginRequest:
+      type: object
+      required:
+        - email
+        - password
+      properties:
+        email:
+          type: string
+          format: email
+          example: student@university.edu
+        password:
+          type: string
+          format: password
+          example: SecurePassword123!
+
+    LoginResponse:
+      type: object
+      properties:
+        user:
+          type: object
+          properties:
+            id:
+              type: string
+              format: uuid
+              example: 550e8400-e29b-41d4-a716-446655440000
+            email:
+              type: string
+              format: email
+              example: student@university.edu
+            last_login:
+              type: string
+              format: date-time
+              example: '2025-12-05T14:30:00Z'
+        profile:
+          $ref: '#/components/schemas/PersonalizationProfile'
+        session:
+          type: object
+          properties:
+            expires_at:
+              type: string
+              format: date-time
+              example: '2026-03-05T14:30:00Z'
+            personalization_enabled:
+              type: boolean
+              example: false
+            language_preference:
+              type: string
+              enum: [en, ur]
+              example: en
+
+    ErrorResponse:
+      type: object
+      properties:
+        error:
+          type: string
+          description: Error type/category
+          example: Validation failed
+        message:
+          type: string
+          description: Human-readable error message
+          example: All 5 personalization questions are required
+        details:
+          type: array
+          description: Optional detailed validation errors
+          items:
+            type: object
+            properties:
+              field:
+                type: string
+                example: profile.python_skill
+              message:
+                type: string
+                example: Required field
+
+  securitySchemes:
+    cookieAuth:
+      type: apiKey
+      in: cookie
+      name: session_token
+      description: HTTP-only session cookie (automatically sent by browser)

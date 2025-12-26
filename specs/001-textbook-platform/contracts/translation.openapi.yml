@@ -1,0 +1,245 @@
+openapi: 3.0.3
+info:
+  title: Physical AI Textbook - Translation API
+  description: |
+    Translation endpoints for lazy-loading Urdu chapter content.
+    English content is served statically via Docusaurus; Urdu is fetched on demand.
+    Supports ETag-based caching for efficient re-validation.
+  version: 1.0.0
+  contact:
+    name: Physical AI Team
+    url: https://github.com/physical-ai/textbook
+
+servers:
+  - url: https://physical-ai-textbook.vercel.app/api
+    description: Production (Vercel)
+  - url: http://localhost:3001/api
+    description: Local Development
+
+tags:
+  - name: Translation
+    description: Chapter translation content delivery (lazy-loaded Urdu)
+
+paths:
+  /translation/{chapterId}:
+    get:
+      summary: Get translated chapter content
+      description: |
+        Fetches translated MDX content for a specific chapter and language.
+        Primarily used for Urdu translations (lazy-loaded on first toggle).
+
+        **Caching Strategy**:
+        - Server-side: ETag based on translation.last_updated timestamp
+        - Server-side: Cache-Control: max-age=604800 (7 days)
+        - Client-side: Store in localStorage with 7-day expiration
+
+        **Performance Targets**:
+        - First fetch: <500ms (cold start)
+        - Subsequent fetches with valid ETag: <100ms (304 Not Modified)
+
+        **Availability**:
+        - Only chapters with completeness_percentage ≥95 are returned
+        - Returns 404 if translation incomplete or not found
+      operationId: getTranslation
+      tags:
+        - Translation
+      parameters:
+        - name: chapterId
+          in: path
+          required: true
+          description: Chapter identifier (e.g., '00-preface', '02-ros2-basics', '13-future')
+          schema:
+            type: string
+            pattern: '^[0-9]{2}-[a-z0-9-]+$'
+          examples:
+            preface:
+              value: '00-preface'
+              summary: Preface chapter
+            ros2:
+              value: '02-ros2-basics'
+              summary: ROS 2 Basics chapter
+            isaac:
+              value: '08-isaac-sim'
+              summary: Isaac Sim chapter
+        - name: language
+          in: query
+          required: false
+          description: Language code (ISO 639-1). Defaults to 'ur' (Urdu).
+          schema:
+            type: string
+            enum: [en, ur]
+            default: ur
+          example: ur
+        - name: If-None-Match
+          in: header
+          required: false
+          description: ETag from previous response (for cache validation)
+          schema:
+            type: string
+          example: '"2025-11-28T09:15:00Z"'
+      responses:
+        '200':
+          description: Translation retrieved successfully
+          headers:
+            ETag:
+              description: Entity tag for cache validation (based on last_updated timestamp)
+              schema:
+                type: string
+                example: '"2025-11-28T09:15:00Z"'
+            Cache-Control:
+              description: Cache policy (7-day max-age)
+              schema:
+                type: string
+                example: 'public, max-age=604800, must-revalidate'
+            Content-Type:
+              description: Response content type
+              schema:
+                type: string
+                example: 'application/json; charset=utf-8'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TranslationResponse'
+              example:
+                chapter_id: '02-ros2-basics'
+                language: ur
+                mdx_content: |
+                  # ROS 2 بنیادی باتیں
+
+                  یہ باب ROS 2 (Robot Operating System 2) کا تعارف فراہم کرتا ہے، جو جدید روبوٹکس کی ترقی کے لیے ایک اوپن سورس فریم ورک ہے۔
+
+                  ## مقاصد
+
+                  - ROS 2 کی بنیادی تصورات کو سمجھنا
+                  - Nodes، topics، اور services کا استعمال
+                  - Docker containers میں ROS 2 کی تنصیب
+
+                  ## تنصیب (Docker)
+
+                  ```bash
+                  # Inside WSL2 terminal (Windows) or native terminal (Linux/Mac):
+                  docker run -it ros:humble-ros-base-jammy
+                  ```
+
+                  > **نوٹ**: تمام لیبز Docker containers میں چلتی ہیں تاکہ Windows، Mac، اور Linux پر یکساں نتائج ملیں۔
+                completeness_percentage: 98
+                last_updated: '2025-11-28T09:15:00Z'
+                word_count: 7200
+        '304':
+          description: Not Modified (ETag matches, use cached version)
+          headers:
+            ETag:
+              description: Entity tag (unchanged)
+              schema:
+                type: string
+                example: '"2025-11-28T09:15:00Z"'
+            Cache-Control:
+              description: Cache policy
+              schema:
+                type: string
+                example: 'public, max-age=604800, must-revalidate'
+        '400':
+          description: Invalid request (malformed chapter_id)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              example:
+                error: Bad Request
+                message: Invalid chapter_id format (expected format: NN-chapter-name)
+        '404':
+          description: Translation not found or incomplete
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              examples:
+                not_found:
+                  summary: Chapter translation does not exist
+                  value:
+                    error: Not Found
+                    message: Translation not found for chapter '14-appendix' in language 'ur'
+                incomplete:
+                  summary: Translation exists but is incomplete (<95%)
+                  value:
+                    error: Not Found
+                    message: Translation for chapter '12-capstone' is only 87% complete (minimum 95% required)
+                    completeness_percentage: 87
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+components:
+  schemas:
+    TranslationResponse:
+      type: object
+      properties:
+        chapter_id:
+          type: string
+          description: Chapter identifier
+          example: '02-ros2-basics'
+        language:
+          type: string
+          enum: [en, ur]
+          description: Language code (ISO 639-1)
+          example: ur
+        mdx_content:
+          type: string
+          description: |
+            Full translated MDX content (headings, paragraphs, code comments).
+            Preserves MDX syntax (code blocks, links, citations).
+            Estimated size: 5-10 KB per chapter (compressed).
+          example: |
+            # ROS 2 بنیادی باتیں
+
+            یہ باب ROS 2 کا تعارف فراہم کرتا ہے...
+        completeness_percentage:
+          type: integer
+          minimum: 95
+          maximum: 100
+          description: Translation completeness percentage (always ≥95 in responses)
+          example: 98
+        last_updated:
+          type: string
+          format: date-time
+          description: Last translation update timestamp (used for ETag generation)
+          example: '2025-11-28T09:15:00Z'
+        word_count:
+          type: integer
+          description: Approximate word count of translated content
+          example: 7200
+
+    ErrorResponse:
+      type: object
+      properties:
+        error:
+          type: string
+          description: Error type/category
+          example: Not Found
+        message:
+          type: string
+          description: Human-readable error message
+          example: Translation not found for chapter '14-appendix' in language 'ur'
+        completeness_percentage:
+          type: integer
+          description: Optional field for incomplete translations (87% complete example)
+          example: 87
+
+  x-performance-targets:
+    first_fetch_latency_ms: 500
+    cached_fetch_latency_ms: 100
+    response_size_kb: 5-10
+    cache_duration_days: 7
+
+  x-caching-strategy:
+    server_side:
+      - ETag based on last_updated timestamp
+      - Cache-Control max-age=604800 (7 days)
+      - Vercel Edge Caching for <150ms global latency
+    client_side:
+      - localStorage key format: 'translation_${chapterId}_${language}'
+      - Expiration: 7 days from fetch
+      - Validation: Check ETag on stale cache

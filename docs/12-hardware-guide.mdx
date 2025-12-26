@@ -1,0 +1,847 @@
+---
+id: 12-hardware-guide
+title: "Chapter 12: Hardware Guide"
+sidebar_position: 12
+part: 5
+week: reference
+difficulty_levels: [beginner, intermediate, advanced]
+hardware_tracks: [simulation_only, budget_hardware, research_grade]
+citation_count: 8
+word_count: 9000
+urdu_completeness: 0
+---
+
+# Chapter 12: Hardware Guide
+
+> *"The right hardware unlocks the right research."*
+
+## Learning Objectives
+
+By the end of this chapter, you will be able to:
+
+1. **Choose appropriate hardware** for your goals and budget
+2. **Build a workstation** optimized for robotics simulation
+3. **Set up NVIDIA Jetson** for edge AI deployment
+4. **Configure sensors** (RealSense, LIDAR, IMU)
+5. **Compare cloud vs on-premise** infrastructure
+
+**Estimated Time**: 4-6 hours (reading) + variable (hardware acquisition/setup)
+
+---
+
+## 12.1 Introduction: Investment Tiers
+
+This chapter provides hardware recommendations across three tiers:
+
+| **Tier** | **Total Cost** | **Use Case** | **Who Is This For?** |
+|----------|---------------|--------------|----------------------|
+| **Tier 1: Cloud-Only** | $205/quarter + $1,118 one-time | Complete coursework with zero local hardware | Students, hobbyists |
+| **Tier 2: Budget Workstation** | $3,500 one-time | Serious learning, small projects | Undergrads, grad students |
+| **Tier 3: Research Lab** | $15,000+ one-time | Professional research, real robots | Research labs, industry |
+
+**Philosophy**: Start with Tier 1 (cloud). Upgrade to Tier 2 if you'll use it for 2+ years. Only go Tier 3 if you're doing funded research.
+
+---
+
+## 12.2 Tier 1: Cloud-Only Setup
+
+**Goal**: Complete course with **zero** local hardware investment.
+
+### 12.2.1 Cloud Compute (AWS EC2)
+
+**Instance type**: `g5.2xlarge`
+- **GPU**: NVIDIA A10G (24GB VRAM)
+- **CPU**: 8 vCPU (AMD EPYC 7R32)
+- **RAM**: 32 GB
+- **Storage**: 225 GB NVMe SSD
+
+**Performance**:
+- **Isaac Sim**: 30-60 FPS (medium quality)
+- **Isaac Gym**: 4,096 parallel environments
+- **ROS 2 + Gazebo**: Real-time simulation (RTF ~1.0)
+
+**Pricing** (us-east-1, as of Dec 2024):
+- **On-demand**: $1.21/hour
+- **Spot instance**: $0.36/hour (70% discount, can be terminated)
+- **Reserved (1 year)**: $0.75/hour
+
+**Cost estimate** (10 hours/week for 12 weeks):
+```
+On-demand: $1.21/hour × 120 hours = $145.20
+Spot: $0.36/hour × 120 hours = $43.20  ⭐ Recommended
+```
+
+### 12.2.2 Cloud Setup Guide
+
+**Step 1: Create AWS Account**
+1. Visit: https://aws.amazon.com/
+2. Sign up (requires credit card, $0 upfront)
+3. Verify identity (phone verification)
+
+**Step 2: Launch g5.2xlarge Instance**
+
+Using AWS CLI (Windows PowerShell):
+
+```powershell
+# Install AWS CLI
+winget install Amazon.AWSCLI
+
+# Configure credentials
+aws configure
+# Enter Access Key ID, Secret Access Key, Region (us-east-1)
+
+# Launch spot instance
+aws ec2 run-instances `
+  --image-id ami-0c55b159cbfafe1f0 `
+  --instance-type g5.2xlarge `
+  --key-name my-key `
+  --security-group-ids sg-0123456789abcdef0 `
+  --subnet-id subnet-0123456789abcdef0 `
+  --instance-market-options '{
+    "MarketType": "spot",
+    "SpotOptions": {
+      "MaxPrice": "0.50",
+      "SpotInstanceType": "one-time"
+    }
+  }'
+```
+
+**Step 3: Install ROS 2 + Isaac Sim**
+
+SSH into instance:
+
+```bash
+# On Windows:
+ssh -i my-key.pem ubuntu@<instance-public-ip>
+
+# On instance:
+sudo apt update
+sudo apt install -y ros-humble-desktop-full
+
+# Install Isaac Sim (via Omniverse)
+wget https://install.launcher.omniverse.nvidia.com/installers/omniverse-launcher-linux.AppImage
+chmod +x omniverse-launcher-linux.AppImage
+./omniverse-launcher-linux.AppImage
+```
+
+**Step 4: Remote Desktop (for GUI)**
+
+Use **X11 forwarding** or **VNC**:
+
+```bash
+# Install VNC server
+sudo apt install -y tightvncserver
+
+# Start VNC (sets password)
+vncserver :1
+
+# On Windows: Use TightVNC Viewer
+# Connect to: <instance-public-ip>:5901
+```
+
+### 12.2.3 GitHub Codespaces (Alternative)
+
+**Free tier**: 60 hours/month (for students with GitHub Education)
+
+**Setup**:
+1. Go to: https://github.com/codespaces
+2. Create codespace from `ros-humble-template` repository
+3. Install extensions: ROS, Docker, Python
+
+**Limitations**:
+- No GPU (CPU-only simulation)
+- Max 4 cores, 8 GB RAM
+- Good for: ROS 2 development, Gazebo (low complexity)
+- Not suitable for: Isaac Sim, RL training
+
+### 12.2.4 Google Colab (Alternative for Training Only)
+
+**Free tier**: Tesla T4 GPU (16GB VRAM), limited to 12 hours/session
+
+**Use case**: Train RL policies, then deploy to Jetson
+
+**Example**:
+
+```python
+# In Colab notebook
+!pip install isaacgym
+!git clone https://github.com/your-repo/legged-locomotion
+
+# Train policy
+!python train.py --env=unitree_g1 --timesteps=10000000
+
+# Download checkpoint
+from google.colab import files
+files.download('policy_checkpoint.pth')
+```
+
+### 12.2.5 Total Cost (Tier 1)
+
+| **Item** | **Cost (one-time)** | **Cost (recurring)** |
+|----------|---------------------|----------------------|
+| **AWS g5.2xlarge spot** | - | $43/quarter (120 hours @ $0.36/hour) |
+| **AWS data transfer** | - | $10/quarter (100 GB out) |
+| **GitHub Codespaces** (optional) | - | $0 (free tier, 60 hours/month) |
+| **Intel RealSense D435i** | $349 | - |
+| **NVIDIA Jetson Orin Nano Super** | $249 | - |
+| **Peripherals** (keyboard, mouse, cables) | $50 | - |
+| **Subtotal** | $648 | $53/quarter |
+| **Semester total (12 weeks)** | | $53 × 1 = $53 |
+| **Full year (4 quarters)** | | $53 × 4 = $212 |
+
+**Total Year 1**: $648 + $212 = **$860**
+
+---
+
+## 12.3 Tier 2: Budget Workstation
+
+**Goal**: Local development + edge deployment.
+
+### 12.3.1 Workstation Build (RTX 4070 Ti)
+
+**Part list** (prices as of Dec 2024, USD):
+
+| **Component** | **Model** | **Price** | **Vendor** |
+|---------------|-----------|-----------|------------|
+| **GPU** | NVIDIA RTX 4070 Ti 12GB | $799 | Newegg |
+| **CPU** | Intel Core i7-13700K (16-core) | $399 | Amazon |
+| **Motherboard** | ASUS TUF Z790-PLUS WIFI | $229 | Newegg |
+| **RAM** | Corsair Vengeance DDR5 32GB (2×16GB) 5600MHz | $109 | Amazon |
+| **SSD** | Samsung 980 Pro 1TB NVMe (PCIe 4.0) | $89 | Amazon |
+| **PSU** | EVGA SuperNOVA 850W Gold | $109 | Amazon |
+| **Case** | NZXT H510 (ATX Mid Tower) | $79 | Amazon |
+| **CPU Cooler** | Noctua NH-D15 | $99 | Amazon |
+| **Thermal Paste** | Arctic MX-4 | $8 | Amazon |
+| **Case Fans** (optional) | Noctua NF-P12 (2-pack) | $29 | Amazon |
+| **Total** | | **$1,950** | |
+
+**Performance**:
+- **Isaac Sim**: 60-90 FPS (high quality, RTX on)
+- **Isaac Gym**: 4,096-8,192 parallel environments
+- **ROS 2 + Gazebo**: Real-time with 10+ robots
+- **Training time**: 10M PPO steps in ~1 hour
+
+### 12.3.2 Assembly Guide (Step-by-Step)
+
+**Tools needed**:
+- Phillips screwdriver (#2)
+- Anti-static wrist strap (optional but recommended)
+
+**Estimated time**: 2-3 hours (first build)
+
+**Steps**:
+
+1. **Install CPU on Motherboard**
+   - Open motherboard socket (lift retention arm)
+   - Align CPU with socket (gold triangle marker)
+   - Place CPU gently (no force!)
+   - Close retention arm (clicks into place)
+
+2. **Install CPU Cooler**
+   - Apply thermal paste (rice grain size in center)
+   - Mount cooler (follow Noctua manual for LGA1700)
+   - Connect fan cable to CPU_FAN header on motherboard
+
+3. **Install RAM**
+   - Open RAM slots (push tabs outward)
+   - Align notch on RAM stick with slot
+   - Push down firmly until tabs click
+
+4. **Install Motherboard in Case**
+   - Install I/O shield (snap into case rear)
+   - Align motherboard with standoffs
+   - Screw in (don't overtighten)
+
+5. **Install Power Supply**
+   - Mount PSU in case (fan facing down if case has vent)
+   - Route cables through grommets
+
+6. **Install SSD**
+   - Locate M.2 slot on motherboard
+   - Insert SSD at 30° angle
+   - Press down, secure with screw
+
+7. **Install GPU**
+   - Remove PCIe slot covers (2 slots for 4070 Ti)
+   - Align GPU with PCIe x16 slot
+   - Press down firmly until it clicks
+   - Secure with screws
+   - Connect PCIe power cables (2×8-pin)
+
+8. **Connect Cables**
+   - 24-pin ATX power → Motherboard
+   - 8-pin CPU power → Motherboard (top-left)
+   - SATA power → (none needed for this build)
+   - Front panel connectors (power button, LED, USB)
+
+9. **First Boot**
+   - Connect monitor (use GPU HDMI, not motherboard)
+   - Connect keyboard + mouse
+   - Power on
+   - Enter BIOS (press Delete during boot)
+   - Verify all components detected
+
+**Video guide**: [YouTube: How to Build a PC (2024)](https://youtube.com/watch?v=BL4DCEp7blY)
+
+### 12.3.3 Software Setup (Windows 11)
+
+**Install drivers**:
+
+```powershell
+# 1. NVIDIA GPU Driver
+# Download from: https://www.nvidia.com/download/index.aspx
+# Select: RTX 40 Series → RTX 4070 Ti → Windows 11
+# Install driver (restart required)
+
+# 2. Verify CUDA
+nvidia-smi
+# Expected: Driver Version: 546.x, CUDA Version: 12.3
+
+# 3. Install WSL2 + Ubuntu 22.04
+wsl --install -d Ubuntu-22.04
+
+# 4. Inside WSL, install ROS 2 Humble
+sudo apt update
+sudo apt install -y ros-humble-desktop-full
+
+# 5. Install Docker Desktop (for containerized workflows)
+# Download: https://www.docker.com/products/docker-desktop
+```
+
+### 12.3.4 Edge Compute (NVIDIA Jetson)
+
+**Jetson Orin Nano Super** (NEW 2024):
+- **Price**: $249 (down from $499 in 2023!)
+- **Performance**: 40 TOPS (INT8), 8GB RAM
+- **Power**: 7-15W
+- **Ports**: 4× USB 3.2, 1× Gigabit Ethernet, HDMI 2.1
+
+**Use case**: Deploy trained models to robot (RealSense + Jetson = portable perception)
+
+**Setup** (see Section 12.5)
+
+---
+
+## 12.4 Tier 3: Research Lab Setup
+
+**Goal**: Full research capability + real robot hardware.
+
+### 12.4.1 Workstation (RTX 4090)
+
+| **Component** | **Model** | **Price** |
+|---------------|-----------|-----------|
+| **GPU** | NVIDIA RTX 4090 24GB | $1,799 |
+| **CPU** | AMD Ryzen 9 7950X (16-core) | $549 |
+| **Motherboard** | ASUS ROG STRIX X670E-E GAMING | $399 |
+| **RAM** | G.Skill Trident Z5 64GB (2×32GB) DDR5 6000MHz | $209 |
+| **SSD** | Samsung 990 Pro 2TB NVMe | $179 |
+| **PSU** | Corsair HX1000 1000W Platinum | $189 |
+| **Case** | Lian Li O11 Dynamic EVO | $159 |
+| **CPU Cooler** | NZXT Kraken X73 (AIO 360mm) | $179 |
+| **Total** | | **$3,662** |
+
+**Performance**:
+- **Isaac Sim**: 90-120 FPS (ultra quality, RTX on)
+- **Isaac Gym**: 16,384+ parallel environments
+- **Training time**: 10M PPO steps in ~20 minutes
+
+### 12.4.2 Robot Platform
+
+**Unitree G1 Humanoid**:
+- **Price**: $16,000
+- **Specs**: 23 DOF, 1.3m tall, 35kg
+- **Payload**: 3kg per arm
+- **Battery**: 2 hours runtime
+- **Onboard compute**: Jetson Orin NX (16GB)
+- **Sensors**: RealSense D435i (head-mounted), IMU, joint encoders
+
+**Purchase**: https://www.unitree.com/g1 (requires research institution verification)
+
+**Alternative** (quadruped, cheaper):
+- **Unitree Go2 Edu**: $2,500 (4-legged, research platform)
+
+### 12.4.3 Sensor Suite
+
+| **Sensor** | **Use Case** | **Price** |
+|------------|--------------|-----------|
+| **Intel RealSense D435i** | RGB-D camera, VSLAM | $349 |
+| **Intel RealSense L515** | High-res depth (LiDAR-based) | $950 |
+| **RPLIDAR A1** | 2D LIDAR (12m range) | $99 |
+| **Livox Mid-360** | 3D LIDAR (70m range) | $599 |
+| **Velodyne VLP-16** | 3D LIDAR (100m, 16 channels) | $3,999 |
+| **VectorNav VN-100** | Research-grade IMU + GPS | $749 |
+| **Force/Torque Sensor** (ATI Mini40) | Grasp force sensing | $2,500 |
+
+**Recommended starter kit**: RealSense D435i + RPLIDAR A1 = $448
+
+### 12.4.4 Total Cost (Tier 3)
+
+| **Category** | **Items** | **Cost** |
+|--------------|-----------|----------|
+| **Workstation** | RTX 4090 build | $3,662 |
+| **Robot** | Unitree G1 | $16,000 |
+| **Sensors** | RealSense D435i, L515, RPLIDAR A1, VectorNav | $2,147 |
+| **Edge compute** | Jetson Orin NX (upgrade) | $599 |
+| **Peripherals** | Monitors, keyboard, desk, power strips | $500 |
+| **Total** | | **$22,908** |
+
+**Funding sources**:
+- Research grants (NSF, DARPA, industry)
+- University lab budgets
+- Shared resources (multi-PI labs)
+
+---
+
+## 12.5 NVIDIA Jetson Setup Guide
+
+### 12.5.1 Model Comparison
+
+| **Model** | **Price** | **TOPS** | **RAM** | **Power** | **Use Case** |
+|-----------|-----------|----------|---------|-----------|--------------|
+| **Orin Nano Super** | $249 | 40 | 8GB | 7-15W | Students, hobbyists |
+| **Orin NX** | $599 | 100 | 16GB | 10-25W | Research (recommended) |
+| **AGX Orin** | $1,999 | 275 | 64GB | 15-60W | Production, multi-sensor systems |
+
+**Recommendation**: Orin Nano Super for learning, Orin NX for serious research.
+
+### 12.5.2 Flashing JetPack (from Windows)
+
+**Requirements**:
+- Windows 10/11 PC
+- USB-C cable
+- Jetson Orin module
+
+**Steps**:
+
+1. **Download NVIDIA SDK Manager** (Windows version)
+   - Visit: https://developer.nvidia.com/sdk-manager
+   - Download `sdkmanager_2.1.0-11219_amd64.exe`
+   - Install (requires NVIDIA Developer account)
+
+2. **Put Jetson in Recovery Mode**
+   - Power off Jetson
+   - Connect USB-C cable (Jetson → Windows PC)
+   - Hold down **RECOVERY** button
+   - Press **POWER** button (while still holding RECOVERY)
+   - Wait 2 seconds, release RECOVERY
+
+3. **Flash JetPack**
+   - Open SDK Manager
+   - Select: Jetson Orin Nano
+   - JetPack version: 5.1.2 (includes Ubuntu 20.04 + ROS 2 Humble)
+   - Click "Flash"
+   - Wait ~30 minutes
+   - Follow on-screen prompts (create username, password)
+
+4. **First Boot**
+   - Disconnect USB-C cable
+   - Connect HDMI monitor, keyboard, mouse, Ethernet
+   - Power on Jetson
+   - Complete Ubuntu setup wizard
+   - Username: `nvidia` (recommended)
+
+### 12.5.3 SSH Setup (Headless Operation)
+
+**On Jetson** (via HDMI initially):
+
+```bash
+# Enable SSH
+sudo systemctl enable ssh
+sudo systemctl start ssh
+
+# Find IP address
+ip addr show eth0
+# Note the IP (e.g., 192.168.1.100)
+
+# (Optional) Set static IP
+sudo nano /etc/netplan/01-netcfg.yaml
+```
+
+**On Windows**:
+
+```powershell
+# SSH from PowerShell
+ssh nvidia@192.168.1.100
+# Enter password
+
+# (Optional) Set up SSH key for password-less login
+ssh-keygen -t ed25519
+ssh-copy-id nvidia@192.168.1.100
+```
+
+### 12.5.4 Installing Isaac ROS
+
+**On Jetson** (via SSH):
+
+```bash
+# Update system
+sudo apt update && sudo apt upgrade -y
+
+# Add Isaac ROS apt repository
+sudo apt install -y software-properties-common
+sudo add-apt-repository universe
+sudo apt update
+
+# Install Isaac ROS packages
+sudo apt install -y \
+  ros-humble-isaac-ros-visual-slam \
+  ros-humble-isaac-ros-dnn-inference \
+  ros-humble-isaac-ros-ess \
+  ros-humble-isaac-ros-apriltag
+
+# Verify installation
+ros2 pkg list | grep isaac_ros
+```
+
+### 12.5.5 Connecting RealSense D435i
+
+**On Jetson**:
+
+```bash
+# Install RealSense SDK
+sudo apt-key adv --keyserver keyserver.ubuntu.com --recv-key F6E65AC044F831AC80A06380C8B3A55A6F3EFCDE
+sudo add-apt-repository "deb https://librealsense.intel.com/Debian/apt-repo $(lsb_release -cs) main"
+sudo apt update
+sudo apt install -y librealsense2-utils librealsense2-dev
+
+# Install ROS 2 wrapper
+sudo apt install -y ros-humble-realsense2-camera
+
+# Test camera
+realsense-viewer
+# (Requires X11 forwarding or VNC for GUI)
+
+# Test ROS 2 node
+ros2 launch realsense2_camera rs_launch.py
+
+# Verify topics
+ros2 topic list | grep camera
+# Expected:
+# /camera/color/image_raw
+# /camera/depth/image_rect_raw
+# /camera/infra1/image_rect_raw
+```
+
+### 12.5.6 Power Budget
+
+**Jetson Orin Nano** power consumption:
+
+| **Workload** | **Power (W)** |
+|--------------|---------------|
+| Idle | 2-3 |
+| ROS 2 nodes (no GPU) | 4-6 |
+| Isaac VSLAM | 10-12 |
+| Isaac VSLAM + DOPE | 13-15 |
+
+**Power supply**: 5V/4A USB-C (20W) recommended.
+
+**For mobile robots**: Use LiPo battery (e.g., Tattu 22.2V 10000mAh → DC-DC converter → 5V/4A for Jetson).
+
+---
+
+## 12.6 Camera Selection
+
+### 12.6.1 Intel RealSense Comparison
+
+| **Model** | **Type** | **Range** | **FPS** | **Price** | **Use Case** |
+|-----------|----------|-----------|---------|-----------|--------------|
+| **D435i** | Stereo + IMU | 0.1-10m | 90 | $349 | General-purpose (recommended) |
+| **D455** | Stereo | 0.4-15m | 90 | $449 | Long-range |
+| **L515** | LiDAR | 0.25-9m | 30 | $950 | High-res depth (indoor) |
+
+**Recommendation**: **D435i** (best value, built-in IMU for VSLAM).
+
+### 12.6.2 RealSense Calibration
+
+**On Jetson**:
+
+```bash
+# Install calibration tool
+sudo apt install -y ros-humble-camera-calibration
+
+# Run calibration (requires checkerboard)
+ros2 run camera_calibration cameracalibrator \
+  --size 8x6 \
+  --square 0.025 \
+  image:=/camera/color/image_raw
+
+# Follow on-screen instructions:
+# 1. Move checkerboard to different positions
+# 2. Wait for "CALIBRATE" button to enable
+# 3. Click "CALIBRATE"
+# 4. Click "SAVE" (saves to /tmp/calibrationdata.tar.gz)
+
+# Extract calibration
+tar -xzf /tmp/calibrationdata.tar.gz -C ~/.ros/camera_info/
+```
+
+---
+
+## 12.7 LIDAR Options
+
+### 12.7.1 2D LIDAR
+
+**RPLIDAR A1**:
+- **Price**: $99
+- **Range**: 12m
+- **Scan rate**: 10 Hz
+- **Points/scan**: 360 (1° resolution)
+- **Interface**: USB
+
+**Use case**: Indoor navigation (Nav2 with 2D costmap).
+
+**Setup**:
+
+```bash
+sudo apt install -y ros-humble-rplidar-ros
+
+ros2 launch rplidar_ros rplidar_a1.launch.py
+
+# Visualize in RViz
+rviz2 -d $(ros2 pkg prefix rplidar_ros)/share/rplidar_ros/rviz/rplidar.rviz
+```
+
+### 12.7.2 3D LIDAR
+
+**Livox Mid-360**:
+- **Price**: $599
+- **Range**: 70m
+- **FOV**: 360° × 59°
+- **Points/sec**: 200,000
+- **Interface**: Ethernet
+
+**Use case**: Outdoor navigation, 3D mapping.
+
+**Velodyne VLP-16** (Puck):
+- **Price**: $3,999
+- **Range**: 100m
+- **Channels**: 16 lasers
+- **Points/sec**: 300,000
+
+**Use case**: Autonomous vehicles, research.
+
+---
+
+## 12.8 IMU Selection
+
+| **Model** | **Price** | **Gyro Noise** | **Accel Noise** | **Use Case** |
+|-----------|-----------|----------------|-----------------|--------------|
+| **MPU6050** | $2 | 0.01°/s | 0.002 m/s² | Hobby projects |
+| **BNO055** | $20 | 0.01°/s | 0.002 m/s² | Sensor fusion (built-in) |
+| **VectorNav VN-100** | $749 | 0.0035°/s | 0.0014 m/s² | Research (GPS + IMU) |
+
+**Recommendation**: **BNO055** for budget ($20), **VectorNav** for research.
+
+---
+
+## 12.9 Cloud vs On-Premise: TCO Analysis
+
+### 12.9.1 Assumptions
+
+- **Workload**: 10 hours/week simulation
+- **Duration**: 3 years
+- **Electricity**: $0.12/kWh (US average)
+- **Workstation**: 450W average (RTX 4070 Ti + CPU)
+
+### 12.9.2 Cloud Cost (AWS g5.2xlarge Spot)
+
+| **Item** | **Cost/hour** | **Hours/year** | **Annual cost** |
+|----------|---------------|----------------|-----------------|
+| **Compute** | $0.36 | 520 | $187.20 |
+| **Storage** (100GB EBS) | $0.01/GB/month | - | $12.00 |
+| **Data transfer** (50GB/month) | $0.09/GB | - | $54.00 |
+| **Total Year 1** | | | **$253.20** |
+| **Total 3 years** | | | **$759.60** |
+
+### 12.9.3 On-Premise Cost (RTX 4070 Ti Build)
+
+| **Item** | **One-time** | **Annual** |
+|----------|--------------|------------|
+| **Workstation** | $1,950 | - |
+| **Electricity** (450W × 520h × $0.12/kWh) | - | $28.08 |
+| **Total Year 1** | $1,950 | $28.08 → **$1,978.08** |
+| **Total Year 2** | - | $28.08 |
+| **Total Year 3** | - | $28.08 |
+| **Total 3 years** | | **$2,034.24** |
+
+### 12.9.4 Breakeven Analysis
+
+**Breakeven time**:
+```
+Cloud cost = On-premise cost
+$253.20 × t = $1,950 + $28.08 × t
+$225.12 × t = $1,950
+t = 8.66 years
+```
+
+**Conclusion**: If you'll use the workstation for **9+ years**, on-premise is cheaper. Otherwise, cloud wins.
+
+**Reality check**: Technology cycles every 5 years (RTX 4070 Ti will be outdated by 2029).
+
+**Recommendation**:
+- **Cloud** if: Unsure about long-term commitment
+- **On-premise** if: 100% certain you'll use it for 3+ years
+
+---
+
+## 12.10 Recommended Setups by Role
+
+### 12.10.1 Undergraduate Student
+
+**Goal**: Complete coursework, maybe a research project.
+
+**Option A: Cloud-Only** ($860/year)
+- GitHub Codespaces (60 hours/month free)
+- AWS g5.2xlarge spot (as needed)
+- Jetson Orin Nano Super ($249)
+- RealSense D435i ($349)
+
+**Option B: Budget Build** ($1,978 first year, then $28/year)
+- RTX 4070 Ti workstation ($1,950)
+- Jetson Orin Nano Super ($249)
+- RealSense D435i ($349)
+- **Total**: $2,548 (use for 4 years → $637/year)
+
+**Recommendation**: Option A if unsure about major. Option B if committed to robotics.
+
+### 12.10.2 Graduate Researcher
+
+**Goal**: Publishable research, experiments on real hardware.
+
+**Setup**:
+- RTX 4070 Ti workstation ($1,950)
+- Jetson Orin NX ($599) [more RAM for complex models]
+- RealSense D435i ($349)
+- RPLIDAR A1 ($99)
+- **Total**: $2,997
+
+**Funding**: Lab startup funds, RA stipend budget.
+
+### 12.10.3 Industry Lab
+
+**Goal**: Production-ready systems, real robot deployment.
+
+**Setup**:
+- RTX 4090 workstation ($3,662)
+- Unitree G1 humanoid ($16,000)
+- RealSense L515 ($950)
+- Livox Mid-360 LIDAR ($599)
+- Force/torque sensors ($2,500)
+- **Total**: $23,711
+
+**Funding**: Company R&D budget.
+
+---
+
+## 12.11 Peripherals & Accessories
+
+### 12.11.1 Must-Have
+
+| **Item** | **Price** | **Notes** |
+|----------|-----------|-----------|
+| **Monitor** (27" 1440p) | $249 | Dell S2721DGF |
+| **Keyboard** | $89 | Logitech MX Keys |
+| **Mouse** | $99 | Logitech MX Master 3S |
+| **Desk** (adjustable height) | $299 | Flexispot E7 |
+| **Chair** | $299 | Secretlab Titan Evo |
+| **UPS** (battery backup) | $149 | APC BR1500MS (prevents data loss) |
+| **USB Hub** (powered, 10-port) | $39 | Anker USB 3.0 Hub |
+| **Ethernet cable** (Cat6, 10ft) | $12 | Monoprice |
+
+**Total**: $1,235
+
+### 12.11.2 Nice-to-Have
+
+| **Item** | **Price** | **Use Case** |
+|----------|-----------|--------------|
+| **Second monitor** (dual-screen) | $249 | RViz + code side-by-side |
+| **Webcam** (1080p) | $79 | Logitech C920 (for meetings) |
+| **Microphone** | $129 | Blue Yeti (for voice commands) |
+| **Mechanical keyboard** | $179 | Keychron K8 Pro |
+| **Laptop stand** | $49 | Rain Design mStand |
+| **Cable management** kit | $25 | Velcro straps, clips |
+
+---
+
+## 12.12 Troubleshooting Common Issues
+
+### 12.12.1 GPU Not Detected (Windows + WSL2)
+
+**Symptom**: `nvidia-smi` works in Windows, fails in WSL2.
+
+**Fix**:
+
+```powershell
+# On Windows: Update WSL kernel
+wsl --update
+
+# Install CUDA toolkit in WSL
+wsl
+sudo apt-key del 7fa2af80
+wget https://developer.download.nvidia.com/compute/cuda/repos/ubuntu2204/x86_64/cuda-keyring_1.0-1_all.deb
+sudo dpkg -i cuda-keyring_1.0-1_all.deb
+sudo apt update
+sudo apt install -y cuda-toolkit-12-3
+
+# Verify
+nvidia-smi
+```
+
+### 12.12.2 Jetson Won't Boot
+
+**Symptom**: Black screen, no HDMI output.
+
+**Possible causes**:
+1. **Power supply**: Use 5V/4A (not 5V/2A phone charger)
+2. **SD card**: Re-flash JetPack
+3. **Recovery mode**: Hold recovery button during power-on → re-flash
+
+### 12.12.3 RealSense Camera Not Recognized
+
+**Symptom**: `rs-enumerate-devices` shows no devices.
+
+**Fix**:
+
+```bash
+# Check USB connection
+lsusb | grep Intel
+# Expected: "Bus 001 Device 005: ID 8086:0b3a Intel Corp."
+
+# If missing:
+# 1. Try different USB port (use USB 3.0, not 2.0)
+# 2. Update udev rules:
+sudo cp ~/.../config/99-realsense-libusb.rules /etc/udev/rules.d/
+sudo udevadm control --reload-rules && sudo udevadm trigger
+
+# 3. Reinstall SDK:
+sudo apt remove librealsense2-*
+sudo apt install -y librealsense2-utils
+```
+
+---
+
+## Citations
+
+1. NVIDIA. (2024). *Jetson Orin Modules and Developer Kits.* https://www.nvidia.com/en-us/autonomous-machines/embedded-systems/jetson-orin/
+
+2. Intel. (2023). *Intel RealSense D400 Series Product Family Datasheet.* https://www.intelrealsense.com/
+
+3. SLAMTEC. (2023). *RPLIDAR A1 Datasheet.* https://www.slamtec.com/en/Lidar/A1
+
+4. Livox Technology. (2024). *Mid-360 User Manual.* https://www.livoxtech.com/mid-360
+
+5. VectorNav Technologies. (2023). *VN-100 IMU/AHRS Datasheet.* https://www.vectornav.com/products/vn-100
+
+6. Unitree Robotics. (2024). *Unitree G1 Humanoid Technical Specifications.* https://www.unitree.com/g1
+
+7. Amazon Web Services. (2024). *Amazon EC2 G5 Instances Pricing.* https://aws.amazon.com/ec2/instance-types/g5/
+
+8. Newegg. (2024). *PC Part Prices.* https://www.newegg.com/
+
+---
+
+**Next Chapter**: [Chapter 13: Ethics & Future of Physical AI →](13-ethics-future-physical-ai.mdx)
+
+---
+
+*This textbook is a living document. Found an error? Have a suggestion? Submit an issue or PR at [github.com/Shumailaaijaz/physical-ai-textbook](https://github.com/Shumailaaijaz/physical-ai-textbook)*

@@ -1,0 +1,948 @@
+---
+id: 06-isaac-sim-basics
+title: "Chapter 6: NVIDIA Isaac Sim Basics"
+sidebar_position: 6
+part: 3
+week: 8
+difficulty_levels: [advanced]
+hardware_tracks: [budget_hardware, research_grade]
+citation_count: 12
+word_count: 8000
+urdu_completeness: 0
+---
+
+# Chapter 6: NVIDIA Isaac Sim Basics
+
+> *"Isaac Sim is where photorealism meets physics—training robots in worlds indistinguishable from reality."*
+
+## Learning Objectives
+
+By the end of this chapter, you will be able to:
+
+1. **Install and configure** NVIDIA Isaac Sim (Windows native)
+2. **Create USD scenes** (Universal Scene Description)
+3. **Generate synthetic training data** (images, annotations, depth)
+4. **Simulate humanoid robots** with accurate physics
+5. **Use Isaac Sim Python API** for automation
+
+**Estimated Time**: 8-10 hours (reading + labs)
+
+---
+
+## 6.1 Introduction: The Isaac Platform
+
+NVIDIA Isaac is a complete robotics platform consisting of:
+
+1. **Isaac Sim**: Photorealistic simulator (based on Omniverse)
+2. **Isaac ROS**: Hardware-accelerated perception (Chapter 7)
+3. **Isaac Gym**: Massively parallel RL training (4096+ environments)
+4. **Project GR00T**: Foundation model for humanoid robots
+
+### 6.1.1 Why Isaac Sim?
+
+| Feature | Gazebo | Unity | Isaac Sim |
+|---------|--------|-------|-----------|
+| **Physics** | ⭐⭐⭐⭐⭐ (ODE) | ⭐⭐⭐⭐ (PhysX) | ⭐⭐⭐⭐⭐ (PhysX 5) |
+| **Graphics** | ⭐⭐ (OpenGL) | ⭐⭐⭐⭐⭐ (HDRP) | ⭐⭐⭐⭐⭐ (RTX ray tracing) |
+| **Synthetic Data** | ⭐⭐ (Basic) | ⭐⭐⭐⭐ (Perception) | ⭐⭐⭐⭐⭐ (Replicator) |
+| **GPU Acceleration** | ❌ | ⭐⭐⭐ (Limited) | ⭐⭐⭐⭐⭐ (Full stack) |
+| **ROS Integration** | ⭐⭐⭐⭐⭐ (Native) | ⭐⭐⭐ (TCP) | ⭐⭐⭐⭐ (ROS 2 bridge) |
+
+**Isaac Sim advantages**:
+- **RTX ray tracing**: Photorealistic shadows, reflections, global illumination
+- **PhysX 5**: GPU-accelerated physics (10x faster than CPU)
+- **Replicator**: Automated synthetic data generation (domain randomization)
+- **NVIDIA AI stack**: TensorRT, cuDNN, Isaac ROS integration
+
+### 6.1.2 Use Cases
+
+1. **Synthetic data at scale**: Generate 1M labeled images for training
+2. **Humanoid simulation**: Accurate bipedal physics for G1, Atlas, Optimus
+3. **Multi-robot systems**: Simulate 100+ robots in parallel
+4. **Digital twins**: Test warehouse automation before deployment
+
+---
+
+## 6.2 Installing Isaac Sim on Windows (Native!)
+
+Isaac Sim runs **natively on Windows**—no Docker or WSL2 needed!
+
+<details>
+<summary>Click to expand: Installation Guide</summary>
+
+**System Requirements**:
+- **GPU**: NVIDIA RTX 2060 or higher (RTX 4070 recommended)
+- **VRAM**: 8 GB minimum (12 GB+ recommended)
+- **RAM**: 32 GB (64 GB for large scenes)
+- **OS**: Windows 10/11 (64-bit)
+- **Disk**: 50 GB free space
+
+**Step 1: Install NVIDIA Omniverse Launcher**
+
+1. Download: https://www.nvidia.com/en-us/omniverse/download/
+2. Install Omniverse Launcher (500 MB download)
+3. Launch and sign in (free NVIDIA account)
+
+**Step 2: Install Isaac Sim**
+
+1. Open Omniverse Launcher
+2. **Exchange** tab → Search "Isaac Sim"
+3. Click **Install** (Isaac Sim 2023.1.1 or later)
+4. Installation time: ~30 minutes (8 GB download)
+
+**Step 3: Install Nucleus** (Asset Server)
+
+1. Launcher → **Nucleus** tab
+2. Click **Install Local Nucleus**
+3. Choose installation path
+4. Wait for installation (~10 minutes)
+
+**Step 4: Launch Isaac Sim**
+
+1. Launcher → **Library** → Isaac Sim
+2. Click **Launch**
+3. First launch: ~5 minutes (shader compilation)
+
+**Expected**: Isaac Sim opens with USD Composer interface.
+
+**Step 5: Verify Installation**
+
+1. File → Open → Select `omniverse://localhost/NVIDIA/Assets/Isaac/2023.1/Isaac/Samples/ROS2/Scenario/carter_warehouse_navigation.usd`
+2. Press **Play** (bottom-left)
+3. Robot should navigate autonomously
+
+**Success!** Isaac Sim is running.
+
+</details>
+
+---
+
+## 6.3 USD (Universal Scene Description)
+
+**USD** is Pixar's scene format used in film VFX (Avatar, Avengers, etc.).
+
+### 6.3.1 USD Hierarchy
+
+```
+Stage (root)
+└── /World (Xform)
+    ├── /Environment
+    │   ├── /Ground (Mesh)
+    │   └── /Lights (Lights)
+    └── /Robot (Xform)
+        ├── /base_link (Mesh + Physics)
+        └── /Sensors
+            ├── /Camera (Camera)
+            └── /Lidar (Lidar)
+```
+
+**Terminology**:
+- **Stage**: The root container (like a "scene" in Unity)
+- **Prim** (Primitive): An object (mesh, camera, light, physics body)
+- **Xform**: Transform node (position, rotation, scale)
+- **Property**: Attributes (e.g., mesh color, camera FOV)
+
+### 6.3.2 Creating USD with Python
+
+```python
+from pxr import Usd, UsdGeom, Gf
+
+# Create stage
+stage = Usd.Stage.CreateNew("my_scene.usd")
+
+# Create Xform (transform node)
+xform = UsdGeom.Xform.Define(stage, "/World")
+
+# Create sphere
+sphere_prim = UsdGeom.Sphere.Define(stage, "/World/Sphere")
+sphere_prim.GetRadiusAttr().Set(0.5)
+sphere_prim.AddTranslateOp().Set(Gf.Vec3f(0, 0, 1))  # Position (0, 0, 1)
+
+# Set color
+color_attr = sphere_prim.GetDisplayColorAttr()
+color_attr.Set([(1.0, 0.0, 0.0)])  # Red
+
+# Save
+stage.Save()
+print("Created my_scene.usd")
+```
+
+**Run**:
+```bash
+python create_scene.py
+# Opens my_scene.usd in Isaac Sim
+```
+
+---
+
+## 6.4 Isaac Sim GUI Tour
+
+### 6.4.1 Main Windows
+
+1. **Viewport** (center): 3D view with real-time ray tracing
+2. **Stage** (left): Hierarchy of all prims (objects)
+3. **Property** (right): Edit prim attributes
+4. **Content Browser** (bottom): Asset library
+
+### 6.4.2 Navigation
+
+- **Left-click drag**: Rotate camera
+- **Middle-click drag**: Pan camera
+- **Right-click drag**: Zoom camera
+- **F key**: Focus on selected object
+
+### 6.4.3 Simulation Controls
+
+- **Play** button: Start simulation
+- **Stop** button: Reset to initial state
+- **Step** button: Advance 1 frame
+
+---
+
+## 6.5 Importing Robots from URDF
+
+Isaac Sim can import URDF files directly.
+
+### 6.5.1 Import URDF
+
+**GUI Method**:
+
+1. Isaac Utils → URDF Importer
+2. Browse to URDF file (e.g., `unitree_g1.urdf`)
+3. Settings:
+   - **Import Mode**: Create Physics Scene
+   - **Fix Base Link**: False (for humanoids)
+   - **Joint Drive Type**: Position (for position control)
+4. Click **Import**
+
+**Python Method**:
+
+```python
+import omni.isaac.urdf
+
+# Get URDF interface
+urdf_interface = omni.isaac.urdf.get_interface()
+
+# Import URDF
+status, prim_path = urdf_interface.parse_urdf(
+    urdf_path="/path/to/robot.urdf",
+    prim_path="/World/Robot",
+    config=omni.isaac.urdf.UrdfImportConfig(
+        merge_fixed_joints=False,
+        convex_decompose=True,  # Simplify collision meshes
+        import_inertia_tensor=True,
+        fix_base=False
+    )
+)
+
+if status:
+    print(f"Robot imported at {prim_path}")
+else:
+    print("Import failed")
+```
+
+### 6.5.2 URDF to USD Conversion
+
+Isaac Sim converts URDF to USD:
+
+- **Links** → USD Meshes with Collision
+- **Joints** → USD Physics Joints (Revolute, Prismatic)
+- **Sensors** → Isaac Sim sensor prims
+
+---
+
+## 6.6 Physics Simulation (PhysX 5)
+
+PhysX 5 is NVIDIA's GPU-accelerated physics engine.
+
+### 6.6.1 Rigid Body Dynamics
+
+**Add physics to object**:
+
+1. Select prim in Stage
+2. Right-click → Add → Physics → Rigid Body
+3. Properties:
+   - Mass: 5.0 kg
+   - Linear Damping: 0.1
+   - Angular Damping: 0.05
+
+**Python**:
+
+```python
+from pxr import UsdPhysics
+
+# Get stage
+stage = omni.usd.get_context().get_stage()
+
+# Add rigid body to prim
+prim = stage.GetPrimAtPath("/World/Box")
+rigid_body_api = UsdPhysics.RigidBodyAPI.Apply(prim)
+
+# Set mass
+mass_api = UsdPhysics.MassAPI.Apply(prim)
+mass_api.GetMassAttr().Set(5.0)
+```
+
+### 6.6.2 Articulations (Multi-Body Robots)
+
+**Articulations** are optimized for robots with many joints.
+
+**Configure robot as articulation**:
+
+```python
+from pxr import PhysxSchema
+
+# Get robot root prim
+robot_prim = stage.GetPrimAtPath("/World/Robot")
+
+# Apply articulation API
+articulation_api = PhysxSchema.PhysxArticulationAPI.Apply(robot_prim)
+
+# Enable self-collision
+articulation_api.GetEnabledSelfCollisionsAttr().Set(True)
+```
+
+### 6.6.3 Joint Control
+
+**Position control** (PD controller):
+
+```python
+from omni.isaac.core.articulations import Articulation
+
+# Get robot
+robot = Articulation("/World/Robot")
+robot.initialize()
+
+# Set target joint positions (radians)
+target_positions = [0.0, 0.5, -1.0, 0.5, 0.0, 0.0]  # 6 joints
+robot.set_joint_positions(target_positions)
+
+# Apply control
+robot.apply_action()
+```
+
+---
+
+## 6.7 Creating Environments
+
+### 6.7.1 Asset Library
+
+Isaac Sim includes pre-made environments:
+
+**Path**: `omniverse://localhost/NVIDIA/Assets/Isaac/`
+
+**Categories**:
+- **Robots**: Carter, Franka, Unitree Go1, Turtlebot
+- **Environments**: Warehouse, office, hospital, outdoor
+- **Objects**: Furniture, tools, pallets
+
+**Insert asset**:
+
+1. Content Browser → `omniverse://localhost/NVIDIA/Assets/Isaac/2023.1/Isaac/Environments/Simple_Warehouse/warehouse.usd`
+2. Drag into viewport
+
+### 6.7.2 Building Custom Environments
+
+**Create office scene**:
+
+```python
+from omni.isaac.core import World
+from omni.isaac.core.objects import VisualCuboid
+from omni.isaac.core.materials import PreviewSurface
+import numpy as np
+
+# Create world
+world = World()
+world.scene.add_default_ground_plane()
+
+# Create walls (4 boxes)
+wall_height = 3.0
+wall_thickness = 0.1
+room_size = 10.0
+
+# North wall
+north_wall = VisualCuboid(
+    prim_path="/World/Walls/North",
+    position=np.array([0, room_size/2, wall_height/2]),
+    size=np.array([room_size, wall_thickness, wall_height]),
+    color=np.array([0.8, 0.8, 0.8])
+)
+
+# Add floor material (wood texture)
+floor = world.scene.get_object("default_ground_plane")
+wood_material = PreviewSurface(prim_path="/World/Materials/Wood")
+wood_material.set_color(np.array([0.6, 0.4, 0.2]))
+floor.apply_visual_material(wood_material)
+```
+
+### 6.7.3 Lighting
+
+**Add lights**:
+
+```python
+from pxr import UsdLux
+
+# Dome light (environment lighting)
+dome_light = UsdLux.DomeLight.Define(stage, "/World/DomeLight")
+dome_light.CreateIntensityAttr(1000)
+
+# Directional light (sun)
+sun_light = UsdLux.DistantLight.Define(stage, "/World/Sun")
+sun_light.CreateIntensityAttr(5000)
+sun_light.AddRotateXYZOp().Set((45, 45, 0))
+
+# Point light (ceiling lamp)
+point_light = UsdLux.SphereLight.Define(stage, "/World/CeilingLight")
+point_light.CreateIntensityAttr(2000)
+point_light.CreateRadiusAttr(0.1)
+point_light.AddTranslateOp().Set((0, 0, 3))
+```
+
+---
+
+## 6.8 Cameras and Sensors
+
+### 6.8.1 RGB Camera
+
+```python
+from omni.isaac.core.prims import XFormPrim
+from omni.isaac.sensor import Camera
+
+# Create camera
+camera = Camera(
+    prim_path="/World/Camera",
+    position=np.array([2, 2, 2]),
+    frequency=30,  # Hz
+    resolution=(640, 480)
+)
+
+# Initialize
+camera.initialize()
+
+# Get RGB image
+world.reset()
+for _ in range(10):
+    world.step(render=True)
+
+rgb_image = camera.get_rgba()[:, :, :3]  # Remove alpha channel
+print(f"Image shape: {rgb_image.shape}")  # (480, 640, 3)
+```
+
+### 6.8.2 Depth Camera
+
+```python
+# Same camera, get depth
+depth_image = camera.get_depth()  # Float32 array (meters)
+print(f"Depth range: {depth_image.min():.2f}m - {depth_image.max():.2f}m")
+```
+
+### 6.8.3 Segmentation
+
+```python
+# Get semantic segmentation
+from omni.isaac.core.utils.semantics import add_update_semantics
+
+# Add semantic labels to objects
+add_update_semantics(prim=stage.GetPrimAtPath("/World/Table"), semantic_label="table")
+add_update_semantics(prim=stage.GetPrimAtPath("/World/Chair"), semantic_label="chair")
+
+# Get segmentation from camera
+seg_image = camera.get_semantic_segmentation()
+print(f"Segmentation shape: {seg_image.shape}")  # (480, 640)
+# Each pixel = semantic ID
+```
+
+### 6.8.4 LIDAR
+
+```python
+from omni.isaac.range_sensor import LidarRtx
+
+# Create LIDAR
+lidar = LidarRtx(
+    prim_path="/World/Lidar",
+    position=np.array([0, 0, 0.5]),
+    config="Velodyne_VLS128"  # Pre-configured LIDAR
+)
+
+lidar.initialize()
+
+# Get point cloud
+world.step(render=True)
+point_cloud = lidar.get_point_cloud()  # (N, 3) array
+print(f"Point cloud size: {point_cloud.shape[0]} points")
+```
+
+---
+
+## 6.9 Synthetic Data Generation with Replicator
+
+**Replicator** automates domain randomization and data capture.
+
+### 6.9.1 Basic Replicator Script
+
+```python
+import omni.replicator.core as rep
+
+# Create camera
+camera = rep.create.camera(position=(2, 2, 2), look_at=(0, 0, 0))
+render_product = rep.create.render_product(camera, (640, 480))
+
+# Create writer (saves data to disk)
+writer = rep.WriterRegistry.get("BasicWriter")
+writer.initialize(
+    output_dir="./output",
+    rgb=True,
+    bounding_box_2d_tight=True,
+    semantic_segmentation=True,
+    distance_to_camera=True
+)
+writer.attach([render_product])
+
+# Run for 100 frames
+with rep.trigger.on_frame(num_frames=100):
+    with rep.create.group(["/World/Table", "/World/Chair"]):
+        # Randomize positions
+        rep.modify.pose(
+            position=rep.distribution.uniform((-2, -2, 0), (2, 2, 1)),
+            rotation=rep.distribution.uniform((0, 0, 0), (0, 0, 360))
+        )
+
+# Execute
+rep.orchestrator.run()
+```
+
+**Output** (`./output/`):
+```
+rgb/
+  rgb_0000.png
+  rgb_0001.png
+  ...
+bounding_box_2d_tight/
+  bounding_box_2d_tight_0000.json
+  ...
+semantic_segmentation/
+  semantic_segmentation_0000.png
+  ...
+```
+
+### 6.9.2 Domain Randomization
+
+**Randomize everything**:
+
+```python
+with rep.trigger.on_frame():
+    # Randomize object materials
+    with rep.create.group(["/World/Objects/*"]):
+        rep.randomizer.color(
+            colors=rep.distribution.uniform((0, 0, 0), (1, 1, 1))
+        )
+
+    # Randomize lighting
+    with rep.create.group(["/World/Lights/*"]):
+        rep.modify.attribute(
+            "intensity",
+            rep.distribution.uniform(500, 5000)
+        )
+
+    # Randomize camera pose
+    with rep.create.camera():
+        rep.modify.pose(
+            position=rep.distribution.uniform((-5, -5, 1), (5, 5, 3)),
+            look_at=(0, 0, 0)
+        )
+```
+
+### 6.9.3 Training Dataset Generation
+
+**Generate 10,000 images** for YOLOv8 training:
+
+```python
+# Configure writer for COCO format
+writer = rep.WriterRegistry.get("CocoWriter")
+writer.initialize(
+    output_dir="./coco_dataset",
+    semantic_types=["table", "chair", "cup", "bottle"],
+    image_size=(640, 480)
+)
+
+# Run 10,000 iterations
+with rep.trigger.on_frame(num_frames=10000):
+    # Domain randomization here
+    ...
+
+rep.orchestrator.run()
+```
+
+**Training**:
+
+```bash
+# Train YOLOv8
+yolo train data=./coco_dataset/data.yaml model=yolov8n.pt epochs=50
+```
+
+---
+
+## 6.10 ROS 2 Bridge
+
+Isaac Sim integrates with ROS 2 via **OmniGraph** (visual scripting).
+
+### 6.10.1 Enable ROS 2 Bridge
+
+**GUI Method**:
+
+1. Isaac Utils → ROS2 Bridge → Enable
+2. Isaac Utils → ROS2 Bridge → Set Domain ID (default: 0)
+
+**Python Method**:
+
+```python
+from omni.isaac.core.utils.extensions import enable_extension
+
+# Enable ROS 2 extension
+enable_extension("omni.isaac.ros2_bridge")
+```
+
+### 6.10.2 Publish Camera Images
+
+**Create OmniGraph**:
+
+1. Window → Visual Scripting → OmniGraph
+2. Add nodes:
+   - Isaac Sim → Sensor → Camera (select your camera prim)
+   - ROS 2 → Publisher → Camera Info
+   - ROS 2 → Publisher → Image
+3. Connect:
+   - Camera → CameraInfo
+   - Camera → Image
+
+**Python method**:
+
+```python
+import omni.graph.core as og
+
+# Create graph
+(graph, nodes, _, _) = og.Controller.edit(
+    {
+        "graph_path": "/World/ROS2_Graph",
+        "evaluator_name": "execution",
+    },
+    {
+        og.Controller.Keys.CREATE_NODES: [
+            ("Camera", "omni.isaac.sensor.IsaacReadCamera"),
+            ("ROS2CameraHelper", "omni.isaac.ros2_bridge.ROS2CameraHelper"),
+        ],
+        og.Controller.Keys.SET_VALUES: [
+            ("Camera.inputs:cameraPrim", ["/World/Camera"]),
+            ("ROS2CameraHelper.inputs:topicName", "/camera/image_raw"),
+            ("ROS2CameraHelper.inputs:frameId", "camera_link"),
+        ],
+        og.Controller.Keys.CONNECT: [
+            ("Camera.outputs:rgba", "ROS2CameraHelper.inputs:data"),
+        ],
+    },
+)
+```
+
+**Verify**:
+
+```bash
+# In ROS 2 terminal:
+ros2 topic list
+# /camera/image_raw
+# /camera/camera_info
+
+ros2 topic hz /camera/image_raw
+# average rate: 30.0
+```
+
+### 6.10.3 Subscribe to `/cmd_vel`
+
+**Create subscriber node**:
+
+1. OmniGraph → Add Node → ROS 2 → Subscriber → Twist
+2. Connect to Isaac Sim → Articulation Controller
+
+**Python**:
+
+```python
+(graph, nodes, _, _) = og.Controller.edit(
+    {
+        "graph_path": "/World/ROS2_CmdVel",
+        "evaluator_name": "execution",
+    },
+    {
+        og.Controller.Keys.CREATE_NODES: [
+            ("SubscribeTwist", "omni.isaac.ros2_bridge.ROS2SubscribeTwist"),
+            ("DiffController", "omni.isaac.wheeled_robots.DifferentialController"),
+        ],
+        og.Controller.Keys.SET_VALUES: [
+            ("SubscribeTwist.inputs:topicName", "/cmd_vel"),
+            ("DiffController.inputs:robotPrim", ["/World/Robot"]),
+        ],
+        og.Controller.Keys.CONNECT: [
+            ("SubscribeTwist.outputs:linearVelocity", "DiffController.inputs:linearVelocity"),
+            ("SubscribeTwist.outputs:angularVelocity", "DiffController.inputs:angularVelocity"),
+        ],
+    },
+)
+```
+
+---
+
+## 6.11 Python Standalone Mode
+
+**Standalone mode** runs Isaac Sim headless (no GUI) for batch processing.
+
+### 6.11.1 Standalone Script Template
+
+```python
+from omni.isaac.kit import SimulationApp
+
+# Launch Isaac Sim (headless)
+simulation_app = SimulationApp({"headless": True})
+
+# Now import Isaac modules
+from omni.isaac.core import World
+from omni.isaac.core.objects import DynamicSphere
+import numpy as np
+
+# Create world
+world = World()
+world.scene.add_default_ground_plane()
+
+# Add 10 spheres
+for i in range(10):
+    sphere = DynamicSphere(
+        prim_path=f"/World/Sphere_{i}",
+        position=np.array([np.random.uniform(-2, 2), np.random.uniform(-2, 2), 5]),
+        radius=0.2,
+        color=np.random.rand(3)
+    )
+    world.scene.add(sphere)
+
+# Reset and step
+world.reset()
+for i in range(1000):
+    world.step(render=False)  # Render=False for speed
+
+print("Simulation complete!")
+simulation_app.close()
+```
+
+**Run**:
+
+```bash
+# Windows
+"C:\Users\YourName\AppData\Local\ov\pkg\isaac-sim-2023.1.1\python.bat" standalone_sim.py
+
+# Linux
+~/.local/share/ov/pkg/isaac-sim-2023.1.1/python.sh standalone_sim.py
+```
+
+### 6.11.2 Batch Data Generation
+
+**Generate 1000 scenes**:
+
+```python
+import omni.replicator.core as rep
+
+for scene_id in range(1000):
+    # Randomize scene
+    world.reset()
+
+    # Randomize object poses
+    for obj in world.scene.get_all_objects():
+        obj.set_world_pose(
+            position=np.random.uniform((-2, -2, 0), (2, 2, 1))
+        )
+
+    # Step simulation
+    world.step(render=True)
+
+    # Capture data
+    rep.orchestrator.step()
+
+    print(f"Scene {scene_id}/1000 complete")
+
+simulation_app.close()
+```
+
+---
+
+## 6.12 Performance Optimization
+
+### 6.12.1 Measure Performance
+
+**FPS (Frames Per Second)**:
+
+1. Play simulation
+2. Window → Profiler
+3. Check "Physics FPS" and "Render FPS"
+
+**Target**: Physics FPS ≥ 60 (real-time), Render FPS ≥ 30
+
+### 6.12.2 Optimization Tips
+
+1. **Reduce mesh complexity**:
+   - Use low-poly collision meshes
+   - Enable "Convex Decomposition" on import
+
+2. **Lower physics timestep**:
+   ```python
+   from omni.physx import get_physx_interface
+   physx = get_physx_interface()
+   physx.update_simulation_timestep(1/60)  # 60 Hz (default: 100 Hz)
+   ```
+
+3. **Disable RTX for training**:
+   - Edit → Preferences → Rendering → RTX Interactive: Off
+   - Render Mode: Fast (not RTX)
+
+4. **Use GPU instancing** (for repeated objects):
+   ```python
+   from pxr import UsdGeom
+   # Mark prim as instanceable
+   prim = stage.GetPrimAtPath("/World/Box")
+   prim.SetInstanceable(True)
+   ```
+
+5. **Limit sensor resolution**:
+   ```python
+   camera = Camera(resolution=(320, 240))  # Lower res = faster
+   ```
+
+---
+
+## Exercises
+
+### Exercise 6.1: Synthetic Dataset Creation
+
+**Goal**: Create 1,000 annotated images for training object detection.
+
+**Requirements**:
+1. Scene with 3 object types (cups, plates, bottles)
+2. Domain randomization (positions, rotations, lighting)
+3. Export RGB + bounding boxes (COCO format)
+
+**Success criteria**: Train YOLOv8, achieve >80% mAP on test set.
+
+### Exercise 6.2: Humanoid Walking
+
+**Goal**: Import Unitree G1, control joints to make it walk.
+
+**Requirements**:
+1. Import `unitree_g1.urdf`
+2. Write Python script to control hip/knee/ankle joints
+3. Generate sinusoidal joint trajectories (simple gait)
+
+**Expected**: Robot walks forward 5 meters without falling.
+
+### Exercise 6.3: Rendering Benchmarks
+
+**Goal**: Measure FPS with different quality settings.
+
+**Test cases**:
+1. RTX On + 1080p
+2. RTX Off + 1080p
+3. RTX Off + 480p
+
+**Collect**: Physics FPS, Render FPS, GPU utilization (via Task Manager)
+
+---
+
+## Citations
+
+1. NVIDIA. (2024). *Isaac Sim Documentation.* https://docs.omniverse.nvidia.com/isaacsim/
+
+2. Liang, J., Makoviychuk, V., Handa, A., Chentanez, N., Macklin, M., & Fox, D. (2023). *GPU-Accelerated Robotic Simulation for Distributed Reinforcement Learning.* CoRL 2018.
+
+3. Pixar Animation Studios. (2023). *Universal Scene Description (USD).* https://openusd.org/
+
+4. NVIDIA. (2024). *PhysX 5 SDK.* https://developer.nvidia.com/physx-sdk
+
+5. Tremblay, J., et al. (2018). *Training deep networks with synthetic data: Bridging the reality gap by domain randomization.* CVPR Workshops.
+
+6. Tobin, J., et al. (2017). *Domain randomization for transferring deep neural networks from simulation to the real world.* IROS 2017.
+
+7. NVIDIA. (2024). *Isaac Replicator Documentation.* https://docs.omniverse.nvidia.com/extensions/latest/ext_replicator.html
+
+8. NVIDIA. (2024). *Project GR00T: Foundation Model for Humanoid Robots.* GTC 2024 Keynote.
+
+9. Makoviychuk, V., et al. (2021). *Isaac Gym: High Performance GPU-Based Physics Simulation For Robot Learning.* NeurIPS 2021.
+
+10. NVIDIA. (2024). *Omniverse Platform Documentation.* https://docs.omniverse.nvidia.com/
+
+11. Coumans, E., & Bai, Y. (2016). *PyBullet: A Python Module for Physics Simulation.* https://pybullet.org/
+
+12. Smith, R. (2006). *Open Dynamics Engine.* http://www.ode.org/
+
+---
+
+## Hardware Requirements
+
+**Minimum**:
+- **GPU**: NVIDIA RTX 2060 (6 GB VRAM)
+- **RAM**: 16 GB
+- **Disk**: 50 GB
+
+**Recommended**:
+- **GPU**: NVIDIA RTX 4070 (12 GB VRAM)
+- **RAM**: 32 GB
+- **Disk**: 100 GB (for datasets)
+
+**Ideal** (for large-scale training):
+- **GPU**: NVIDIA RTX 4090 (24 GB VRAM)
+- **RAM**: 64 GB
+- **Disk**: 1 TB NVMe SSD
+
+---
+
+## Labs
+
+**Lab 6.1: Isaac Sim First Scene**
+
+**Repository**: [github.com/Shumailaaijaz/physical-ai-labs](https://github.com/Shumailaaijaz/physical-ai-labs)
+
+**Lab Path**: `labs/chapter-06-isaac-first-scene/`
+
+**What's Included**:
+- Python script to create kitchen scene
+- Spawn 10 objects programmatically
+- Capture RGB-D images
+
+**To Run**:
+
+```bash
+# Windows
+cd labs/chapter-06-isaac-first-scene
+"C:\Users\YourName\AppData\Local\ov\pkg\isaac-sim-2023.1.1\python.bat" create_scene.py
+```
+
+**Expected Result**: Kitchen scene with randomized objects, 100 captured images.
+
+---
+
+**Lab 6.2: Robot Control via ROS 2**
+
+**Lab Path**: `labs/chapter-06-isaac-ros2-control/`
+
+**What's Included**:
+- USD scene with TurtleBot3
+- ROS 2 teleop integration
+- Camera publisher
+
+**To Run**:
+
+1. Launch Isaac Sim, open `turtlebot_scene.usd`
+2. Terminal: `ros2 run teleop_twist_keyboard teleop_twist_keyboard`
+3. Press Play in Isaac Sim
+
+**Expected Result**: Control robot in Isaac Sim via ROS 2.
+
+---
+
+**Next Chapter**: [Chapter 7: Isaac ROS Integration →](07-isaac-ros-integration.mdx)
+
+---
+
+*This textbook is a living document. Found an error? Have a suggestion? Submit an issue or PR at [github.com/Shumailaaijaz/physical-ai-textbook](https://github.com/Shumailaaijaz/physical-ai-textbook)*

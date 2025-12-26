@@ -1,0 +1,795 @@
+---
+id: 05-unity-robotics-hub
+title: "Chapter 5: Unity Robotics Hub"
+sidebar_position: 5
+part: 2
+week: 7
+difficulty_levels: [intermediate]
+hardware_tracks: [simulation_only, budget_hardware, research_grade]
+citation_count: 8
+word_count: 6500
+urdu_completeness: 0
+---
+
+# Chapter 5: Unity Robotics Hub
+
+> *"Unity brings photorealism to robotics—where Gazebo shows you physics, Unity shows you reality."*
+
+## Learning Objectives
+
+By the end of this chapter, you will be able to:
+
+1. **Set up Unity** for robotics simulation
+2. **Connect Unity to ROS 2** via TCP endpoint
+3. **Import robot models** (URDF) into Unity
+4. **Create high-fidelity environments** for human-robot interaction
+5. **Generate synthetic training data** (images, depth, segmentation)
+
+**Estimated Time**: 6-8 hours (reading + labs)
+
+---
+
+## 5.1 Introduction: Why Unity?
+
+Gazebo is excellent for physics and navigation, but has limitations:
+- **Graphics**: Basic rendering (no shadows, reflections, or advanced lighting)
+- **Environments**: Sparse model library
+- **Human interaction**: Limited support for animated humans
+
+**Unity** is a game engine (think Fortnite, Pokemon GO) repurposed for robotics:
+- **Photorealistic rendering**: RTX ray tracing, global illumination
+- **Massive asset library**: 100,000+ pre-made 3D models (furniture, buildings, humans)
+- **VR/AR support**: Test human-robot interaction in immersive environments
+
+### 5.1.1 Unity vs Gazebo
+
+| Feature | Gazebo | Unity |
+|---------|--------|-------|
+| **Physics** | ⭐⭐⭐⭐⭐ (ODE, Bullet) | ⭐⭐⭐⭐ (PhysX 4) |
+| **Graphics** | ⭐⭐ (OpenGL) | ⭐⭐⭐⭐⭐ (HDRP, ray tracing) |
+| **ROS Integration** | ⭐⭐⭐⭐⭐ (Native) | ⭐⭐⭐ (TCP bridge) |
+| **Ease of Use** | ⭐⭐⭐ (SDF/URDF) | ⭐⭐⭐⭐ (GUI drag-and-drop) |
+| **Platform** | Linux primary | Windows, macOS, Linux |
+| **Cost** | Free (open-source) | Free (Personal), Paid (Pro) |
+
+**Best practices**:
+- **Gazebo**: Navigation, manipulation, physics-critical tasks
+- **Unity**: Vision training, HRI, photorealistic visualization
+
+### 5.1.2 Use Cases
+
+1. **Synthetic data generation**: Train YOLOv8 on 100,000 Unity-generated images (no manual labeling)
+2. **Human-robot interaction**: Simulate robots navigating crowded cafes
+3. **Visualization**: Create demos for stakeholders (investors, customers)
+4. **VR teleoperation**: Control robots in VR (real-time feedback)
+
+---
+
+## 5.2 Unity Robotics Hub Overview
+
+**Unity Robotics Hub** is Unity's official ROS integration. It consists of:
+
+1. **ROS-TCP-Connector** (Unity plugin): Connects Unity to ROS via TCP
+2. **ROS-TCP-Endpoint** (ROS package): ROS 2 node that bridges topics/services
+3. **URDF Importer**: Load robot models into Unity
+4. **Articulation Body**: Unity's physics system for robots
+
+**Architecture**:
+```
+┌──────────────┐     TCP (port 10000)     ┌──────────────┐
+│    Unity     │◄────────────────────────►│   ROS 2      │
+│  (Simulator) │     JSON messages        │  (Control)   │
+└──────────────┘                          └──────────────┘
+     │                                            │
+     │ Publishes: /camera/image                  │ Publishes: /cmd_vel
+     │ Subscribes: /cmd_vel                      │ Subscribes: /camera/image
+```
+
+---
+
+## 5.3 Installing Unity on Windows (Native!)
+
+**Advantage**: Unity runs **natively on Windows**—no Docker, no WSL2 needed!
+
+<details>
+<summary>Click to expand: Unity Installation</summary>
+
+**Step 1: Install Unity Hub**
+
+1. Download: https://unity.com/download
+2. Install Unity Hub (launcher for Unity versions)
+3. Create a Unity account (free)
+
+**Step 2: Install Unity Editor**
+
+1. Open Unity Hub
+2. Installs → Add → Install Unity Editor
+3. **Recommended version**: **Unity 2022.3 LTS** (Long Term Support)
+4. Select modules:
+   - **Windows Build Support** (IL2CPP)
+   - **Linux Build Support** (for deploying to edge devices)
+   - **Visual Studio** (for C# editing)
+
+**Installation time**: ~20 minutes (8 GB download)
+
+**Step 3: Verify Installation**
+
+1. Unity Hub → Projects → New Project
+2. Template: **3D Core**
+3. Project name: `RoboticsTest`
+4. Create → Unity Editor opens
+
+**Success!** You see Unity's interface (Scene view, Game view, Inspector).
+
+</details>
+
+---
+
+## 5.4 Setting Up Unity Robotics Hub
+
+### 5.4.1 Install ROS-TCP-Connector (Unity Side)
+
+**Method 1: Package Manager** (Recommended)
+
+1. Open Unity Editor
+2. Window → Package Manager
+3. `+` → Add package from git URL
+4. Enter:
+   ```
+   https://github.com/Unity-Technologies/ROS-TCP-Connector.git?path=/com.unity.robotics.ros-tcp-connector
+   ```
+5. Click "Add" → Package installs (2 minutes)
+
+**Method 2: Manual Install**
+
+1. Download: https://github.com/Unity-Technologies/Unity-Robotics-Hub/releases
+2. Extract to `Packages/` folder in your Unity project
+
+### 5.4.2 Install ROS-TCP-Endpoint (ROS 2 Side)
+
+```bash
+# Inside Docker/WSL2:
+cd ~/ros2_ws/src
+git clone https://github.com/Unity-Technologies/ROS-TCP-Endpoint.git
+
+# Build
+cd ~/ros2_ws
+colcon build --packages-select ros_tcp_endpoint
+source install/setup.bash
+```
+
+### 5.4.3 Configure Connection
+
+**In Unity**:
+
+1. Robotics → ROS Settings
+2. **ROS IP Address**: `127.0.0.1` (localhost)
+3. **ROS Port**: `10000` (default)
+4. **Protocol**: ROS 2
+
+**Launch ROS endpoint**:
+
+```bash
+ros2 run ros_tcp_endpoint default_server_endpoint --ros-args -p ROS_IP:=0.0.0.0
+```
+
+**Expected output**:
+```
+[INFO] [ros_tcp_endpoint]: Starting server on 0.0.0.0:10000
+```
+
+**Test connection**: Unity Editor → Robotics → ROS Settings → "Connect" button turns green.
+
+---
+
+## 5.5 Your First Unity-ROS 2 Project
+
+Let's create a simple scene with a sphere that moves based on ROS `/cmd_vel` commands.
+
+### 5.5.1 Create Unity Scene
+
+1. **Create scene**:
+   - File → New Scene → 3D Core
+   - Save as `RoboticsScene`
+
+2. **Add ground plane**:
+   - Right-click in Hierarchy → 3D Object → Plane
+   - Transform: Position (0, 0, 0), Scale (10, 1, 10)
+
+3. **Add robot (sphere)**:
+   - Right-click in Hierarchy → 3D Object → Sphere
+   - Rename to "Robot"
+   - Transform: Position (0, 0.5, 0)
+
+4. **Add physics**:
+   - Select Robot
+   - Inspector → Add Component → Rigidbody
+   - Mass: 1, Drag: 0.5, Angular Drag: 0.5
+
+### 5.5.2 Create C# Script to Subscribe to `/cmd_vel`
+
+**Create script**:
+
+1. Right-click in Project panel → Create → C# Script
+2. Name: `RobotController`
+3. Double-click to open in Visual Studio
+
+**Code**:
+
+```csharp
+using UnityEngine;
+using Unity.Robotics.ROSTCPConnector;
+using RosMessageTypes.Geometry;
+
+public class RobotController : MonoBehaviour
+{
+    private ROSConnection ros;
+    private Rigidbody rb;
+
+    // Movement parameters
+    public float forceMultiplier = 10f;
+    public float torqueMultiplier = 10f;
+
+    void Start()
+    {
+        // Get ROS connection instance
+        ros = ROSConnection.GetOrCreateInstance();
+        ros.RegisterRosService<Empty>("ping");  // Test service
+
+        // Subscribe to /cmd_vel
+        ros.Subscribe<TwistMsg>("/cmd_vel", ApplyVelocityCommand);
+
+        // Get Rigidbody component
+        rb = GetComponent<Rigidbody>();
+
+        Debug.Log("RobotController: Subscribed to /cmd_vel");
+    }
+
+    void ApplyVelocityCommand(TwistMsg twist)
+    {
+        // Extract velocity commands
+        float linearX = (float)twist.linear.x;
+        float angularZ = (float)twist.angular.z;
+
+        // Apply force (forward/backward)
+        Vector3 force = transform.forward * linearX * forceMultiplier;
+        rb.AddForce(force, ForceMode.Force);
+
+        // Apply torque (turning)
+        Vector3 torque = Vector3.up * angularZ * torqueMultiplier;
+        rb.AddTorque(torque, ForceMode.Force);
+
+        Debug.Log($"Received cmd_vel: linear.x={linearX}, angular.z={angularZ}");
+    }
+}
+```
+
+**Attach script to Robot**:
+
+1. Select "Robot" in Hierarchy
+2. Drag `RobotController` script onto Robot
+3. Inspector: Set `Force Multiplier` = 10, `Torque Multiplier` = 10
+
+### 5.5.3 Test
+
+**Terminal 1: Start ROS endpoint**
+
+```bash
+ros2 run ros_tcp_endpoint default_server_endpoint --ros-args -p ROS_IP:=0.0.0.0
+```
+
+**Terminal 2: Publish velocity**
+
+```bash
+ros2 topic pub /cmd_vel geometry_msgs/Twist \
+  "linear: {x: 1.0, y: 0.0, z: 0.0}
+   angular: {x: 0.0, y: 0.0, z: 0.0}"
+```
+
+**Unity Editor**: Press **Play** button → Sphere moves forward!
+
+---
+
+## 5.6 Importing URDF into Unity
+
+Unity can import robot URDF files directly.
+
+### 5.6.1 Install URDF Importer
+
+1. Package Manager → Add from git URL:
+   ```
+   https://github.com/Unity-Technologies/URDF-Importer.git?path=/com.unity.robotics.urdf-importer
+   ```
+
+### 5.6.2 Import Robot
+
+**Example: TurtleBot3**
+
+1. Download TurtleBot3 URDF:
+   ```bash
+   git clone https://github.com/ROBOTIS-GIT/turtlebot3.git
+   ```
+
+2. In Unity:
+   - Assets → Import Robot from URDF
+   - Browse to `turtlebot3_description/urdf/turtlebot3_burger.urdf`
+   - Import Settings:
+     - Axis Type: Y-Up (Unity default)
+     - Mesh Decomposer: VHACD (for collision)
+   - Click "Import"
+
+**Result**: TurtleBot3 appears in scene with all joints, links, sensors.
+
+### 5.6.3 Configure Articulation Body
+
+Unity's **Articulation Body** component handles robot physics.
+
+**Hierarchy after import**:
+```
+turtlebot3_burger
+├── base_link (Articulation Body)
+├── wheel_left_link (Articulation Body)
+├── wheel_right_link (Articulation Body)
+└── camera_link
+```
+
+**Joint types map**:
+- URDF `revolute` → Unity `Revolute`
+- URDF `prismatic` → Unity `Prismatic`
+- URDF `fixed` → Unity `Fixed`
+
+---
+
+## 5.7 Publishing Camera Images to ROS
+
+Let's add a camera to the robot and publish RGB images to ROS.
+
+### 5.7.1 Add Camera
+
+1. Right-click on robot → Create Empty → Rename "CameraMount"
+2. Transform: Position (0, 0.5, 0.2) (0.2m forward from center)
+3. Right-click CameraMount → Camera
+4. Camera settings:
+   - Field of View: 60
+   - Clipping Planes: Near 0.1, Far 100
+
+### 5.7.2 Create Camera Publisher Script
+
+```csharp
+using UnityEngine;
+using Unity.Robotics.ROSTCPConnector;
+using RosMessageTypes.Sensor;
+using Unity.Robotics.ROSTCPConnector.MessageGeneration;
+
+public class CameraPublisher : MonoBehaviour
+{
+    private ROSConnection ros;
+    private Camera cam;
+
+    public string topicName = "/camera/image_raw";
+    public float publishRate = 10f;  // Hz
+
+    private float timer;
+    private RenderTexture renderTexture;
+
+    void Start()
+    {
+        ros = ROSConnection.GetOrCreateInstance();
+        ros.RegisterPublisher<ImageMsg>(topicName);
+
+        cam = GetComponent<Camera>();
+
+        // Create render texture
+        renderTexture = new RenderTexture(640, 480, 24);
+        cam.targetTexture = renderTexture;
+
+        timer = 1f / publishRate;
+    }
+
+    void Update()
+    {
+        timer -= Time.deltaTime;
+
+        if (timer <= 0)
+        {
+            timer = 1f / publishRate;
+            PublishImage();
+        }
+    }
+
+    void PublishImage()
+    {
+        // Render camera to texture
+        RenderTexture.active = renderTexture;
+        Texture2D texture = new Texture2D(renderTexture.width, renderTexture.height, TextureFormat.RGB24, false);
+        texture.ReadPixels(new Rect(0, 0, renderTexture.width, renderTexture.height), 0, 0);
+        texture.Apply();
+
+        // Convert to ROS message
+        ImageMsg msg = new ImageMsg
+        {
+            header = new RosMessageTypes.Std.HeaderMsg
+            {
+                stamp = new RosMessageTypes.BuiltinInterfaces.TimeMsg
+                {
+                    sec = (int)Time.time,
+                    nanosec = (uint)((Time.time % 1) * 1e9)
+                },
+                frame_id = "camera_link"
+            },
+            height = (uint)texture.height,
+            width = (uint)texture.width,
+            encoding = "rgb8",
+            is_bigendian = 0,
+            step = (uint)(texture.width * 3),
+            data = texture.GetRawTextureData()
+        };
+
+        ros.Publish(topicName, msg);
+    }
+}
+```
+
+**Attach script**:
+1. Select Camera object
+2. Add Component → Camera Publisher
+3. Topic Name: `/camera/image_raw`
+4. Publish Rate: 10
+
+**Test**:
+```bash
+# View images in RViz
+ros2 run rqt_image_view rqt_image_view /camera/image_raw
+```
+
+---
+
+## 5.8 High-Fidelity Environments
+
+Unity's strength is creating realistic scenes.
+
+### 5.8.1 Using Asset Store
+
+**Unity Asset Store**: 100,000+ free and paid 3D models.
+
+**Example: Kitchen Environment**
+
+1. Unity Editor → Window → Asset Store
+2. Search "Kitchen"
+3. Download free asset pack (e.g., "Modular Kitchen")
+4. Import into project
+5. Drag prefabs into scene
+
+### 5.8.2 ProBuilder (Built-In Modeling)
+
+**ProBuilder**: Build geometry directly in Unity (like Blender, but simpler).
+
+**Create a room**:
+
+1. Window → Package Manager → Search "ProBuilder" → Install
+2. Tools → ProBuilder → ProBuilder Window
+3. New Shape → Cube → Draw room walls (4 cubes arranged as walls)
+4. Apply materials (wood, concrete, etc.)
+
+### 5.8.3 Lighting for Photorealism
+
+**High Definition Render Pipeline (HDRP)**:
+
+1. Window → Rendering → Lighting
+2. Skybox: HDR skybox (search Asset Store for free HDRI images)
+3. Add lights:
+   - Directional Light (sun)
+   - Point Lights (lamps)
+   - Spotlights (ceiling lights)
+
+4. **Global Illumination**: Enable bounce lighting (realistic shadows)
+
+---
+
+## 5.9 Human-Robot Interaction
+
+### 5.9.1 Animated Human Models
+
+**Source**: Mixamo (Adobe's free character library)
+
+**Steps**:
+
+1. Download character from Mixamo: https://www.mixamo.com/
+2. Select "T-Pose" FBX
+3. Import to Unity
+4. Add Animation Controller:
+   - Window → Animation → Animator
+   - Create new Animator Controller
+   - Add animations (walk, idle, wave)
+
+### 5.9.2 Social Navigation Scenario
+
+**Goal**: Robot navigates around humans.
+
+**Setup**:
+
+1. Place 5 animated humans in scene (walking in random directions)
+2. Add Nav Mesh Agent to humans (Unity's pathfinding AI)
+3. Robot subscribes to `/cmd_vel` and must avoid humans
+
+**Code snippet (human waypoint navigation)**:
+
+```csharp
+using UnityEngine;
+using UnityEngine.AI;
+
+public class HumanWalker : MonoBehaviour
+{
+    private NavMeshAgent agent;
+    public Transform[] waypoints;
+    private int currentWaypoint = 0;
+
+    void Start()
+    {
+        agent = GetComponent<NavMeshAgent>();
+        agent.SetDestination(waypoints[0].position);
+    }
+
+    void Update()
+    {
+        if (!agent.pathPending && agent.remainingDistance < 0.5f)
+        {
+            // Reached waypoint, go to next
+            currentWaypoint = (currentWaypoint + 1) % waypoints.Length;
+            agent.SetDestination(waypoints[currentWaypoint].position);
+        }
+    }
+}
+```
+
+---
+
+## 5.10 Synthetic Data Generation
+
+**Goal**: Generate labeled datasets for training ML models.
+
+### 5.10.1 Unity Perception Package
+
+**Install**:
+
+1. Package Manager → Add from git URL:
+   ```
+   https://github.com/Unity-Technologies/com.unity.perception.git
+   ```
+
+### 5.10.2 Capture RGB + Segmentation
+
+**Setup**:
+
+1. Add Perception Camera:
+   - Select camera → Add Component → Perception Camera
+2. Configure captures:
+   - RGB: Enable
+   - Semantic Segmentation: Enable
+   - Bounding Boxes: Enable
+
+3. Create labeling configuration:
+   - Assets → Create → Perception → ID Label Config
+   - Add labels: "robot", "table", "chair", "human"
+
+4. Tag objects:
+   - Select object → Add Component → Labeling
+   - Add Label: "table"
+
+### 5.10.3 Domain Randomization
+
+**Randomize every frame**:
+- Object positions
+- Object rotations
+- Lighting (intensity, color)
+- Textures (swap materials)
+
+**Script**:
+
+```csharp
+using UnityEngine;
+using UnityEngine.Perception.Randomization.Samplers;
+
+public class DomainRandomizer : MonoBehaviour
+{
+    public GameObject[] objectsToRandomize;
+    public Material[] materials;
+
+    private UniformSampler positionSampler = new UniformSampler(-5f, 5f);
+    private UniformSampler rotationSampler = new UniformSampler(0f, 360f);
+
+    void Update()
+    {
+        foreach (GameObject obj in objectsToRandomize)
+        {
+            // Randomize position
+            obj.transform.position = new Vector3(
+                positionSampler.Sample(),
+                obj.transform.position.y,
+                positionSampler.Sample()
+            );
+
+            // Randomize rotation
+            obj.transform.rotation = Quaternion.Euler(0, rotationSampler.Sample(), 0);
+
+            // Randomize material
+            obj.GetComponent<Renderer>().material = materials[Random.Range(0, materials.Length)];
+        }
+    }
+}
+```
+
+### 5.10.4 Generate Dataset
+
+**Run simulation**:
+
+1. Set Perception Camera → Frames Per Iteration: 10,000
+2. Play → Unity captures 10,000 images with:
+   - RGB images
+   - Semantic segmentation masks
+   - Bounding boxes (JSON)
+
+**Output** (saved to `{Project}/Perception/`):
+```
+Dataset/
+├── RGB/
+│   ├── 00001.png
+│   ├── 00002.png
+│   └── ...
+├── Segmentation/
+│   ├── 00001.png (colored masks)
+│   └── ...
+└── annotations.json (COCO format)
+```
+
+**Use for training**: Train YOLOv8, Mask R-CNN, etc.
+
+---
+
+## 5.11 Unity ML-Agents (Preview)
+
+**Unity ML-Agents**: Train RL policies directly in Unity.
+
+**Example**: Train quadruped to walk.
+
+**High-level process**:
+
+1. Define observation space (joint angles, torso orientation)
+2. Define action space (joint torques)
+3. Define reward function (forward velocity, upright posture)
+4. Train with PPO algorithm (PyTorch backend)
+
+**Integration with ROS**:
+- Actions from RL policy → Publish to ROS `/joint_commands`
+- Observations from ROS sensors → Input to policy
+
+**Reference**: https://github.com/Unity-Technologies/ml-agents
+
+---
+
+## 5.12 Unity vs Gazebo: Decision Matrix
+
+| Use Unity When... | Use Gazebo When... |
+|-------------------|-------------------|
+| Training vision models (need labeled data) | Testing navigation algorithms |
+| Creating demos for non-technical stakeholders | Rapid prototyping (URDF → spawn in seconds) |
+| Simulating human-robot interaction | Physics-critical tasks (grasping, bipedal balance) |
+| Deploying VR/AR teleoperation | Integrating with existing ROS pipelines |
+| Need photorealistic rendering | Need real-time factor > 1.0 (faster-than-real-time) |
+
+**Recommendation**: Use **both**. Develop in Gazebo, visualize in Unity.
+
+---
+
+## Exercises
+
+### Exercise 5.1: URDF Import and Control
+
+**Goal**: Import a robot URDF into Unity, control joints via ROS.
+
+**Requirements**:
+1. Import `simple_arm.urdf` (from Chapter 3)
+2. Subscribe to `/joint_commands` (sensor_msgs/JointState)
+3. Apply joint positions using Articulation Body
+
+**Expected**: Robot arm moves when you publish joint commands.
+
+### Exercise 5.2: Kitchen Scene + Object Detection
+
+**Goal**: Create a kitchen scene, place 10 objects, capture 100 images with bounding boxes.
+
+**Requirements**:
+1. Download kitchen asset from Asset Store
+2. Place objects (cups, plates, bottles)
+3. Add labels ("cup", "plate", etc.)
+4. Run Perception Camera for 100 frames
+
+**Output**: 100 RGB images + annotations.json (COCO format)
+
+### Exercise 5.3: Social Navigation
+
+**Goal**: Robot avoids moving humans.
+
+**Requirements**:
+1. Add 3 animated humans (walking in circles)
+2. Robot subscribes to `/cmd_vel`
+3. Implement obstacle avoidance (stop if human within 1m)
+
+**Success criteria**: Robot navigates for 5 minutes without colliding with humans.
+
+---
+
+## Citations
+
+1. Unity Technologies. (2023). *Unity Robotics Hub Documentation.* https://github.com/Unity-Technologies/Unity-Robotics-Hub
+
+2. Juliani, A., Berges, V. P., Teng, E., Cohen, A., Harper, J., Elion, C., ... & Lange, D. (2018). *Unity: A general platform for intelligent agents.* arXiv preprint arXiv:1809.02627.
+
+3. Unity Technologies. (2023). *Unity Perception Package.* https://github.com/Unity-Technologies/com.unity.perception
+
+4. Tobin, J., Fong, R., Ray, A., Schneider, J., Zaremba, W., & Abbeel, P. (2017). *Domain randomization for transferring deep neural networks from simulation to the real world.* IEEE/RSJ International Conference on Intelligent Robots and Systems (IROS), 23-30.
+
+5. Tremblay, J., Prakash, A., Acuna, D., Brophy, M., Jampani, V., Anil, C., ... & Birchfield, S. (2018). *Training deep networks with synthetic data: Bridging the reality gap by domain randomization.* IEEE Conference on Computer Vision and Pattern Recognition Workshops (CVPRW), 969-977.
+
+6. Unity Technologies. (2023). *High Definition Render Pipeline (HDRP).* https://docs.unity3d.com/Packages/com.unity.render-pipelines.high-definition@latest
+
+7. Adobe. (2023). *Mixamo: Animated 3D Characters.* https://www.mixamo.com/
+
+8. Unity Technologies. (2023). *ML-Agents Toolkit.* https://github.com/Unity-Technologies/ml-agents
+
+---
+
+## Hardware Requirements
+
+**Minimum**:
+- **GPU**: NVIDIA GTX 1060 6GB OR AMD RX 580
+- **RAM**: 8 GB
+- **Disk**: 20 GB free space
+
+**Recommended**:
+- **GPU**: NVIDIA RTX 3060 12GB (for real-time ray tracing)
+- **RAM**: 16 GB
+- **Disk**: 50 GB (for Asset Store assets)
+
+**For synthetic data generation**:
+- **GPU**: RTX 3080 or better (batch rendering 10,000 images)
+
+---
+
+## Lab
+
+**Lab 5.1: Unity ROS Bridge + Teleoperation**
+
+**Repository**: [github.com/Shumailaaijaz/physical-ai-labs](https://github.com/Shumailaaijaz/physical-ai-labs)
+
+**Lab Path**: `labs/chapter-05-unity-tcp-connector/`
+
+**What's Included**:
+- Unity project (pre-configured scene)
+- ROS 2 teleop node (keyboard control)
+- Camera publisher script
+- README with tasks
+
+**To Run**:
+
+```bash
+# Terminal 1: ROS endpoint
+cd labs/chapter-05-unity-tcp-connector/ros2_ws
+source install/setup.bash
+ros2 run ros_tcp_endpoint default_server_endpoint --ros-args -p ROS_IP:=0.0.0.0
+
+# Terminal 2: Teleop
+ros2 run teleop_twist_keyboard teleop_twist_keyboard
+
+# Unity: Open project, press Play
+```
+
+**Expected Result**: Control robot in Unity with keyboard, view camera feed in RViz.
+
+---
+
+**Next Chapter**: [Chapter 6: NVIDIA Isaac Sim Basics →](06-isaac-sim-basics.mdx)
+
+---
+
+*This textbook is a living document. Found an error? Have a suggestion? Submit an issue or PR at [github.com/Shumailaaijaz/physical-ai-textbook](https://github.com/Shumailaaijaz/physical-ai-textbook)*

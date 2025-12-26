@@ -1,0 +1,45 @@
+skill: diagram-gen
+version: 1.0.0
+description: Generates technical diagrams using Mermaid.js syntax
+
+prompt: |
+  Generate a Mermaid.js diagram based on this description:
+
+  {description}
+
+  Requirements:
+  1. Use appropriate diagram type (flowchart, sequence, class, state, etc.)
+  2. Make it clear and professional
+  3. Include proper labels and connections
+  4. Use colors for better visualization
+  5. Keep it simple and readable
+
+  Output ONLY the Mermaid.js code, no explanations.
+
+output_format: mermaid
+model: gpt-4-turbo
+
+examples:
+  - input: "ROS 2 node communication with topics"
+    output: |
+      graph LR
+        A[Publisher Node] -->|/cmd_vel| B[Topic]
+        B -->|/cmd_vel| C[Subscriber Node]
+        D[Sensor Node] -->|/sensor_data| E[Topic]
+        E -->|/sensor_data| C
+        style A fill:#4CAF50
+        style C fill:#2196F3
+        style D fill:#FF9800
+
+  - input: "Humanoid robot control architecture"
+    output: |
+      graph TD
+        A[High-Level Planner] --> B[Motion Controller]
+        B --> C[Left Leg]
+        B --> D[Right Leg]
+        B --> E[Arms]
+        F[Sensors] --> G[State Estimator]
+        G --> A
+        style A fill:#E91E63
+        style B fill:#9C27B0
+        style F fill:#FF5722

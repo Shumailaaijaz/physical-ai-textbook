@@ -1,0 +1,61 @@
+.personalizeButton {
+  position: sticky;
+  top: 60px;
+  z-index: 100;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.625rem 1rem;
+  background-color: var(--ifm-color-primary);
+  color: white;
+  border: none;
+  border-radius: 20px;
+  font-size: 0.875rem;
+  font-weight: 600;
+  cursor: pointer;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+  transition: all 0.2s ease;
+  margin-bottom: 1rem;
+}
+
+.personalizeButton:hover {
+  background-color: var(--ifm-color-primary-dark);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+}
+
+.personalizeButton.active {
+  background-color: var(--ifm-color-success);
+}
+
+.personalizeButton.active:hover {
+  background-color: var(--ifm-color-success-dark);
+}
+
+.personalizeButton .icon {
+  font-size: 1rem;
+}
+
+.personalizeButton .text {
+  white-space: nowrap;
+}
+
+@media (max-width: 768px) {
+  .personalizeButton {
+    position: fixed;
+    top: auto;
+    bottom: 1rem;
+    right: 1rem;
+    padding: 0.75rem 1.25rem;
+    border-radius: 25px;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.25);
+  }
+
+  .personalizeButton .text {
+    display: none;
+  }
+
+  .personalizeButton .icon {
+    font-size: 1.25rem;
+  }
+}

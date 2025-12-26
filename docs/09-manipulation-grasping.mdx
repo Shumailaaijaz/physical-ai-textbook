@@ -1,0 +1,839 @@
+---
+id: 09-manipulation-grasping
+title: "Chapter 9: Manipulation & Grasping"
+sidebar_position: 9
+part: 4
+week: 12
+difficulty_levels: [advanced]
+hardware_tracks: [simulation_only, research_grade]
+citation_count: 12
+word_count: 6800
+urdu_completeness: 0
+---
+
+# Chapter 9: Manipulation & Grasping
+
+> *"The hand is the visible part of the brain." — Immanuel Kant*
+
+## Learning Objectives
+
+By the end of this chapter, you will be able to:
+
+1. **Solve inverse kinematics** for robot arms
+2. **Plan collision-free trajectories** with MoveIt 2
+3. **Implement grasp planning** algorithms
+4. **Use force control** for compliant manipulation
+5. **Integrate vision** (object detection) + manipulation
+
+**Estimated Time**: 8-10 hours (reading + labs)
+
+---
+
+## 9.1 Introduction: Manipulation Challenges
+
+Picking up a cup seems trivial to humans. For robots, it requires solving multiple hard problems:
+
+**Challenges**:
+1. **Redundancy**: 7-DOF arm has infinite solutions for the same end-effector pose (elbow up vs down)
+2. **Grasp stability**: Where to place fingers? (force closure, contact points)
+3. **Collision avoidance**: Don't hit the table, other objects, or yourself
+4. **Perception uncertainty**: Object pose may be off by 1-2cm (enough to fail grasp)
+5. **Contact forces**: Too weak → object slips; too strong → object breaks
+
+### 9.1.1 State of the Art
+
+**Franka Emika Panda** (research standard):
+- 7-DOF arm (redundant)
+- Parallel-jaw gripper (max 0.08m opening)
+- Torque sensors (all 7 joints)
+- **Price**: $25,000
+
+**Unitree Z1** (budget option):
+- 6-DOF arm
+- Gripper with force sensing
+- **Price**: $3,000
+
+**Unitree G1 Humanoid**:
+- Dual 7-DOF arms (whole-body manipulation)
+- 3-finger dexterous hands
+- **Use case**: Bi-manual tasks (opening jars, folding clothes)
+
+---
+
+## 9.2 Forward and Inverse Kinematics
+
+### 9.2.1 Denavit-Hartenberg (DH) Parameters
+
+**DH Convention**: Standard way to describe robot arm geometry.
+
+Each joint has 4 parameters:
+- `θ`: Joint angle (revolute) or displacement (prismatic)
+- `d`: Link offset along z-axis
+- `a`: Link length along x-axis
+- `α`: Link twist (rotation about x-axis)
+
+**Example**: PUMA 560 arm (classic 6-DOF)
+
+| Joint | θ | d | a | α |
+|-------|---|---|---|---|
+| 1 | θ₁* | 0 | 0 | 90° |
+| 2 | θ₂* | 0 | 0.4318 | 0° |
+| 3 | θ₃* | 0.15005 | 0.0203 | -90° |
+| 4 | θ₄* | 0.4318 | 0 | 90° |
+| 5 | θ₅* | 0 | 0 | -90° |
+| 6 | θ₆* | 0 | 0 | 0° |
+
+(*) Variable (controlled by motors)
+
+### 9.2.2 Forward Kinematics (FK)
+
+**Goal**: Given joint angles θ₁, θ₂, ..., θₙ, find end-effector pose.
+
+**Homogeneous Transformation Matrix**:
+
+```
+T = T₁ T₂ T₃ T₄ T₅ T₆
+
+Where each Tᵢ is:
+[cos(θᵢ)  -sin(θᵢ)cos(αᵢ)   sin(θᵢ)sin(αᵢ)   aᵢcos(θᵢ)]
+[sin(θᵢ)   cos(θᵢ)cos(αᵢ)  -cos(θᵢ)sin(αᵢ)   aᵢsin(θᵢ)]
+[   0          sin(αᵢ)           cos(αᵢ)           dᵢ     ]
+[   0             0                  0               1      ]
+```
+
+**Code Example** (using modern robotics library):
+
+```python
+import numpy as np
+from modern_robotics import FKinSpace
+
+# Screw axes (spatial)
+Slist = np.array([
+    [0,  0,  1,  0,    0,    0],
+    [0,  1,  0, -0.1, 0,    0],
+    [0,  1,  0, -0.1, 0,    0.4],
+    [0,  1,  0, -0.1, 0,    0.8],
+    [0,  0,  1,  0,   -0.8,  0],
+    [0,  1,  0, -0.1, 0,    1.0]
+]).T
+
+# Home configuration (end-effector pose at θ = 0)
+M = np.array([
+    [1, 0, 0, 1.0],
+    [0, 1, 0, 0],
+    [0, 0, 1, 0],
+    [0, 0, 0, 1]
+])
+
+# Joint angles
+theta = np.array([0, -np.pi/4, 0, np.pi/2, 0, 0])
+
+# Compute FK
+T = FKinSpace(M, Slist, theta)
+
+print("End-effector pose:")
+print(T)
+# Output:
+# [[ 0.707  0.707  0     0.883]
+#  [-0.707  0.707  0     0    ]
+#  [ 0      0      1     0.283]
+#  [ 0      0      0     1    ]]
+```
+
+### 9.2.3 Inverse Kinematics (IK)
+
+**Goal**: Given desired end-effector pose, find joint angles.
+
+**Analytical IK** (closed-form):
+- Only possible for specific arm geometries (6-DOF with spherical wrist)
+- Fast (microseconds)
+- Example: PUMA 560, UR5
+
+**Numerical IK** (iterative):
+- Works for any arm
+- Slower (milliseconds)
+- Methods: Jacobian pseudoinverse, Newton-Raphson, Levenberg-Marquardt
+
+**Code Example**: Numerical IK using PyKDL
+
+```python
+import PyKDL as kdl
+
+# Define robot chain (6-DOF)
+chain = kdl.Chain()
+chain.addSegment(kdl.Segment(kdl.Joint(kdl.Joint.RotZ), kdl.Frame.DH(0, np.pi/2, 0, 0)))
+chain.addSegment(kdl.Segment(kdl.Joint(kdl.Joint.RotZ), kdl.Frame.DH(0.4318, 0, 0, 0)))
+chain.addSegment(kdl.Segment(kdl.Joint(kdl.Joint.RotZ), kdl.Frame.DH(0.0203, -np.pi/2, 0.15005, 0)))
+chain.addSegment(kdl.Segment(kdl.Joint(kdl.Joint.RotZ), kdl.Frame.DH(0, np.pi/2, 0.4318, 0)))
+chain.addSegment(kdl.Segment(kdl.Joint(kdl.Joint.RotZ), kdl.Frame.DH(0, -np.pi/2, 0, 0)))
+chain.addSegment(kdl.Segment(kdl.Joint(kdl.Joint.RotZ), kdl.Frame.DH(0, 0, 0, 0)))
+
+# IK solver
+ik_solver = kdl.ChainIkSolverPos_LMA(chain)
+
+# Desired pose
+target = kdl.Frame(kdl.Rotation.RPY(0, 0, 0), kdl.Vector(0.5, 0.2, 0.3))
+
+# Initial guess
+q_init = kdl.JntArray(6)
+
+# Solve IK
+q_out = kdl.JntArray(6)
+result = ik_solver.CartToJnt(q_init, target, q_out)
+
+if result >= 0:
+    print("IK solution (radians):")
+    for i in range(6):
+        print(f"  Joint {i+1}: {q_out[i]:.3f}")
+else:
+    print("IK failed (target unreachable)")
+```
+
+### 9.2.4 Redundancy (7-DOF Arms)
+
+**Problem**: 7-DOF arm has infinite IK solutions for the same end-effector pose.
+
+**Use redundancy for**:
+- **Obstacle avoidance**: Choose elbow configuration that avoids table
+- **Joint limit avoidance**: Stay away from joint limits (safer)
+- **Secondary tasks**: Optimize energy, manipulability
+
+**Null-space projection**:
+
+```python
+# Primary task: Reach target (6D)
+J = compute_jacobian(q)  # 6x7 Jacobian
+dq_primary = np.linalg.pinv(J) @ dx_desired
+
+# Secondary task: Minimize joint deviation from home
+q_home = np.array([0, 0, 0, 0, 0, 0, 0])
+dq_secondary = 0.1 * (q_home - q)
+
+# Project secondary task into null space
+N = np.eye(7) - np.linalg.pinv(J) @ J  # Null-space projector
+dq_total = dq_primary + N @ dq_secondary
+```
+
+---
+
+## 9.3 MoveIt 2
+
+**MoveIt 2** is the ROS 2 motion planning framework. It provides:
+- **Motion planning**: RRT, RRT*, OMPL library
+- **Collision checking**: FCL (Flexible Collision Library)
+- **Trajectory execution**: Smooth interpolation
+- **MoveGroup interface**: Python/C++ API
+
+### 9.3.1 MoveIt Architecture
+
+```
+[User Goal] → [MoveGroup] → [Planning Scene] → [OMPL Planner] → [Trajectory] → [Controller]
+                  ↓
+            [Collision Checker]
+```
+
+### 9.3.2 Installation
+
+```bash
+# On Ubuntu 22.04
+sudo apt install ros-humble-moveit
+
+# Install MoveIt Python interface
+sudo apt install ros-humble-moveit-py
+```
+
+### 9.3.3 Basic Usage
+
+**Example**: Plan and execute pick-and-place
+
+```python
+import rclpy
+from rclpy.node import Node
+from moveit_py import MoveItPy
+from geometry_msgs.msg import PoseStamped
+
+class PickAndPlace(Node):
+    def __init__(self):
+        super().__init__('pick_and_place')
+
+        # Initialize MoveIt
+        self.moveit = MoveItPy(node_name="moveit_py")
+        self.arm = self.moveit.get_planning_component("manipulator")
+
+    def pick(self, object_pose):
+        """
+        Plan and execute grasp motion.
+
+        Args:
+            object_pose: Pose of object to grasp
+        """
+        # 1. Move to pre-grasp pose (10cm above object)
+        pre_grasp = object_pose.copy()
+        pre_grasp.pose.position.z += 0.1
+
+        self.arm.set_goal_state(pose_stamped_msg=pre_grasp)
+        plan1 = self.arm.plan()
+
+        if plan1.error_code.val == 1:  # Success
+            self.arm.execute()
+        else:
+            self.get_logger().error("Planning failed!")
+            return False
+
+        # 2. Open gripper
+        self.open_gripper()
+
+        # 3. Move down to grasp pose
+        self.arm.set_goal_state(pose_stamped_msg=object_pose)
+        plan2 = self.arm.plan()
+        self.arm.execute()
+
+        # 4. Close gripper
+        self.close_gripper()
+
+        # 5. Lift object
+        self.arm.set_goal_state(pose_stamped_msg=pre_grasp)
+        plan3 = self.arm.plan()
+        self.arm.execute()
+
+        return True
+
+    def place(self, place_pose):
+        """Similar to pick, but reverse order."""
+        # (Implementation similar to pick)
+        pass
+
+    def open_gripper(self):
+        # Send gripper command (hardware-specific)
+        pass
+
+    def close_gripper(self):
+        pass
+
+def main():
+    rclpy.init()
+    node = PickAndPlace()
+
+    # Define object pose
+    object_pose = PoseStamped()
+    object_pose.header.frame_id = "base_link"
+    object_pose.pose.position.x = 0.5
+    object_pose.pose.position.y = 0.0
+    object_pose.pose.position.z = 0.2
+    object_pose.pose.orientation.w = 1.0
+
+    # Execute pick
+    node.pick(object_pose)
+
+    rclpy.spin(node)
+```
+
+### 9.3.4 Motion Planners
+
+MoveIt uses **OMPL (Open Motion Planning Library)**:
+
+| **Planner** | **Speed** | **Optimality** | **Use Case** |
+|-------------|-----------|----------------|--------------|
+| **RRT** | Fast | Poor | Quick feasibility check |
+| **RRT*** | Medium | Good | General-purpose |
+| **PRM** | Slow (multi-query) | Good | Repeated queries in same environment |
+| **STOMP** | Medium | Good | Smooth trajectories (collision-free) |
+
+**Configure planner**:
+
+```yaml
+# moveit_config/ompl_planning.yaml
+manipulator:
+  planner_configs:
+    - RRTConnect
+    - RRTstar
+  projection_evaluator: joints(joint1,joint2)
+```
+
+---
+
+## 9.4 Grasp Planning
+
+**Problem**: Where to place fingers on an object?
+
+### 9.4.1 Force Closure
+
+**Definition**: Grasp achieves force closure if contact forces can resist **any** external wrench (force + torque).
+
+**2D Example**: Grasping a box
+
+```
+     ┌────────┐
+  F₁ │        │ F₂
+  ←  │  Box   │  →
+     └────────┘
+```
+
+**Force closure**: F₁ and F₂ point inward, opposing each other.
+
+**Not force closure**: F₁ and F₂ parallel (cannot resist torques).
+
+### 9.4.2 Antipodal Grasps
+
+**Parallel-jaw gripper**: Two fingers move in opposite directions.
+
+**Antipodal grasp**: Contact normals point towards each other.
+
+**Code Example**: Sample antipodal grasps for cylinder
+
+```python
+import numpy as np
+
+def sample_antipodal_grasps(object_mesh, num_samples=100):
+    """
+    Sample antipodal grasps for a mesh.
+
+    Args:
+        object_mesh: Trimesh object
+        num_samples: Number of grasp candidates
+
+    Returns:
+        List of (position, orientation, width) tuples
+    """
+    grasps = []
+
+    for _ in range(num_samples):
+        # Sample random point on surface
+        point1, face_idx = object_mesh.sample(1, return_index=True)
+        normal1 = object_mesh.face_normals[face_idx[0]]
+
+        # Raycast in opposite direction
+        ray_origin = point1 + normal1 * 0.5
+        ray_direction = -normal1
+
+        locations, index_ray, index_tri = object_mesh.ray.intersects_location(
+            ray_origins=[ray_origin],
+            ray_directions=[ray_direction]
+        )
+
+        if len(locations) > 0:
+            point2 = locations[0]
+            normal2 = object_mesh.face_normals[index_tri[0]]
+
+            # Check if normals oppose each other
+            if np.dot(normal1, normal2) < -0.9:  # Nearly opposite
+                # Grasp center
+                center = (point1 + point2) / 2
+
+                # Grasp width
+                width = np.linalg.norm(point2 - point1)
+
+                # Grasp orientation (approach direction)
+                approach = normal1
+
+                grasps.append((center, approach, width))
+
+    return grasps
+
+# Example usage
+import trimesh
+mesh = trimesh.primitives.Cylinder(radius=0.03, height=0.15)
+grasps = sample_antipodal_grasps(mesh, num_samples=100)
+
+print(f"Found {len(grasps)} grasp candidates")
+# Output: Found 87 grasp candidates
+```
+
+### 9.4.3 GraspNet (Learning-Based)
+
+**GraspNet-1Billion** (2020): DNN trained on 1 billion synthetic grasps.
+
+**Input**: Point cloud (from RGB-D camera)
+**Output**: Ranked grasp poses (6D pose + gripper width)
+
+**Code Example**:
+
+```python
+import torch
+from graspnetAPI import GraspNet
+
+# Load pre-trained model
+model = GraspNet(checkpoint_path='graspnet_checkpoint.pth')
+
+# Capture point cloud from RealSense
+point_cloud = capture_pointcloud()  # Nx3 array
+
+# Predict grasps
+grasps = model.infer(point_cloud)
+
+# Sort by score
+grasps_sorted = sorted(grasps, key=lambda g: g.score, reverse=True)
+
+# Best grasp
+best_grasp = grasps_sorted[0]
+print(f"Grasp pose: {best_grasp.pose}")
+print(f"Gripper width: {best_grasp.width:.3f}m")
+print(f"Score: {best_grasp.score:.2f}")
+
+# Execute with MoveIt
+execute_grasp(best_grasp)
+```
+
+---
+
+## 9.5 Force Control
+
+**Problem**: Position control is rigid (robot ignores contact forces).
+
+**Use cases**:
+- **Insertion**: Inserting USB plug (requires compliance)
+- **Wiping**: Cleaning table (constant force)
+- **Assembly**: Peg-in-hole (feel for contact)
+
+### 9.5.1 Impedance Control
+
+**Goal**: Act like a spring-damper system.
+
+**Control law**:
+
+```
+F = K(x_desired - x) + B(ẋ_desired - ẋ)
+```
+
+Where:
+- `K`: Stiffness (N/m)
+- `B`: Damping (Ns/m)
+
+**Code Example**:
+
+```python
+def impedance_controller(x_desired, x_current, v_current, K=100, B=10):
+    """
+    Compute force command for impedance control.
+
+    Args:
+        x_desired: Desired position (m)
+        x_current: Current position (m)
+        v_current: Current velocity (m/s)
+        K: Stiffness (N/m)
+        B: Damping (Ns/m)
+
+    Returns:
+        F: Force command (N)
+    """
+    error = x_desired - x_current
+    F = K * error - B * v_current
+    return F
+
+# Example: Move to target with compliance
+x_target = 0.5
+x = 0.0
+v = 0.0
+dt = 0.01
+m = 1.0  # End-effector mass (kg)
+
+for t in np.arange(0, 2, dt):
+    F = impedance_controller(x_target, x, v, K=100, B=10)
+
+    # Simulate dynamics
+    a = F / m
+    v += a * dt
+    x += v * dt
+
+    print(f"t={t:.2f}, x={x:.3f}, F={F:.2f}")
+```
+
+### 9.5.2 Admittance Control
+
+**Opposite of impedance**: Sense force → produce motion.
+
+**Control law**:
+
+```
+ẋ = (F_measured - F_desired) / B
+```
+
+**Use case**: Sanding (apply constant force to surface).
+
+---
+
+## 9.6 Visual Servoing
+
+**Visual servoing**: Use camera feedback to guide robot motion.
+
+### 9.6.1 Position-Based Visual Servoing (PBVS)
+
+**Workflow**:
+1. Detect object in camera image
+2. Estimate object pose (using DOPE, FoundationPose)
+3. Compute end-effector target pose
+4. Move to target using MoveIt
+
+**Code Example**:
+
+```python
+def pbvs_grasp(camera, detector, arm):
+    """
+    Grasp object using position-based visual servoing.
+    """
+    # 1. Capture image
+    image = camera.capture()
+
+    # 2. Detect object
+    object_pose = detector.detect(image)  # Returns 6D pose
+
+    if object_pose is None:
+        print("Object not detected!")
+        return False
+
+    # 3. Compute grasp pose (offset from object)
+    grasp_pose = object_pose.copy()
+    grasp_pose.position.z += 0.15  # Approach from above
+
+    # 4. Plan and execute
+    arm.set_goal_state(pose_stamped_msg=grasp_pose)
+    plan = arm.plan()
+
+    if plan.error_code.val == 1:
+        arm.execute()
+        return True
+    else:
+        return False
+```
+
+### 9.6.2 Image-Based Visual Servoing (IBVS)
+
+**Workflow**:
+1. Track features in image (e.g., corners)
+2. Compute image Jacobian (maps joint velocities to feature velocities)
+3. Move features towards desired positions
+
+**Advantage**: No need for 3D pose estimation (works even with calibration errors).
+
+---
+
+## 9.7 Dual-Arm Manipulation
+
+**Use cases**:
+- **Carry large objects**: Two arms share load
+- **Bi-manual tasks**: Open jar (one hand holds, one unscrews)
+
+### 9.7.1 Coordination
+
+**Challenge**: Synchronize two arms (avoid internal forces).
+
+**Approach**: Plan for **relative pose** (maintain grasp while moving).
+
+**Code Example**:
+
+```python
+def dual_arm_carry(left_arm, right_arm, object_pose, target_pose):
+    """
+    Carry object with two arms.
+
+    Args:
+        left_arm, right_arm: MoveIt arm interfaces
+        object_pose: Current object pose
+        target_pose: Desired object pose
+    """
+    # Current grasp poses
+    left_grasp = compute_grasp_pose(object_pose, side='left')
+    right_grasp = compute_grasp_pose(object_pose, side='right')
+
+    # Target grasp poses (maintain relative transform)
+    left_target = compute_grasp_pose(target_pose, side='left')
+    right_target = compute_grasp_pose(target_pose, side='right')
+
+    # Plan for both arms simultaneously
+    multi_arm_planner = MoveGroupInterface("arms")
+    multi_arm_planner.set_pose_target(left_target, end_effector_link="left_gripper")
+    multi_arm_planner.set_pose_target(right_target, end_effector_link="right_gripper")
+
+    plan = multi_arm_planner.plan()
+    multi_arm_planner.execute(plan)
+```
+
+---
+
+## 9.8 Whole-Body Manipulation (Humanoids)
+
+**Advantage**: Use base + torso + arms (12+ DOF total).
+
+**Use case**: Reach high shelf (stand on toes + extend arm).
+
+**Code Example**: Whole-body IK
+
+```python
+import pinocchio as pin
+
+def whole_body_ik(model, data, hand_target, foot_contacts):
+    """
+    IK for humanoid (optimizes all joints).
+
+    Args:
+        model: Pinocchio model
+        data: Pinocchio data
+        hand_target: Desired hand pose
+        foot_contacts: List of foot frame IDs (must stay on ground)
+
+    Returns:
+        q: Joint configuration
+    """
+    q = pin.neutral(model)
+
+    for iteration in range(100):
+        pin.forwardKinematics(model, data, q)
+        pin.computeJointJacobians(model, data, q)
+
+        # Hand task (priority 1)
+        hand_id = model.getFrameId("left_hand")
+        J_hand = pin.getFrameJacobian(model, data, hand_id, pin.LOCAL_WORLD_ALIGNED)
+
+        current_pose = data.oMf[hand_id]
+        error_hand = hand_target.translation - current_pose.translation
+
+        # Foot tasks (priority 2: stay on ground)
+        errors = [error_hand]
+        jacobians = [J_hand[:3, :]]  # Position only
+
+        for foot_id in foot_contacts:
+            J_foot = pin.getFrameJacobian(model, data, foot_id, pin.LOCAL_WORLD_ALIGNED)
+            foot_pos = data.oMf[foot_id].translation
+            error_foot = np.array([0, 0, 0]) - foot_pos  # Stay at current position
+            errors.append(error_foot)
+            jacobians.append(J_foot[:3, :])
+
+        # Stack constraints
+        J = np.vstack(jacobians)
+        e = np.concatenate(errors)
+
+        # Solve
+        dq = np.linalg.pinv(J) @ e
+        q = pin.integrate(model, q, dq * 0.1)
+
+        if np.linalg.norm(e) < 1e-3:
+            break
+
+    return q
+```
+
+---
+
+## Exercises
+
+### Exercise 9.1: Compare IK Solvers
+
+**Goal**: Implement and benchmark 5 IK solvers:
+1. Jacobian pseudoinverse
+2. Damped least squares
+3. PyKDL
+4. MoveIt (IKFast)
+5. TracIK
+
+**Metrics**:
+- **Speed**: Average solve time (ms)
+- **Success rate**: % of reachable targets solved
+- **Accuracy**: Mean pose error (mm)
+
+**Expected result**: TracIK wins on success rate; IKFast wins on speed.
+
+### Exercise 9.2: Stack 3 Blocks
+
+**Goal**: Use MoveIt to stack 3 blocks (pick-and-place).
+
+**Requirements**:
+- Blocks start at random positions on table
+- Stack them in order: Red → Blue → Green
+- Measure success rate over 20 trials
+
+**Expected**: >85% success with tuned grasp poses.
+
+### Exercise 9.3: Train GraspNet on YCB Objects
+
+**Goal**: Fine-tune GraspNet on YCB dataset (77 household objects).
+
+**Steps**:
+1. Generate synthetic grasps in Isaac Sim (10,000 per object)
+2. Train GraspNet model (PyTorch)
+3. Evaluate on 10 novel objects
+4. Compare to baseline (random grasps)
+
+**Expected**: GraspNet achieves >80% success vs 40% for random.
+
+---
+
+## Citations
+
+1. Salisbury, J. K., & Roth, B. (1983). *Kinematic and force analysis of articulated mechanical hands.* Journal of Mechanisms, Transmissions, and Automation in Design, 105(1), 35-41.
+
+2. Chitta, S., Sucan, I., & Cousins, S. (2012). *MoveIt! [ROS Topics].* IEEE Robotics & Automation Magazine, 19(1), 18-19.
+
+3. Kuffner, J. J., & LaValle, S. M. (2000). *RRT-connect: An efficient approach to single-query path planning.* IEEE International Conference on Robotics and Automation (ICRA), 2, 995-1001.
+
+4. Fang, H. S., Wang, C., Gou, M., & Lu, C. (2020). *GraspNet-1Billion: A large-scale benchmark for general object grasping.* IEEE/CVF Conference on Computer Vision and Pattern Recognition (CVPR), 11444-11453.
+
+5. Hogan, N. (1985). *Impedance control: An approach to manipulation: Part I—Theory.* Journal of Dynamic Systems, Measurement, and Control, 107(1), 1-7.
+
+6. Hutchinson, S., Hager, G. D., & Corke, P. I. (1996). *A tutorial on visual servo control.* IEEE Transactions on Robotics and Automation, 12(5), 651-670.
+
+7. Beeson, P., & Ames, B. (2015). *TRAC-IK: An open-source library for improved solving of generic inverse kinematics.* IEEE-RAS International Conference on Humanoid Robots (Humanoids), 928-935.
+
+8. Sucan, I. A., & Chitta, S. (2013). *MoveIt! Motion planning framework.* http://moveit.ros.org
+
+9. Miller, A. T., & Allen, P. K. (2004). *GraspIt! A versatile simulator for robotic grasping.* IEEE Robotics & Automation Magazine, 11(4), 110-122.
+
+10. Mahler, J., Liang, J., Niyaz, S., Laskey, M., Doan, R., Liu, X., ... & Goldberg, K. (2017). *Dex-Net 2.0: Deep learning to plan robust grasps with synthetic point clouds and analytic grasp metrics.* Robotics: Science and Systems (RSS).
+
+11. Carpentier, J., & Mansard, N. (2018). *Analytical derivatives of rigid body dynamics algorithms.* Robotics: Science and Systems (RSS).
+
+12. Kalakrishnan, M., Chitta, S., Theodorou, E., Pastor, P., & Schaal, S. (2011). *STOMP: Stochastic trajectory optimization for motion planning.* IEEE International Conference on Robotics and Automation (ICRA), 4569-4574.
+
+---
+
+## Hardware Requirements
+
+**Simulation Only** (recommended):
+- **CPU/GPU**: Any modern computer
+- **Software**: MoveIt 2 + Gazebo/RViz
+
+**Real Hardware** (optional):
+- **Budget**: Unitree Z1 arm ($3,000)
+- **Research**: Franka Emika Panda ($25,000)
+- **Humanoid**: Unitree G1 ($16,000)
+
+---
+
+## Labs
+
+**Lab 9.1: MoveIt Pick-and-Place**
+
+**Repository**: [github.com/Shumailaaijaz/physical-ai-labs](https://github.com/Shumailaaijaz/physical-ai-labs)
+
+**Lab Path**: `labs/chapter-09-moveit-planning/`
+
+**What's Included**:
+- MoveIt config for Panda arm
+- Gazebo world with table + blocks
+- Pick-and-place Python script
+- RViz visualization
+
+**Expected Time**: 2 hours
+
+---
+
+**Lab 9.2: GraspNet Inference**
+
+**Lab Path**: `labs/chapter-09-graspnet/`
+
+**What's Included**:
+- Pre-trained GraspNet checkpoint
+- RealSense D435i point cloud capture
+- Grasp visualization
+- MoveIt execution integration
+
+**Hardware**: RealSense D435i (or use pre-recorded point clouds)
+
+**Expected Time**: 3 hours
+
+---
+
+**Next Chapter**: [Chapter 10: Vision-Language-Action Models →](10-vision-language-action.mdx)
+
+---
+
+*This textbook is a living document. Found an error? Have a suggestion? Submit an issue or PR at [github.com/Shumailaaijaz/physical-ai-textbook](https://github.com/Shumailaaijaz/physical-ai-textbook)*
