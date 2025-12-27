@@ -7,14 +7,8 @@ import BrowserOnly from '@docusaurus/BrowserOnly';
  */
 function ChatbotWidgetComponent() {
   const [isOpen, setIsOpen] = useState(false);
-  const [chatbotUrl, setChatbotUrl] = useState('');
-
-  useEffect(() => {
-    // Set the Vercel chatbot URL
-    // Update this after deploying to Vercel
-    const vercelUrl = process.env.REACT_APP_VERCEL_CHATBOT_URL || 'https://your-chatbot.vercel.app';
-    setChatbotUrl(vercelUrl);
-  }, []);
+  // Vercel chatbot URL - hardcoded for reliability in Docusaurus
+  const chatbotUrl = 'https://physical-ai-textbook-e3se.vercel.app';
 
   const toggleChat = () => {
     setIsOpen(!isOpen);
