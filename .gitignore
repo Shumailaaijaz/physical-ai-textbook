@@ -1,4 +1,10 @@
-# Dependencies
+# Dependenciesnode_modules/
+node_modules/
+.next/
+dist/
+build/
+.env*
+
 /node_modules
 
 # Production
