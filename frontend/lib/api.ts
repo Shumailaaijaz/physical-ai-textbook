@@ -7,7 +7,7 @@ import type {
 // API Configuration
 const API_BASE_URL =
   process.env.NEXT_PUBLIC_API_URL ||
-  'https://huggingface.co/spaces/shumailaaijaz/hackathon-book';
+  'https://shumailaaijaz-hackathon-book.hf.space';
 
 const API_TIMEOUT = 30000; // 30 seconds
 
@@ -24,7 +24,7 @@ export async function submitQuery(query: string): Promise<BackendQueryResponse> 
 
   try {
     // Make POST request to backend
-    const response = await fetch(`${API_BASE_URL}/query`, {
+    const response = await fetch(`${API_BASE_URL}/ask`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
