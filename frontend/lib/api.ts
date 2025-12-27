@@ -119,23 +119,20 @@ function validateBackendResponse(data: unknown): BackendQueryResponse {
     throw error;
   }
 
-  // Required: citations array (can be empty)
-  if (!Array.isArray(response.citations)) {
-    const error: APIError = {
-      type: 'validation',
-      message: 'Invalid response from server.',
-      details: 'Missing or invalid "citations" field (must be an array)',
-    };
-    throw error;
-  }
+  // Backend returns 'sources' field, map it to 'citations'
+  const citations = Array.isArray(response.sources)
+    ? response.sources
+    : (Array.isArray(response.citations) ? response.citations : []);
 
   // Optional: timestamp (default to current time if missing)
   const timestamp =
-    typeof response.timestamp === 'number' ? response.timestamp : Math.floor(Date.now() / 1000);
+    typeof response.timestamp === 'number'
+      ? response.timestamp
+      : Math.floor(Date.now() / 1000);
 
   return {
     answer: response.answer,
-    citations: response.citations,
+    citations,
     timestamp,
   };
 }
