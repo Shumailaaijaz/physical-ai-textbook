@@ -17,12 +17,14 @@ function ChatbotPage() {
     setIsLoading(true);
 
     try {
-      const response = await fetch('http://localhost:8000/chat', {
+      // Use production API URL with environment variable fallback
+      const apiUrl = process.env.REACT_APP_CHATBOT_API_URL || 'https://shumailaaijaz-hackathon-book.hf.space';
+      const response = await fetch(`${apiUrl}/query`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ message: inputValue }),
+        body: JSON.stringify({ query: inputValue }),
       });
 
       if (!response.ok) {
@@ -32,9 +34,9 @@ function ChatbotPage() {
       const data = await response.json();
 
       const botMessage = {
-        text: data.response,
+        text: data.answer || data.response,
         sender: 'bot',
-        sources: data.sources || [],
+        sources: data.citations || data.sources || [],
         timestamp: new Date()
       };
 

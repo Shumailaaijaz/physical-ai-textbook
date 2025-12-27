@@ -99,6 +99,7 @@ const config: Config = {
           label: 'Textbook',
         },
         {to: '/blog', label: 'Blog', position: 'left'},
+        {to: '/chatbot', label: 'AI Chatbot', position: 'left'},
         {
           href: 'https://github.com/Shumailaaijaz/physical-ai-labs',
           label: 'Labs',
