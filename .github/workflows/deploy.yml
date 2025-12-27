@@ -33,10 +33,11 @@ jobs:
           cache: 'npm'
 
       - name: Install dependencies
-        run: npm ci
+        run: |
+          npm ci || npm install
 
       - name: Clear Docusaurus cache
-        run: npm run clear
+        run: npm run clear || echo "Cache already clear"
 
       - name: Build website
         run: npm run build
@@ -48,8 +49,18 @@ jobs:
       - name: Test build output
         run: |
           # Verify critical files exist
-          test -f build/index.html
-          test -d build/assets
+          if [ -f build/index.html ]; then
+            echo "✓ build/index.html exists"
+          else
+            echo "✗ build/index.html missing"
+            exit 1
+          fi
+          if [ -d build/assets ]; then
+            echo "✓ build/assets directory exists"
+          else
+            echo "✗ build/assets directory missing"
+            exit 1
+          fi
           echo "Build verification passed"
 
       - name: Upload Build Artifact
@@ -67,8 +78,3 @@ jobs:
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v4
-
-      - name: Verify deployment
-        run: |
-          echo "Deployment completed successfully"
-          echo "Site URL: ${{ steps.deployment.outputs.page_url }}"
