@@ -45,8 +45,8 @@ jobs:
           NODE_ENV: production
           # Chatbot backend URL for production
           REACT_APP_CHATBOT_API_URL: https://shumailaaijaz-hackathon-book.hf.space
-          # Vercel chatbot URL (update after deploying to Vercel)
-          REACT_APP_VERCEL_CHATBOT_URL: https://your-chatbot-name.vercel.app
+          # Vercel chatbot URL (deployed to Vercel)
+          REACT_APP_VERCEL_CHATBOT_URL: https://physical-ai-textbook-e3se.vercel.app
 
       - name: Test build output
         run: |
