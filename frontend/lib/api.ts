@@ -24,7 +24,7 @@ export async function submitQuery(query: string): Promise<BackendQueryResponse> 
 
   try {
     // Make POST request to backend
-    const response = await fetch(`${API_BASE_URL}/ask`, {
+    const response = await fetch(`${API_BASE_URL}/chat`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -109,20 +109,24 @@ function validateBackendResponse(data: unknown): BackendQueryResponse {
 
   const response = data as Record<string, unknown>;
 
-  // Required: answer field (non-empty string)
-  if (typeof response.answer !== 'string' || response.answer.trim().length === 0) {
+  // Handle both /chat response (text field) and /ask response (answer field)
+  const answerText =
+    typeof response.text === 'string' ? response.text :
+    typeof response.answer === 'string' ? response.answer : '';
+
+  if (!answerText || answerText.trim().length === 0) {
     const error: APIError = {
       type: 'validation',
       message: 'Invalid response from server.',
-      details: 'Missing or empty "answer" field',
+      details: 'Missing or empty answer/text field',
     };
     throw error;
   }
 
-  // Backend returns 'sources' field, map it to 'citations'
-  const citations = Array.isArray(response.sources)
-    ? response.sources
-    : (Array.isArray(response.citations) ? response.citations : []);
+  // Handle citations from different response formats
+  const citations = Array.isArray(response.citations)
+    ? response.citations
+    : (Array.isArray(response.sources) ? response.sources : []);
 
   // Optional: timestamp (default to current time if missing)
   const timestamp =
@@ -131,7 +135,7 @@ function validateBackendResponse(data: unknown): BackendQueryResponse {
       : Math.floor(Date.now() / 1000);
 
   return {
-    answer: response.answer,
+    answer: answerText,
     citations,
     timestamp,
   };
