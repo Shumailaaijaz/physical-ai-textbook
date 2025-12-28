@@ -24,7 +24,7 @@ export async function submitQuery(query: string): Promise<BackendQueryResponse> 
 
   try {
     // Make POST request to backend
-    const response = await fetch(`${API_BASE_URL}/chat`, {
+    const response = await fetch(`${API_BASE_URL}/ask`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -109,24 +109,24 @@ function validateBackendResponse(data: unknown): BackendQueryResponse {
 
   const response = data as Record<string, unknown>;
 
-  // Handle both /chat response (text field) and /ask response (answer field)
+  // Handle /ask response (answer field) - primary format from HuggingFace Space
   const answerText =
-    typeof response.text === 'string' ? response.text :
-    typeof response.answer === 'string' ? response.answer : '';
+    typeof response.answer === 'string' ? response.answer :
+    typeof response.text === 'string' ? response.text : '';
 
   if (!answerText || answerText.trim().length === 0) {
     const error: APIError = {
       type: 'validation',
       message: 'Invalid response from server.',
-      details: 'Missing or empty answer/text field',
+      details: 'Missing or empty answer field',
     };
     throw error;
   }
 
-  // Handle citations from different response formats
-  const citations = Array.isArray(response.citations)
-    ? response.citations
-    : (Array.isArray(response.sources) ? response.sources : []);
+  // Handle sources from /ask endpoint
+  const citations = Array.isArray(response.sources)
+    ? response.sources
+    : (Array.isArray(response.citations) ? response.citations : []);
 
   // Optional: timestamp (default to current time if missing)
   const timestamp =
