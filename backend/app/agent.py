@@ -79,7 +79,7 @@ def initialize_rag():
         # Initialize vectorstore
         vectorstore = Qdrant(
             client=qdrant_client,
-            collection_name="rag_embeddings",
+            collection_name="rag_embeddings_v2",
             embeddings=embeddings
         )
 
