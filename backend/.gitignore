@@ -1,0 +1,39 @@
+(
+echo # ===== Environment =====
+echo .env
+echo .env.*
+echo.
+echo # ===== Python venv =====
+echo .venv\
+echo venv\
+echo backend\.venv\
+echo.
+echo # ===== Python cache =====
+echo __pycache__\
+echo *.pyc
+echo *.pyo
+echo *.pyd
+echo.
+echo # ===== HuggingFace =====
+echo .cache\
+echo hf_cache\
+echo.
+echo # ===== Qdrant =====
+echo qdrant_storage\
+echo qdrant_data\
+echo.
+echo # ===== Logs =====
+echo *.log
+echo.
+echo # ===== IDE =====
+echo .vscode\
+echo .idea\
+echo.
+echo # ===== OS =====
+echo Thumbs.db
+echo desktop.ini
+) > .gitignore
+.env
+.env.*
+backend\.venv\
+__pycache__\

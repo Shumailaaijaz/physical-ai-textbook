@@ -1,61 +1,86 @@
-# Dependenciesnode_modules/
-node_modules/
-.next/
-dist/
-build/
-.env*
+# =========================
+# Environment variables
+# =========================
+.env
+.env.*
+!.env.example
 
-/node_modules
-
-# Production
-/build
-
-# Generated files
-.docusaurus
-.cache-loader
-
-# Misc
-.DS_Store
-.env.local
-.env.development.local
-.env.test.local
-.env.production.local
-
-npm-debug.log*
-yarn-debug.log*
-yarn-error.log*
-
-# Python
-__pycache__/
-*.pyc
-*.pyo
-*.pyd
-.Python
-*.so
-*.egg
-*.egg-info/
-dist/
-build/
-
-# Virtual environments
+# =========================
+# Python virtual environments
+# =========================
+.venv/
 venv/
+backend/.venv/
 env/
 ENV/
-src/chatbot/backend/env/
 
-# Environment variables
-.env
-src/chatbot/backend/.env
+# =========================
+# Python cache / build
+# =========================
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.cache/
 
-# IDE
+# =========================
+# FastAPI / Uvicorn
+# =========================
+*.log
+uvicorn.log
+
+# =========================
+# Hugging Face Spaces
+# =========================
+.gradio/
+hf_cache/
+.cache/huggingface/
+.cache/torch/
+.cache/transformers/
+
+# =========================
+# Qdrant
+# =========================
+qdrant_storage/
+qdrant_data/
+*.snapshot
+
+# =========================
+# OS files
+# =========================
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# =========================
+# IDE / Editor
+# =========================
 .vscode/
 .idea/
 *.swp
-*.swo
-*~
 
-# Logs
-*.log
-logs/
-backend/node_modules/
-backend/package-lock.json
+# =========================
+# Node / Frontend (if any)
+# =========================
+node_modules/
+dist/
+build/
+.next/
+
+# =========================
+# Secrets / Keys
+# =========================
+*.key
+*.pem
+*.crt
+
+# =========================
+# Misc
+# =========================
+coverage/
+reports/
+tmp/
+temp/
