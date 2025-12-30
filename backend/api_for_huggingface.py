@@ -79,8 +79,8 @@ def initialize_rag():
         # Initialize vectorstore
         vectorstore = Qdrant(
             client=qdrant_client,
-            collection_name="rag_embeddings",
-            embeddings=embeddings
+            collection_name="textbook_docs",
+            embedding=embeddings
         )
 
         logger.info("✅ RAG system initialized successfully")
