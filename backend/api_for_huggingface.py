@@ -50,15 +50,22 @@ def initialize_rag():
     global vectorstore, openrouter_api_key
 
     try:
-        # Get API keys from environment
-        openrouter_api_key = os.getenv("OPENROUTER_API_KEY")
-        qdrant_url = os.getenv("QDRANT_URL")
-        qdrant_api_key = os.getenv("QDRANT_API_KEY")
-        openai_api_key = os.getenv("OPENAI_API_KEY")
+        # Get API keys from environment and strip whitespace/quotes
+        openrouter_api_key = os.getenv("OPENROUTER_API_KEY", "").strip().strip('"').strip("'")
+        qdrant_url = os.getenv("QDRANT_URL", "").strip()
+        qdrant_api_key = os.getenv("QDRANT_API_KEY", "").strip()
+        openai_api_key = os.getenv("OPENAI_API_KEY", "").strip()
 
+        # Validate OpenRouter API key
         if not openrouter_api_key:
-            logger.warning("OPENROUTER_API_KEY not set")
+            logger.error("❌ OPENROUTER_API_KEY not set in environment")
             return False
+
+        if not openrouter_api_key.startswith("sk-or-v1-"):
+            logger.error(f"❌ Invalid OpenRouter API key format. Expected 'sk-or-v1-...', got '{openrouter_api_key[:15]}...'")
+            return False
+
+        logger.info(f"✅ OpenRouter API key loaded: {openrouter_api_key[:15]}...{openrouter_api_key[-4:]}")
 
         if not qdrant_url or not qdrant_api_key:
             logger.warning("Qdrant not configured")
@@ -94,7 +101,19 @@ def initialize_rag():
 initialize_rag()
 
 def call_openrouter(prompt: str) -> str:
-    """Call OpenRouter API"""
+    """Call OpenRouter API with robust error handling"""
+
+    # Validate API key is loaded
+    if not openrouter_api_key:
+        error_msg = "OpenRouter API key not initialized. Check your .env file."
+        logger.error(f"❌ {error_msg}")
+        raise ValueError(error_msg)
+
+    if not openrouter_api_key.startswith("sk-or-v1-"):
+        error_msg = f"Invalid API key format: '{openrouter_api_key[:10]}...'"
+        logger.error(f"❌ {error_msg}")
+        raise ValueError(error_msg)
+
     try:
         url = "https://openrouter.ai/api/v1/chat/completions"
 
@@ -103,7 +122,6 @@ def call_openrouter(prompt: str) -> str:
             "Content-Type": "application/json",
             "HTTP-Referer": "https://huggingface.co/spaces/shumailaaijaz/hackathon-book",
             "X-Title": "Physical AI RAG Chatbot"
-            
         }
 
         data = {
@@ -112,13 +130,40 @@ def call_openrouter(prompt: str) -> str:
             "temperature": 0.7
         }
 
+        logger.info(f"🚀 Calling OpenRouter API with model: {data['model']}")
         response = requests.post(url, headers=headers, json=data, timeout=60)
+
+        # Log response details for debugging
+        logger.info(f"📡 OpenRouter response status: {response.status_code}")
+
+        if response.status_code == 401:
+            logger.error(f"❌ 401 Unauthorized - API key invalid or expired")
+            logger.error(f"   Key used: {openrouter_api_key[:15]}...{openrouter_api_key[-4:]}")
+            logger.error(f"   Response: {response.text}")
+
         response.raise_for_status()
 
-        return response.json()['choices'][0]['message']['content']
+        result = response.json()
+        answer = result['choices'][0]['message']['content']
+        logger.info(f"✅ OpenRouter API call successful ({len(answer)} chars)")
 
+        return answer
+
+    except requests.exceptions.HTTPError as e:
+        logger.error(f"❌ OpenRouter HTTP error: {e}")
+        logger.error(f"   Response body: {e.response.text if hasattr(e, 'response') else 'N/A'}")
+        raise
+    except requests.exceptions.Timeout:
+        logger.error("❌ OpenRouter API timeout (60s)")
+        raise
+    except requests.exceptions.RequestException as e:
+        logger.error(f"❌ OpenRouter network error: {e}")
+        raise
+    except (KeyError, IndexError) as e:
+        logger.error(f"❌ Unexpected OpenRouter response format: {e}")
+        raise
     except Exception as e:
-        logger.error(f"OpenRouter API error: {e}")
+        logger.error(f"❌ OpenRouter API error: {e}")
         raise
 
 @app.get("/")
