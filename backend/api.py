@@ -10,7 +10,7 @@ import os
 import logging
 import requests
 from langchain_openai import OpenAIEmbeddings
-from langchain_community.vectorstores import Qdrant
+from langchain_qdrant import QdrantVectorStore
 from qdrant_client import QdrantClient
 
 # Set up logging
@@ -84,7 +84,7 @@ def initialize_rag():
         )
 
         # Initialize vectorstore
-        vectorstore = Qdrant(
+        vectorstore = QdrantVectorStore(
             client=qdrant_client,
             collection_name="textbook_docs",
             embedding=embeddings
