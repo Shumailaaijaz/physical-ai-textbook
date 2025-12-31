@@ -1,0 +1,624 @@
+<!doctype html>
+<html lang="en" dir="ltr" class="docs-wrapper plugin-docs plugin-id-default docs-version-current docs-doc-page docs-doc-id-11-capstone-project" data-has-hydrated="false">
+<head>
+<meta charset="UTF-8">
+<meta name="generator" content="Docusaurus v3.9.2">
+<title data-rh="true">Chapter 11: Capstone Project | Physical AI &amp; Humanoid Robotics</title><meta data-rh="true" name="viewport" content="width=device-width,initial-scale=1"><meta data-rh="true" name="twitter:card" content="summary_large_image"><meta data-rh="true" property="og:image" content="https://shumailaaijaz.github.io/physical-ai-textbook/img/docusaurus-social-card.jpg"><meta data-rh="true" name="twitter:image" content="https://shumailaaijaz.github.io/physical-ai-textbook/img/docusaurus-social-card.jpg"><meta data-rh="true" property="og:url" content="https://shumailaaijaz.github.io/physical-ai-textbook/docs/11-capstone-project"><meta data-rh="true" property="og:locale" content="en"><meta data-rh="true" name="docusaurus_locale" content="en"><meta data-rh="true" name="docsearch:language" content="en"><meta data-rh="true" name="docusaurus_version" content="current"><meta data-rh="true" name="docusaurus_tag" content="docs-default-current"><meta data-rh="true" name="docsearch:version" content="current"><meta data-rh="true" name="docsearch:docusaurus_tag" content="docs-default-current"><meta data-rh="true" property="og:title" content="Chapter 11: Capstone Project | Physical AI &amp; Humanoid Robotics"><meta data-rh="true" name="description" content="&quot;The best way to learn robotics is to build a complete system.&quot;"><meta data-rh="true" property="og:description" content="&quot;The best way to learn robotics is to build a complete system.&quot;"><link data-rh="true" rel="icon" href="/physical-ai-textbook/img/favicon.ico"><link data-rh="true" rel="canonical" href="https://shumailaaijaz.github.io/physical-ai-textbook/docs/11-capstone-project"><link data-rh="true" rel="alternate" href="https://shumailaaijaz.github.io/physical-ai-textbook/docs/11-capstone-project" hreflang="en"><link data-rh="true" rel="alternate" href="https://shumailaaijaz.github.io/physical-ai-textbook/docs/11-capstone-project" hreflang="x-default"><script data-rh="true" type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Chapter 11: Capstone Project","item":"https://shumailaaijaz.github.io/physical-ai-textbook/docs/11-capstone-project"}]}</script><link rel="alternate" type="application/rss+xml" href="/physical-ai-textbook/blog/rss.xml" title="Physical AI &amp; Humanoid Robotics RSS Feed">
+<link rel="alternate" type="application/atom+xml" href="/physical-ai-textbook/blog/atom.xml" title="Physical AI &amp; Humanoid Robotics Atom Feed"><link rel="stylesheet" href="/physical-ai-textbook/assets/css/styles.2bd0a4a8.css">
+<script src="/physical-ai-textbook/assets/js/runtime~main.3b1ba462.js" defer="defer"></script>
+<script src="/physical-ai-textbook/assets/js/main.4469a88a.js" defer="defer"></script>
+</head>
+<body class="navigation-with-keyboard">
+<svg style="display: none;"><defs>
+<symbol id="theme-svg-external-link" viewBox="0 0 24 24"><path fill="currentColor" d="M21 13v10h-21v-19h12v2h-10v15h17v-8h2zm3-12h-10.988l4.035 4-6.977 7.07 2.828 2.828 6.977-7.07 4.125 4.172v-11z"/></symbol>
+</defs></svg>
+<script>!function(){var t=function(){try{return new URLSearchParams(window.location.search).get("docusaurus-theme")}catch(t){}}()||function(){try{return window.localStorage.getItem("theme")}catch(t){}}();document.documentElement.setAttribute("data-theme",t||"light"),document.documentElement.setAttribute("data-theme-choice",t||"light")}(),function(){try{const c=new URLSearchParams(window.location.search).entries();for(var[t,e]of c)if(t.startsWith("docusaurus-data-")){var a=t.replace("docusaurus-data-","data-");document.documentElement.setAttribute(a,e)}}catch(t){}}()</script><div id="__docusaurus"><link rel="preload" as="image" href="/physical-ai-textbook/img/logo.jpeg"><div role="region" aria-label="Skip to main content"><a class="skipToContent_fXgn" href="#__docusaurus_skipToContent_fallback">Skip to main content</a></div><nav aria-label="Main" class="theme-layout-navbar navbar navbar--fixed-top"><div class="navbar__inner"><div class="navbar__items"><button aria-label="Toggle navigation bar" aria-expanded="false" class="navbar__toggle clean-btn" type="button"><svg width="30" height="30" viewBox="0 0 30 30" aria-hidden="true"><path stroke="currentColor" stroke-linecap="round" stroke-miterlimit="10" stroke-width="2" d="M4 7h22M4 15h22M4 23h22"></path></svg></button><a class="navbar__brand" href="/physical-ai-textbook/"><div class="navbar__logo"><img src="/physical-ai-textbook/img/logo.jpeg" alt="Physical AI Logo" class="themedComponent_mlkZ themedComponent--light_NVdE" style="border-radius:50%;width:40px;height:40px"><img src="/physical-ai-textbook/img/logo.jpeg" alt="Physical AI Logo" class="themedComponent_mlkZ themedComponent--dark_xIcU" style="border-radius:50%;width:40px;height:40px"></div><b class="navbar__title text--truncate">Physical AI Textbook</b></a><a aria-current="page" class="navbar__item navbar__link navbar__link--active" href="/physical-ai-textbook/docs/00-preface">Textbook</a><a class="navbar__item navbar__link" href="/physical-ai-textbook/blog">Blog</a><a class="navbar__item navbar__link" href="/physical-ai-textbook/chatbot">AI Chatbot</a></div><div class="navbar__items navbar__items--right"><a href="https://github.com/Shumailaaijaz/physical-ai-labs" target="_blank" rel="noopener noreferrer" class="navbar__item navbar__link">Labs<svg width="13.5" height="13.5" aria-label="(opens in new tab)" class="iconExternalLink_nPIU"><use href="#theme-svg-external-link"></use></svg></a><a href="https://github.com/Shumailaaijaz/physical-ai-textbook" target="_blank" rel="noopener noreferrer" class="navbar__item navbar__link">GitHub<svg width="13.5" height="13.5" aria-label="(opens in new tab)" class="iconExternalLink_nPIU"><use href="#theme-svg-external-link"></use></svg></a><a class="navbar__item navbar__link" href="/physical-ai-textbook/login">Login</a><a class="navbar__item navbar__link" href="/physical-ai-textbook/signup">Sign Up</a><div class="toggle_vylO colorModeToggle_x44X"><button class="clean-btn toggleButton_gllP toggleButtonDisabled_aARS" type="button" disabled="" title="system mode" aria-label="Switch between dark and light mode (currently system mode)"><svg viewBox="0 0 24 24" width="24" height="24" aria-hidden="true" class="toggleIcon_g3eP lightToggleIcon_pyhR"><path fill="currentColor" d="M12,9c1.65,0,3,1.35,3,3s-1.35,3-3,3s-3-1.35-3-3S10.35,9,12,9 M12,7c-2.76,0-5,2.24-5,5s2.24,5,5,5s5-2.24,5-5 S14.76,7,12,7L12,7z M2,13l2,0c0.55,0,1-0.45,1-1s-0.45-1-1-1l-2,0c-0.55,0-1,0.45-1,1S1.45,13,2,13z M20,13l2,0c0.55,0,1-0.45,1-1 s-0.45-1-1-1l-2,0c-0.55,0-1,0.45-1,1S19.45,13,20,13z M11,2v2c0,0.55,0.45,1,1,1s1-0.45,1-1V2c0-0.55-0.45-1-1-1S11,1.45,11,2z M11,20v2c0,0.55,0.45,1,1,1s1-0.45,1-1v-2c0-0.55-0.45-1-1-1C11.45,19,11,19.45,11,20z M5.99,4.58c-0.39-0.39-1.03-0.39-1.41,0 c-0.39,0.39-0.39,1.03,0,1.41l1.06,1.06c0.39,0.39,1.03,0.39,1.41,0s0.39-1.03,0-1.41L5.99,4.58z M18.36,16.95 c-0.39-0.39-1.03-0.39-1.41,0c-0.39,0.39-0.39,1.03,0,1.41l1.06,1.06c0.39,0.39,1.03,0.39,1.41,0c0.39-0.39,0.39-1.03,0-1.41 L18.36,16.95z M19.42,5.99c0.39-0.39,0.39-1.03,0-1.41c-0.39-0.39-1.03-0.39-1.41,0l-1.06,1.06c-0.39,0.39-0.39,1.03,0,1.41 s1.03,0.39,1.41,0L19.42,5.99z M7.05,18.36c0.39-0.39,0.39-1.03,0-1.41c-0.39-0.39-1.03-0.39-1.41,0l-1.06,1.06 c-0.39,0.39-0.39,1.03,0,1.41s1.03,0.39,1.41,0L7.05,18.36z"></path></svg><svg viewBox="0 0 24 24" width="24" height="24" aria-hidden="true" class="toggleIcon_g3eP darkToggleIcon_wfgR"><path fill="currentColor" d="M9.37,5.51C9.19,6.15,9.1,6.82,9.1,7.5c0,4.08,3.32,7.4,7.4,7.4c0.68,0,1.35-0.09,1.99-0.27C17.45,17.19,14.93,19,12,19 c-3.86,0-7-3.14-7-7C5,9.07,6.81,6.55,9.37,5.51z M12,3c-4.97,0-9,4.03-9,9s4.03,9,9,9s9-4.03,9-9c0-0.46-0.04-0.92-0.1-1.36 c-0.98,1.37-2.58,2.26-4.4,2.26c-2.98,0-5.4-2.42-5.4-5.4c0-1.81,0.89-3.42,2.26-4.4C12.92,3.04,12.46,3,12,3L12,3z"></path></svg><svg viewBox="0 0 24 24" width="24" height="24" aria-hidden="true" class="toggleIcon_g3eP systemToggleIcon_QzmC"><path fill="currentColor" d="m12 21c4.971 0 9-4.029 9-9s-4.029-9-9-9-9 4.029-9 9 4.029 9 9 9zm4.95-13.95c1.313 1.313 2.05 3.093 2.05 4.95s-0.738 3.637-2.05 4.95c-1.313 1.313-3.093 2.05-4.95 2.05v-14c1.857 0 3.637 0.737 4.95 2.05z"></path></svg></button></div><div class="navbarSearchContainer_Bca1"></div></div></div><div role="presentation" class="navbar-sidebar__backdrop"></div></nav><div id="__docusaurus_skipToContent_fallback" class="theme-layout-main main-wrapper mainWrapper_z2l0"><div class="docsWrapper_hBAB"><button aria-label="Scroll back to top" class="clean-btn theme-back-to-top-button backToTopButton_sjWU" type="button"></button><div class="docRoot_UBD9"><aside class="theme-doc-sidebar-container docSidebarContainer_YfHR"><div class="sidebarViewport_aRkj"><div class="sidebar_njMd"><nav aria-label="Docs sidebar" class="menu thin-scrollbar menu_SIkG"><ul class="theme-doc-sidebar-menu menu__list"><li class="theme-doc-sidebar-item-link theme-doc-sidebar-item-link-level-1 menu__list-item"><a class="menu__link" href="/physical-ai-textbook/docs/00-preface"><span title="Preface" class="linkLabel_WmDU">Preface</span></a></li><li class="theme-doc-sidebar-item-link theme-doc-sidebar-item-link-level-1 menu__list-item"><a class="menu__link" href="/physical-ai-textbook/docs/01-introduction-to-physical-ai"><span title="Chapter 1: Introduction to Physical AI" class="linkLabel_WmDU">Chapter 1: Introduction to Physical AI</span></a></li><li class="theme-doc-sidebar-item-link theme-doc-sidebar-item-link-level-1 menu__list-item"><a class="menu__link" href="/physical-ai-textbook/docs/02-ros2-fundamentals"><span title="Chapter 2: ROS 2 Fundamentals" class="linkLabel_WmDU">Chapter 2: ROS 2 Fundamentals</span></a></li><li class="theme-doc-sidebar-item-link theme-doc-sidebar-item-link-level-1 menu__list-item"><a class="menu__link" href="/physical-ai-textbook/docs/03-urdf-robot-modeling"><span title="Chapter 3: URDF &amp; Robot Modeling" class="linkLabel_WmDU">Chapter 3: URDF &amp; Robot Modeling</span></a></li><li class="theme-doc-sidebar-item-link theme-doc-sidebar-item-link-level-1 menu__list-item"><a class="menu__link" href="/physical-ai-textbook/docs/04-gazebo-simulation"><span title="Chapter 4: Gazebo Simulation" class="linkLabel_WmDU">Chapter 4: Gazebo Simulation</span></a></li><li class="theme-doc-sidebar-item-link theme-doc-sidebar-item-link-level-1 menu__list-item"><a class="menu__link" href="/physical-ai-textbook/docs/05-unity-robotics-hub"><span title="Chapter 5: Unity Robotics Hub" class="linkLabel_WmDU">Chapter 5: Unity Robotics Hub</span></a></li><li class="theme-doc-sidebar-item-link theme-doc-sidebar-item-link-level-1 menu__list-item"><a class="menu__link" href="/physical-ai-textbook/docs/06-isaac-sim-basics"><span title="Chapter 6: NVIDIA Isaac Sim Basics" class="linkLabel_WmDU">Chapter 6: NVIDIA Isaac Sim Basics</span></a></li><li class="theme-doc-sidebar-item-link theme-doc-sidebar-item-link-level-1 menu__list-item"><a class="menu__link" href="/physical-ai-textbook/docs/07-isaac-ros-integration"><span title="Chapter 7: Isaac ROS Integration" class="linkLabel_WmDU">Chapter 7: Isaac ROS Integration</span></a></li><li class="theme-doc-sidebar-item-link theme-doc-sidebar-item-link-level-1 menu__list-item"><a class="menu__link" href="/physical-ai-textbook/docs/08-legged-locomotion"><span title="Chapter 8: Legged Locomotion" class="linkLabel_WmDU">Chapter 8: Legged Locomotion</span></a></li><li class="theme-doc-sidebar-item-link theme-doc-sidebar-item-link-level-1 menu__list-item"><a class="menu__link" href="/physical-ai-textbook/docs/09-manipulation-grasping"><span title="Chapter 9: Manipulation &amp; Grasping" class="linkLabel_WmDU">Chapter 9: Manipulation &amp; Grasping</span></a></li><li class="theme-doc-sidebar-item-link theme-doc-sidebar-item-link-level-1 menu__list-item"><a class="menu__link" href="/physical-ai-textbook/docs/10-vision-language-action"><span title="Chapter 10: Vision-Language-Action (VLA) Models" class="linkLabel_WmDU">Chapter 10: Vision-Language-Action (VLA) Models</span></a></li><li class="theme-doc-sidebar-item-link theme-doc-sidebar-item-link-level-1 menu__list-item"><a class="menu__link menu__link--active" aria-current="page" href="/physical-ai-textbook/docs/11-capstone-project"><span title="Chapter 11: Capstone Project" class="linkLabel_WmDU">Chapter 11: Capstone Project</span></a></li><li class="theme-doc-sidebar-item-link theme-doc-sidebar-item-link-level-1 menu__list-item"><a class="menu__link" href="/physical-ai-textbook/docs/12-hardware-guide"><span title="Chapter 12: Hardware Guide" class="linkLabel_WmDU">Chapter 12: Hardware Guide</span></a></li><li class="theme-doc-sidebar-item-link theme-doc-sidebar-item-link-level-1 menu__list-item"><a class="menu__link" href="/physical-ai-textbook/docs/13-ethics-future-physical-ai"><span title="Chapter 13: Ethics &amp; Future of Physical AI" class="linkLabel_WmDU">Chapter 13: Ethics &amp; Future of Physical AI</span></a></li><li class="theme-doc-sidebar-item-link theme-doc-sidebar-item-link-level-1 menu__list-item"><a class="menu__link" href="/physical-ai-textbook/docs/example-diagrams"><span title="Example Diagrams" class="linkLabel_WmDU">Example Diagrams</span></a></li><li class="theme-doc-sidebar-item-link theme-doc-sidebar-item-link-level-1 menu__list-item"><a class="menu__link" href="/physical-ai-textbook/docs/CHAPTER_OUTLINES"><span title="Chapter Outlines: Physical AI &amp; Humanoid Robotics Textbook" class="linkLabel_WmDU">Chapter Outlines: Physical AI &amp; Humanoid Robotics Textbook</span></a></li></ul></nav></div></div></aside><main class="docMainContainer_TBSr"><div class="container padding-top--md padding-bottom--lg"><div style="display:flex;gap:1rem;margin-bottom:1.5rem;flex-wrap:wrap;position:sticky;top:60px;z-index:100;background-color:var(--ifm-background-color);padding:0.5rem 0;border-bottom:1px solid var(--ifm-color-emphasis-200)"><div class="urduTranslate_pQle"><button class="translateButton_xb_Y" aria-label="View in Urdu">🇵🇰 اردو میں دیکھیں (View in Urdu)</button></div></div><div class="row"><div class="col docItemCol_VOVn"><div class="docItemContainer_Djhp"><article><nav class="theme-doc-breadcrumbs breadcrumbsContainer_Z_bl" aria-label="Breadcrumbs"><ul class="breadcrumbs"><li class="breadcrumbs__item"><a aria-label="Home page" class="breadcrumbs__link" href="/physical-ai-textbook/"><svg viewBox="0 0 24 24" class="breadcrumbHomeIcon_YNFT"><path d="M10 19v-5h4v5c0 .55.45 1 1 1h3c.55 0 1-.45 1-1v-7h1.7c.46 0 .68-.57.33-.87L12.67 3.6c-.38-.34-.96-.34-1.34 0l-8.36 7.53c-.34.3-.13.87.33.87H5v7c0 .55.45 1 1 1h3c.55 0 1-.45 1-1z" fill="currentColor"></path></svg></a></li><li class="breadcrumbs__item breadcrumbs__item--active"><span class="breadcrumbs__link">Chapter 11: Capstone Project</span></li></ul></nav><div class="tocCollapsible_ETCw theme-doc-toc-mobile tocMobile_ITEo"><button type="button" class="clean-btn tocCollapsibleButton_TO0P">On this page</button></div><div class="theme-doc-markdown markdown"><header><h1>Chapter 11: Capstone Project</h1></header>
+<blockquote>
+<p><em>&quot;The best way to learn robotics is to build a complete system.&quot;</em></p>
+</blockquote>
+<h2 class="anchor anchorTargetStickyNavbar_Vzrq" id="learning-objectives">Learning Objectives<a href="#learning-objectives" class="hash-link" aria-label="Direct link to Learning Objectives" title="Direct link to Learning Objectives" translate="no">​</a></h2>
+<p>By the end of this chapter, you will be able to:</p>
+<ol>
+<li class=""><strong>Integrate all course modules</strong> (ROS 2, Gazebo, Isaac, VLA)</li>
+<li class=""><strong>Design and implement</strong> a complete autonomous system</li>
+<li class=""><strong>Evaluate performance</strong> with quantitative metrics</li>
+<li class=""><strong>Present results</strong> professionally</li>
+<li class=""><strong>Debug complex multi-component</strong> systems</li>
+</ol>
+<p><strong>Estimated Time</strong>: 40-60 hours (1 week full-time or 2-3 weeks part-time)</p>
+<hr>
+<h2 class="anchor anchorTargetStickyNavbar_Vzrq" id="111-project-specification">11.1 Project Specification<a href="#111-project-specification" class="hash-link" aria-label="Direct link to 11.1 Project Specification" title="Direct link to 11.1 Project Specification" translate="no">​</a></h2>
+<h3 class="anchor anchorTargetStickyNavbar_Vzrq" id="1111-title">11.1.1 Title<a href="#1111-title" class="hash-link" aria-label="Direct link to 11.1.1 Title" title="Direct link to 11.1.1 Title" translate="no">​</a></h3>
+<p><strong>Voice-Controlled Autonomous Humanoid Robot</strong></p>
+<h3 class="anchor anchorTargetStickyNavbar_Vzrq" id="1112-scenario">11.1.2 Scenario<a href="#1112-scenario" class="hash-link" aria-label="Direct link to 11.1.2 Scenario" title="Direct link to 11.1.2 Scenario" translate="no">​</a></h3>
+<p>A simulated <strong>Unitree G1 humanoid</strong> operates in a kitchen environment. It receives voice commands from a human, plans a sequence of actions, navigates to objects, identifies them using vision, grasps them, and delivers them to the user.</p>
+<p><strong>Example tasks</strong>:</p>
+<ul>
+<li class="">&quot;Bring me the red cup from the table&quot;</li>
+<li class="">&quot;Clean the table by moving all objects to the bin&quot;</li>
+<li class="">&quot;Find the remote control and hand it to me&quot;</li>
+</ul>
+<h3 class="anchor anchorTargetStickyNavbar_Vzrq" id="1113-system-architecture">11.1.3 System Architecture<a href="#1113-system-architecture" class="hash-link" aria-label="Direct link to 11.1.3 System Architecture" title="Direct link to 11.1.3 System Architecture" translate="no">​</a></h3>
+<div class="language-text codeBlockContainer_Ckt0 theme-code-block" style="--prism-color:#393A34;--prism-background-color:#f6f8fa"><div class="codeBlockContent_QJqH"><pre tabindex="0" class="prism-code language-text codeBlock_bY9V thin-scrollbar" style="color:#393A34;background-color:#f6f8fa"><code class="codeBlockLines_e6Vv"><span class="token-line" style="color:#393A34"><span class="token plain">┌─────────────────────────────────────────────────────────────────┐</span><br></span><span class="token-line" style="color:#393A34"><span class="token plain">│                      Full System Architecture                   │</span><br></span><span class="token-line" style="color:#393A34"><span class="token plain">│                                                                 │</span><br></span><span class="token-line" style="color:#393A34"><span class="token plain">│  ┌──────────────┐     ┌──────────────┐     ┌──────────────┐   │</span><br></span><span class="token-line" style="color:#393A34"><span class="token plain">│  │   Voice      │ --&gt; │   Language   │ --&gt; │   Action     │   │</span><br></span><span class="token-line" style="color:#393A34"><span class="token plain">│  │   Input      │     │   Planning   │     │   Executor   │   │</span><br></span><span class="token-line" style="color:#393A34"><span class="token plain">│  │  (Whisper)   │     │   (GPT-4)    │     │   (ROS 2)    │   │</span><br></span><span class="token-line" style="color:#393A34"><span class="token plain">│  └──────────────┘     └──────────────┘     └──────┬───────┘   │</span><br></span><span class="token-line" style="color:#393A34"><span class="token plain">│                                                     │           │</span><br></span><span class="token-line" style="color:#393A34"><span class="token plain">│                                                     ▼           │</span><br></span><span class="token-line" style="color:#393A34"><span class="token plain">│  ┌──────────────────────────────────────────────────────────┐  │</span><br></span><span class="token-line" style="color:#393A34"><span class="token plain">│  │                   Navigation Module                       │  │</span><br></span><span class="token-line" style="color:#393A34"><span class="token plain">│  │         (Nav2 + Isaac VSLAM + Path Planning)              │  │</span><br></span><span class="token-line" style="color:#393A34"><span class="token plain">│  └────────────────────────────┬─────────────────────────────┘  │</span><br></span><span class="token-line" style="color:#393A34"><span class="token plain">│                               │                                 │</span><br></span><span class="token-line" style="color:#393A34"><span class="token plain">│                               ▼                                 │</span><br></span><span class="token-line" style="color:#393A34"><span class="token plain">│  ┌──────────────────────────────────────────────────────────┐  │</span><br></span><span class="token-line" style="color:#393A34"><span class="token plain">│  │                   Perception Module                       │  │</span><br></span><span class="token-line" style="color:#393A34"><span class="token plain">│  │       (YOLOv8 + FoundationPose + Depth Estimation)        │  │</span><br></span><span class="token-line" style="color:#393A34"><span class="token plain">│  └────────────────────────────┬─────────────────────────────┘  │</span><br></span><span class="token-line" style="color:#393A34"><span class="token plain">│                               │                                 │</span><br></span><span class="token-line" style="color:#393A34"><span class="token plain">│                               ▼                                 │</span><br></span><span class="token-line" style="color:#393A34"><span class="token plain">│  ┌──────────────────────────────────────────────────────────┐  │</span><br></span><span class="token-line" style="color:#393A34"><span class="token plain">│  │                  Manipulation Module                      │  │</span><br></span><span class="token-line" style="color:#393A34"><span class="token plain">│  │           (MoveIt 2 + Grasp Planning + Force Control)     │  │</span><br></span><span class="token-line" style="color:#393A34"><span class="token plain">│  └──────────────────────────────────────────────────────────┘  │</span><br></span><span class="token-line" style="color:#393A34"><span class="token plain">│                                                                 │</span><br></span><span class="token-line" style="color:#393A34"><span class="token plain">└─────────────────────────────────────────────────────────────────┘</span><br></span></code></pre></div></div>
+<h3 class="anchor anchorTargetStickyNavbar_Vzrq" id="1114-required-components">11.1.4 Required Components<a href="#1114-required-components" class="hash-link" aria-label="Direct link to 11.1.4 Required Components" title="Direct link to 11.1.4 Required Components" translate="no">​</a></h3>
+<p><strong>1. Voice Interface</strong></p>
+<ul>
+<li class=""><strong>Input</strong>: Microphone audio</li>
+<li class=""><strong>Processing</strong>: OpenAI Whisper (speech → text)</li>
+<li class=""><strong>Output</strong>: Text command</li>
+</ul>
+<p><strong>2. Task Planning</strong></p>
+<ul>
+<li class=""><strong>Input</strong>: Natural language command</li>
+<li class=""><strong>Processing</strong>: GPT-4 (text → action sequence)</li>
+<li class=""><strong>Output</strong>: JSON list of actions</li>
+</ul>
+<p><strong>3. Navigation</strong></p>
+<ul>
+<li class=""><strong>Input</strong>: Goal location (x, y, theta)</li>
+<li class=""><strong>Processing</strong>: Nav2 path planner + Isaac VSLAM</li>
+<li class=""><strong>Output</strong>: cmd_vel commands</li>
+</ul>
+<p><strong>4. Perception</strong></p>
+<ul>
+<li class=""><strong>Input</strong>: RGB-D camera feed</li>
+<li class=""><strong>Processing</strong>: YOLOv8 (detection) + FoundationPose (6D pose)</li>
+<li class=""><strong>Output</strong>: Object poses</li>
+</ul>
+<p><strong>5. Manipulation</strong></p>
+<ul>
+<li class=""><strong>Input</strong>: Object pose</li>
+<li class=""><strong>Processing</strong>: MoveIt 2 (motion planning) + grasp planner</li>
+<li class=""><strong>Output</strong>: Joint trajectories</li>
+</ul>
+<p><strong>6. Execution Monitor</strong></p>
+<ul>
+<li class=""><strong>Function</strong>: Detect failures, trigger re-planning</li>
+<li class=""><strong>Metrics</strong>: Grasp success, navigation accuracy, task completion time</li>
+</ul>
+<hr>
+<h2 class="anchor anchorTargetStickyNavbar_Vzrq" id="112-deliverables">11.2 Deliverables<a href="#112-deliverables" class="hash-link" aria-label="Direct link to 11.2 Deliverables" title="Direct link to 11.2 Deliverables" translate="no">​</a></h2>
+<h3 class="anchor anchorTargetStickyNavbar_Vzrq" id="1121-system-design-document-10-15-pages">11.2.1 System Design Document (10-15 pages)<a href="#1121-system-design-document-10-15-pages" class="hash-link" aria-label="Direct link to 11.2.1 System Design Document (10-15 pages)" title="Direct link to 11.2.1 System Design Document (10-15 pages)" translate="no">​</a></h3>
+<p><strong>Required sections</strong>:</p>
+<ol>
+<li class="">
+<p><strong>Introduction</strong> (1 page)</p>
+<ul>
+<li class="">Project motivation</li>
+<li class="">High-level overview</li>
+<li class="">Key challenges</li>
+</ul>
+</li>
+<li class="">
+<p><strong>Architecture</strong> (2-3 pages)</p>
+<ul>
+<li class="">System diagram (nodes, topics, actions)</li>
+<li class="">Data flow (sensors → perception → planning → control)</li>
+<li class="">Technology stack (ROS 2 packages, models, hardware)</li>
+</ul>
+</li>
+<li class="">
+<p><strong>Module Specifications</strong> (3-4 pages)</p>
+<ul>
+<li class=""><strong>Voice</strong>: Model choice (Whisper base/small), latency, accuracy</li>
+<li class=""><strong>Planning</strong>: GPT-4 prompt design, action vocabulary</li>
+<li class=""><strong>Navigation</strong>: Planner choice (RRT*, STOMP), costmap resolution</li>
+<li class=""><strong>Perception</strong>: Model choice (YOLOv8n/s/m), inference rate</li>
+<li class=""><strong>Manipulation</strong>: IK solver, grasp strategy, force limits</li>
+</ul>
+</li>
+<li class="">
+<p><strong>Failure Modes &amp; Mitigations</strong> (2 pages)</p>
+<ul>
+<li class=""><strong>Failure 1</strong>: Whisper misunderstands command<!-- -->
+<ul>
+<li class=""><strong>Mitigation</strong>: Confidence threshold + re-prompt</li>
+</ul>
+</li>
+<li class=""><strong>Failure 2</strong>: Navigation path blocked<!-- -->
+<ul>
+<li class=""><strong>Mitigation</strong>: Dynamic replanning</li>
+</ul>
+</li>
+<li class=""><strong>Failure 3</strong>: Grasp fails (object slips)<!-- -->
+<ul>
+<li class=""><strong>Mitigation</strong>: Force sensing + retry with different grasp</li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="">
+<p><strong>Performance Targets</strong> (1 page)</p>
+<ul>
+<li class=""><strong>Success rate</strong>: ≥70% on test set (20 trials)</li>
+<li class=""><strong>Latency</strong>: Voice → action start <code>&lt;5</code> seconds</li>
+<li class=""><strong>Navigation accuracy</strong>: ±10cm position error</li>
+<li class=""><strong>Grasp success</strong>: ≥80% for known objects</li>
+</ul>
+</li>
+<li class="">
+<p><strong>Testing Plan</strong> (1 page)</p>
+<ul>
+<li class="">Unit tests (per module)</li>
+<li class="">Integration tests (full pipeline)</li>
+<li class="">Performance benchmarks (success rate, timing)</li>
+</ul>
+</li>
+</ol>
+<h3 class="anchor anchorTargetStickyNavbar_Vzrq" id="1122-implementation-code--docker">11.2.2 Implementation (Code + Docker)<a href="#1122-implementation-code--docker" class="hash-link" aria-label="Direct link to 11.2.2 Implementation (Code + Docker)" title="Direct link to 11.2.2 Implementation (Code + Docker)" translate="no">​</a></h3>
+<p><strong>Directory structure</strong>:</p>
+<div class="language-text codeBlockContainer_Ckt0 theme-code-block" style="--prism-color:#393A34;--prism-background-color:#f6f8fa"><div class="codeBlockContent_QJqH"><pre tabindex="0" class="prism-code language-text codeBlock_bY9V thin-scrollbar" style="color:#393A34;background-color:#f6f8fa"><code class="codeBlockLines_e6Vv"><span class="token-line" style="color:#393A34"><span class="token plain">capstone_project/</span><br></span><span class="token-line" style="color:#393A34"><span class="token plain">├── docker/</span><br></span><span class="token-line" style="color:#393A34"><span class="token plain">│   ├── Dockerfile</span><br></span><span class="token-line" style="color:#393A34"><span class="token plain">│   └── docker-compose.yml</span><br></span><span class="token-line" style="color:#393A34"><span class="token plain">├── src/</span><br></span><span class="token-line" style="color:#393A34"><span class="token plain">│   ├── voice_interface/</span><br></span><span class="token-line" style="color:#393A34"><span class="token plain">│   │   ├── whisper_node.py</span><br></span><span class="token-line" style="color:#393A34"><span class="token plain">│   │   └── tts_node.py</span><br></span><span class="token-line" style="color:#393A34"><span class="token plain">│   ├── task_planner/</span><br></span><span class="token-line" style="color:#393A34"><span class="token plain">│   │   ├── gpt4_planner.py</span><br></span><span class="token-line" style="color:#393A34"><span class="token plain">│   │   └── action_executor.py</span><br></span><span class="token-line" style="color:#393A34"><span class="token plain">│   ├── navigation/</span><br></span><span class="token-line" style="color:#393A34"><span class="token plain">│   │   ├── nav2_launch.py</span><br></span><span class="token-line" style="color:#393A34"><span class="token plain">│   │   └── vslam_node.py</span><br></span><span class="token-line" style="color:#393A34"><span class="token plain">│   ├── perception/</span><br></span><span class="token-line" style="color:#393A34"><span class="token plain">│   │   ├── yolo_detector.py</span><br></span><span class="token-line" style="color:#393A34"><span class="token plain">│   │   └── pose_estimator.py</span><br></span><span class="token-line" style="color:#393A34"><span class="token plain">│   └── manipulation/</span><br></span><span class="token-line" style="color:#393A34"><span class="token plain">│       ├── moveit_interface.py</span><br></span><span class="token-line" style="color:#393A34"><span class="token plain">│       └── grasp_planner.py</span><br></span><span class="token-line" style="color:#393A34"><span class="token plain">├── config/</span><br></span><span class="token-line" style="color:#393A34"><span class="token plain">│   ├── nav2_params.yaml</span><br></span><span class="token-line" style="color:#393A34"><span class="token plain">│   ├── moveit_config/</span><br></span><span class="token-line" style="color:#393A34"><span class="token plain">│   └── camera_calibration.yaml</span><br></span><span class="token-line" style="color:#393A34"><span class="token plain">├── launch/</span><br></span><span class="token-line" style="color:#393A34"><span class="token plain">│   └── full_system.launch.py</span><br></span><span class="token-line" style="color:#393A34"><span class="token plain">├── worlds/</span><br></span><span class="token-line" style="color:#393A34"><span class="token plain">│   └── kitchen.world (Gazebo)</span><br></span><span class="token-line" style="color:#393A34"><span class="token plain">├── urdf/</span><br></span><span class="token-line" style="color:#393A34"><span class="token plain">│   └── unitree_g1.urdf</span><br></span><span class="token-line" style="color:#393A34"><span class="token plain">├── tests/</span><br></span><span class="token-line" style="color:#393A34"><span class="token plain">│   ├── test_voice.py</span><br></span><span class="token-line" style="color:#393A34"><span class="token plain">│   ├── test_navigation.py</span><br></span><span class="token-line" style="color:#393A34"><span class="token plain">│   └── test_manipulation.py</span><br></span><span class="token-line" style="color:#393A34"><span class="token plain">└── README.md</span><br></span></code></pre></div></div>
+<p><strong>Key requirements</strong>:</p>
+<ul>
+<li class="">All code in ROS 2 packages</li>
+<li class="">Dockerized for reproducibility</li>
+<li class="">Launch file starts entire system</li>
+<li class="">Config files for all parameters</li>
+</ul>
+<h3 class="anchor anchorTargetStickyNavbar_Vzrq" id="1123-evaluation-report-5-10-pages">11.2.3 Evaluation Report (5-10 pages)<a href="#1123-evaluation-report-5-10-pages" class="hash-link" aria-label="Direct link to 11.2.3 Evaluation Report (5-10 pages)" title="Direct link to 11.2.3 Evaluation Report (5-10 pages)" translate="no">​</a></h3>
+<p><strong>Metrics</strong>:</p>
+<ol>
+<li class="">
+<p><strong>Success Rate</strong></p>
+<ul>
+<li class="">Test on 20 commands (varied complexity)</li>
+<li class="">Success = Task completed within 2 minutes</li>
+<li class="">Report: Mean, std dev, per-task breakdown</li>
+</ul>
+</li>
+<li class="">
+<p><strong>Timing</strong></p>
+<ul>
+<li class="">Voice recognition latency</li>
+<li class="">Planning time</li>
+<li class="">Navigation time</li>
+<li class="">Manipulation time</li>
+<li class="">Total task time</li>
+</ul>
+</li>
+<li class="">
+<p><strong>Navigation Accuracy</strong></p>
+<ul>
+<li class="">Position error (cm)</li>
+<li class="">Orientation error (degrees)</li>
+<li class="">Path efficiency (actual length / optimal length)</li>
+</ul>
+</li>
+<li class="">
+<p><strong>Grasp Success</strong></p>
+<ul>
+<li class="">Success rate per object type</li>
+<li class="">Failure modes (slip, collision, missed grasp)</li>
+</ul>
+</li>
+<li class="">
+<p><strong>Failure Analysis</strong></p>
+<ul>
+<li class="">Categorize all failures</li>
+<li class="">Root cause for each</li>
+<li class="">Proposed fixes</li>
+</ul>
+</li>
+</ol>
+<p><strong>Required tables</strong>:</p>
+<table><thead><tr><th>Command</th><th>Success</th><th>Time (s)</th><th>Failure Mode</th></tr></thead><tbody><tr><td>&quot;Bring red cup&quot;</td><td>✓</td><td>45.2</td><td>-</td></tr><tr><td>&quot;Clean table&quot;</td><td>✗</td><td>78.5</td><td>Grasp failed</td></tr><tr><td>&quot;Find remote&quot;</td><td>✓</td><td>52.1</td><td>-</td></tr><tr><td>...</td><td>...</td><td>...</td><td>...</td></tr></tbody></table>
+<p><strong>Required graphs</strong>:</p>
+<ul>
+<li class="">Success rate by command type</li>
+<li class="">Timing breakdown (box plot)</li>
+<li class="">Navigation trajectories (top-view plot)</li>
+</ul>
+<h3 class="anchor anchorTargetStickyNavbar_Vzrq" id="1124-video-demonstration-3-5-minutes">11.2.4 Video Demonstration (3-5 minutes)<a href="#1124-video-demonstration-3-5-minutes" class="hash-link" aria-label="Direct link to 11.2.4 Video Demonstration (3-5 minutes)" title="Direct link to 11.2.4 Video Demonstration (3-5 minutes)" translate="no">​</a></h3>
+<p><strong>Content</strong>:</p>
+<ol>
+<li class=""><strong>Introduction</strong> (30s): Show robot in environment, explain project</li>
+<li class=""><strong>Demo 1</strong> (60s): Simple task (&quot;bring cup&quot;)<!-- -->
+<ul>
+<li class="">Show voice command</li>
+<li class="">Visualize plan (text overlay)</li>
+<li class="">Show robot execution (real-time)</li>
+</ul>
+</li>
+<li class=""><strong>Demo 2</strong> (60s): Complex task (&quot;clean table&quot;)<!-- -->
+<ul>
+<li class="">Show multi-step plan</li>
+<li class="">Show successful completion</li>
+</ul>
+</li>
+<li class=""><strong>Demo 3</strong> (60s): Failure case<!-- -->
+<ul>
+<li class="">Show grasp failure</li>
+<li class="">Show re-planning</li>
+<li class="">Show successful recovery</li>
+</ul>
+</li>
+<li class=""><strong>Conclusion</strong> (30s): Summarize results, lessons learned</li>
+</ol>
+<p><strong>Technical requirements</strong>:</p>
+<ul>
+<li class="">Screen recording (RViz + Gazebo side-by-side)</li>
+<li class="">Narration (voice-over or captions)</li>
+<li class="">Uploaded to YouTube (unlisted link)</li>
+</ul>
+<h3 class="anchor anchorTargetStickyNavbar_Vzrq" id="1125-presentation-10-minutes--5-min-qa">11.2.5 Presentation (10 minutes + 5 min Q&amp;A)<a href="#1125-presentation-10-minutes--5-min-qa" class="hash-link" aria-label="Direct link to 11.2.5 Presentation (10 minutes + 5 min Q&amp;A)" title="Direct link to 11.2.5 Presentation (10 minutes + 5 min Q&amp;A)" translate="no">​</a></h3>
+<p><strong>Slide structure</strong>:</p>
+<ol>
+<li class="">
+<p><strong>Title</strong> (1 slide)</p>
+<ul>
+<li class="">Project name, your name, date</li>
+</ul>
+</li>
+<li class="">
+<p><strong>Motivation</strong> (1 slide)</p>
+<ul>
+<li class="">Why voice-controlled humanoids?</li>
+<li class="">Real-world applications</li>
+</ul>
+</li>
+<li class="">
+<p><strong>Approach</strong> (2 slides)</p>
+<ul>
+<li class="">System architecture diagram</li>
+<li class="">Key technical choices</li>
+</ul>
+</li>
+<li class="">
+<p><strong>Implementation</strong> (2 slides)</p>
+<ul>
+<li class="">Code overview (ROS 2 packages)</li>
+<li class="">Interesting challenges solved</li>
+</ul>
+</li>
+<li class="">
+<p><strong>Results</strong> (3 slides)</p>
+<ul>
+<li class="">Success rate (bar chart)</li>
+<li class="">Timing analysis (box plot)</li>
+<li class="">Demo video embed or screenshot</li>
+</ul>
+</li>
+<li class="">
+<p><strong>Lessons Learned</strong> (1 slide)</p>
+<ul>
+<li class="">What worked well</li>
+<li class="">What would you do differently</li>
+</ul>
+</li>
+<li class="">
+<p><strong>Future Work</strong> (1 slide)</p>
+<ul>
+<li class="">Improvements (better models, faster planning)</li>
+<li class="">Extensions (multi-robot, real hardware)</li>
+</ul>
+</li>
+</ol>
+<hr>
+<h2 class="anchor anchorTargetStickyNavbar_Vzrq" id="113-starter-code">11.3 Starter Code<a href="#113-starter-code" class="hash-link" aria-label="Direct link to 11.3 Starter Code" title="Direct link to 11.3 Starter Code" translate="no">​</a></h2>
+<p><strong>Provided resources</strong>:</p>
+<ol>
+<li class="">
+<p><strong>ROS 2 Package Templates</strong></p>
+<ul>
+<li class="">Skeleton code for voice, planning, perception, manipulation</li>
+<li class="">Launch file templates</li>
+<li class="">Config file examples</li>
+</ul>
+</li>
+<li class="">
+<p><strong>Gazebo World</strong></p>
+<ul>
+<li class="">Kitchen environment (3m × 3m)</li>
+<li class="">Table with 5 objects (cup, plate, box, bottle, remote)</li>
+<li class="">Charging station (start location)</li>
+</ul>
+</li>
+<li class="">
+<p><strong>URDF</strong></p>
+<ul>
+<li class="">Unitree G1 humanoid (full model with sensors)</li>
+<li class="">RealSense D435i camera (mounted on head)</li>
+<li class="">ROS 2 control interfaces</li>
+</ul>
+</li>
+<li class="">
+<p><strong>Sample Commands Dataset</strong></p>
+<ul>
+<li class="">50 voice commands (WAV files)</li>
+<li class="">Ground truth transcriptions</li>
+<li class="">Expected action sequences</li>
+</ul>
+</li>
+</ol>
+<p><strong>What you must implement</strong>:</p>
+<ol>
+<li class="">
+<p><strong>Voice → Action Planner</strong></p>
+<ul>
+<li class="">Integrate Whisper + GPT-4</li>
+<li class="">Parse GPT-4 JSON output</li>
+<li class="">Handle errors (invalid JSON, unreachable goals)</li>
+</ul>
+</li>
+<li class="">
+<p><strong>Navigation + Obstacle Avoidance</strong></p>
+<ul>
+<li class="">Configure Nav2 for humanoid (footprint, inflation radius)</li>
+<li class="">Integrate Isaac VSLAM (or alternative)</li>
+<li class="">Handle dynamic obstacles (moving objects)</li>
+</ul>
+</li>
+<li class="">
+<p><strong>Vision → Grasp Pipeline</strong></p>
+<ul>
+<li class="">Run YOLOv8 on camera feed</li>
+<li class="">Estimate 6D pose (DOPE or FoundationPose)</li>
+<li class="">Generate grasp pose (parallel-jaw gripper)</li>
+<li class="">Execute with MoveIt 2</li>
+</ul>
+</li>
+<li class="">
+<p><strong>Full Integration</strong></p>
+<ul>
+<li class="">Launch all modules together</li>
+<li class="">Handle inter-module communication (ROS topics, actions)</li>
+<li class="">Monitor execution state</li>
+<li class="">Log all events (for debugging)</li>
+</ul>
+</li>
+</ol>
+<hr>
+<h2 class="anchor anchorTargetStickyNavbar_Vzrq" id="114-timeline-1-week">11.4 Timeline (1 Week)<a href="#114-timeline-1-week" class="hash-link" aria-label="Direct link to 11.4 Timeline (1 Week)" title="Direct link to 11.4 Timeline (1 Week)" translate="no">​</a></h2>
+<h3 class="anchor anchorTargetStickyNavbar_Vzrq" id="day-1-2-design--setup">Day 1-2: Design &amp; Setup<a href="#day-1-2-design--setup" class="hash-link" aria-label="Direct link to Day 1-2: Design &amp; Setup" title="Direct link to Day 1-2: Design &amp; Setup" translate="no">​</a></h3>
+<p><strong>Tasks</strong>:</p>
+<ul>
+<li class="">Write system design document (sections 1-3)</li>
+<li class="">Set up Docker environment</li>
+<li class="">Test starter code (launch Gazebo, verify robot loads)</li>
+<li class="">Create Git repository (initialize with .gitignore, README)</li>
+</ul>
+<p><strong>Deliverable</strong>: Design document draft + working Docker container</p>
+<h3 class="anchor anchorTargetStickyNavbar_Vzrq" id="day-3-4-module-implementation">Day 3-4: Module Implementation<a href="#day-3-4-module-implementation" class="hash-link" aria-label="Direct link to Day 3-4: Module Implementation" title="Direct link to Day 3-4: Module Implementation" translate="no">​</a></h3>
+<p><strong>Tasks</strong>:</p>
+<ul>
+<li class="">Implement voice interface (Whisper integration)</li>
+<li class="">Implement task planner (GPT-4 API)</li>
+<li class="">Implement action executor (ROS action clients)</li>
+<li class="">Unit test each module (isolated from others)</li>
+</ul>
+<p><strong>Deliverable</strong>: Working modules (tested independently)</p>
+<h3 class="anchor anchorTargetStickyNavbar_Vzrq" id="day-5-integration">Day 5: Integration<a href="#day-5-integration" class="hash-link" aria-label="Direct link to Day 5: Integration" title="Direct link to Day 5: Integration" translate="no">​</a></h3>
+<p><strong>Tasks</strong>:</p>
+<ul>
+<li class="">Connect all modules (launch file)</li>
+<li class="">Test full pipeline (voice → execution)</li>
+<li class="">Debug integration issues (timing, message passing)</li>
+<li class="">Add logging and monitoring</li>
+</ul>
+<p><strong>Deliverable</strong>: End-to-end working system</p>
+<h3 class="anchor anchorTargetStickyNavbar_Vzrq" id="day-6-evaluation">Day 6: Evaluation<a href="#day-6-evaluation" class="hash-link" aria-label="Direct link to Day 6: Evaluation" title="Direct link to Day 6: Evaluation" translate="no">​</a></h3>
+<p><strong>Tasks</strong>:</p>
+<ul>
+<li class="">Run 20 test trials (record all data)</li>
+<li class="">Analyze results (success rate, timing, errors)</li>
+<li class="">Generate graphs and tables</li>
+<li class="">Write evaluation report</li>
+</ul>
+<p><strong>Deliverable</strong>: Evaluation report + dataset (logs, videos)</p>
+<h3 class="anchor anchorTargetStickyNavbar_Vzrq" id="day-7-documentation--presentation">Day 7: Documentation &amp; Presentation<a href="#day-7-documentation--presentation" class="hash-link" aria-label="Direct link to Day 7: Documentation &amp; Presentation" title="Direct link to Day 7: Documentation &amp; Presentation" translate="no">​</a></h3>
+<p><strong>Tasks</strong>:</p>
+<ul>
+<li class="">Finalize design document (add failure analysis)</li>
+<li class="">Record demo video (3 clips + editing)</li>
+<li class="">Create presentation slides</li>
+<li class="">Practice presentation (10 minutes)</li>
+</ul>
+<p><strong>Deliverable</strong>: All final deliverables ready for submission</p>
+<hr>
+<h2 class="anchor anchorTargetStickyNavbar_Vzrq" id="115-grading-rubric-100-points">11.5 Grading Rubric (100 points)<a href="#115-grading-rubric-100-points" class="hash-link" aria-label="Direct link to 11.5 Grading Rubric (100 points)" title="Direct link to 11.5 Grading Rubric (100 points)" translate="no">​</a></h2>
+<h3 class="anchor anchorTargetStickyNavbar_Vzrq" id="system-design-20-points">System Design (20 points)<a href="#system-design-20-points" class="hash-link" aria-label="Direct link to System Design (20 points)" title="Direct link to System Design (20 points)" translate="no">​</a></h3>
+<ul>
+<li class=""><strong>Architecture</strong> (10 points): Clear diagram, justified choices</li>
+<li class=""><strong>Failure Modes</strong> (5 points): Identified 3+ failures + mitigations</li>
+<li class=""><strong>Performance Targets</strong> (5 points): Quantitative, measurable</li>
+</ul>
+<h3 class="anchor anchorTargetStickyNavbar_Vzrq" id="implementation-quality-25-points">Implementation Quality (25 points)<a href="#implementation-quality-25-points" class="hash-link" aria-label="Direct link to Implementation Quality (25 points)" title="Direct link to Implementation Quality (25 points)" translate="no">​</a></h3>
+<ul>
+<li class=""><strong>Code Structure</strong> (10 points): Modular, clean, follows ROS 2 best practices</li>
+<li class=""><strong>Dockerization</strong> (5 points): One-command setup, reproducible</li>
+<li class=""><strong>Configuration</strong> (5 points): All parameters in config files (not hardcoded)</li>
+<li class=""><strong>Testing</strong> (5 points): Unit tests for critical functions</li>
+</ul>
+<h3 class="anchor anchorTargetStickyNavbar_Vzrq" id="functionality-30-points">Functionality (30 points)<a href="#functionality-30-points" class="hash-link" aria-label="Direct link to Functionality (30 points)" title="Direct link to Functionality (30 points)" translate="no">​</a></h3>
+<ul>
+<li class=""><strong>Basic Functionality</strong> (15 points): System runs, completes at least 1 task</li>
+<li class=""><strong>Success Rate</strong> (10 points):<!-- -->
+<ul>
+<li class="">≥70%: 10 points</li>
+<li class="">50-69%: 7 points</li>
+<li class="">30-49%: 4 points</li>
+<li class="">Less than 30%: 2 points</li>
+</ul>
+</li>
+<li class=""><strong>Robustness</strong> (5 points): Handles failures gracefully (doesn&#x27;t crash)</li>
+</ul>
+<h3 class="anchor anchorTargetStickyNavbar_Vzrq" id="evaluation-15-points">Evaluation (15 points)<a href="#evaluation-15-points" class="hash-link" aria-label="Direct link to Evaluation (15 points)" title="Direct link to Evaluation (15 points)" translate="no">​</a></h3>
+<ul>
+<li class=""><strong>Metrics</strong> (7 points): Reports 4+ quantitative metrics</li>
+<li class=""><strong>Analysis</strong> (5 points): Insightful failure analysis, root causes identified</li>
+<li class=""><strong>Visualization</strong> (3 points): Graphs, tables, screenshots</li>
+</ul>
+<h3 class="anchor anchorTargetStickyNavbar_Vzrq" id="presentation-10-points">Presentation (10 points)<a href="#presentation-10-points" class="hash-link" aria-label="Direct link to Presentation (10 points)" title="Direct link to Presentation (10 points)" translate="no">​</a></h3>
+<ul>
+<li class=""><strong>Video</strong> (5 points): 3-5 minutes, shows successes + failures, narrated</li>
+<li class=""><strong>Slides</strong> (5 points): Clear, professional, covers all sections</li>
+</ul>
+<hr>
+<h2 class="anchor anchorTargetStickyNavbar_Vzrq" id="116-example-projects-inspiration">11.6 Example Projects (Inspiration)<a href="#116-example-projects-inspiration" class="hash-link" aria-label="Direct link to 11.6 Example Projects (Inspiration)" title="Direct link to 11.6 Example Projects (Inspiration)" translate="no">​</a></h2>
+<h3 class="anchor anchorTargetStickyNavbar_Vzrq" id="project-1-coffee-fetch">Project 1: &quot;Coffee Fetch&quot;<a href="#project-1-coffee-fetch" class="hash-link" aria-label="Direct link to Project 1: &quot;Coffee Fetch&quot;" title="Direct link to Project 1: &quot;Coffee Fetch&quot;" translate="no">​</a></h3>
+<p><strong>Task</strong>: Robot navigates kitchen, identifies coffee mug, grasps, delivers to user.</p>
+<p><strong>Key innovation</strong>: Multi-modal object detection (CLIP + depth) for novel mugs.</p>
+<p><strong>Result</strong>: 85% success rate (17/20 trials)</p>
+<h3 class="anchor anchorTargetStickyNavbar_Vzrq" id="project-2-table-cleanup">Project 2: &quot;Table Cleanup&quot;<a href="#project-2-table-cleanup" class="hash-link" aria-label="Direct link to Project 2: &quot;Table Cleanup&quot;" title="Direct link to Project 2: &quot;Table Cleanup&quot;" translate="no">​</a></h3>
+<p><strong>Task</strong>: Robot detects scattered objects, plans order, moves them to bin.</p>
+<p><strong>Key innovation</strong>: Task and motion planning (TAMP) for optimal object ordering.</p>
+<p><strong>Result</strong>: 75% success rate (15/20 trials), avg time 120s</p>
+<h3 class="anchor anchorTargetStickyNavbar_Vzrq" id="project-3-tool-handover">Project 3: &quot;Tool Handover&quot;<a href="#project-3-tool-handover" class="hash-link" aria-label="Direct link to Project 3: &quot;Tool Handover&quot;" title="Direct link to Project 3: &quot;Tool Handover&quot;" translate="no">​</a></h3>
+<p><strong>Task</strong>: User asks for tool, robot searches workshop, identifies tool, hands it over.</p>
+<p><strong>Key innovation</strong>: Active search (probabilistic roadmap for exploration).</p>
+<p><strong>Result</strong>: 70% success rate (14/20 trials), avg search time 45s</p>
+<hr>
+<h2 class="anchor anchorTargetStickyNavbar_Vzrq" id="117-tips-for-success">11.7 Tips for Success<a href="#117-tips-for-success" class="hash-link" aria-label="Direct link to 11.7 Tips for Success" title="Direct link to 11.7 Tips for Success" translate="no">​</a></h2>
+<h3 class="anchor anchorTargetStickyNavbar_Vzrq" id="1171-start-simple">11.7.1 Start Simple<a href="#1171-start-simple" class="hash-link" aria-label="Direct link to 11.7.1 Start Simple" title="Direct link to 11.7.1 Start Simple" translate="no">​</a></h3>
+<p><strong>Bad approach</strong>: Try to implement everything at once
+<strong>Good approach</strong>: Build incrementally</p>
+<p><strong>Milestone sequence</strong>:</p>
+<ol>
+<li class="">✓ Robot spawns in Gazebo</li>
+<li class="">✓ Teleoperation works (keyboard control)</li>
+<li class="">✓ Voice interface publishes text</li>
+<li class="">✓ Planner generates action sequence</li>
+<li class="">✓ Navigation to fixed waypoint works</li>
+<li class="">✓ Perception detects one object</li>
+<li class="">✓ Grasp executes (fixed pose)</li>
+<li class="">✓ End-to-end integration (voice → grasp)</li>
+</ol>
+<h3 class="anchor anchorTargetStickyNavbar_Vzrq" id="1172-test-incrementally">11.7.2 Test Incrementally<a href="#1172-test-incrementally" class="hash-link" aria-label="Direct link to 11.7.2 Test Incrementally" title="Direct link to 11.7.2 Test Incrementally" translate="no">​</a></h3>
+<p><strong>Test each module in isolation</strong> before integration.</p>
+<p><strong>Example</strong>: Test voice interface</p>
+<div class="language-bash codeBlockContainer_Ckt0 theme-code-block" style="--prism-color:#393A34;--prism-background-color:#f6f8fa"><div class="codeBlockContent_QJqH"><pre tabindex="0" class="prism-code language-bash codeBlock_bY9V thin-scrollbar" style="color:#393A34;background-color:#f6f8fa"><code class="codeBlockLines_e6Vv"><span class="token-line" style="color:#393A34"><span class="token plain"># Terminal 1: Run voice node</span><br></span><span class="token-line" style="color:#393A34"><span class="token plain">ros2 run voice_interface whisper_node</span><br></span><span class="token-line" style="color:#393A34"><span class="token plain" style="display:inline-block"></span><br></span><span class="token-line" style="color:#393A34"><span class="token plain"># Terminal 2: Echo output</span><br></span><span class="token-line" style="color:#393A34"><span class="token plain">ros2 topic echo /voice_commands</span><br></span><span class="token-line" style="color:#393A34"><span class="token plain" style="display:inline-block"></span><br></span><span class="token-line" style="color:#393A34"><span class="token plain"># Speak into microphone, verify text appears</span><br></span></code></pre></div></div>
+<h3 class="anchor anchorTargetStickyNavbar_Vzrq" id="1173-use-simulation">11.7.3 Use Simulation<a href="#1173-use-simulation" class="hash-link" aria-label="Direct link to 11.7.3 Use Simulation" title="Direct link to 11.7.3 Use Simulation" translate="no">​</a></h3>
+<p><strong>Simulate before deploying</strong> to real robot (if available).</p>
+<p><strong>Advantages</strong>:</p>
+<ul>
+<li class="">Faster iteration (no hardware setup)</li>
+<li class="">Safer (no risk of collision)</li>
+<li class="">Reproducible (reset environment instantly)</li>
+</ul>
+<h3 class="anchor anchorTargetStickyNavbar_Vzrq" id="1174-document-failures">11.7.4 Document Failures<a href="#1174-document-failures" class="hash-link" aria-label="Direct link to 11.7.4 Document Failures" title="Direct link to 11.7.4 Document Failures" translate="no">​</a></h3>
+<p><strong>Every failure teaches you something.</strong></p>
+<p><strong>Failure log template</strong>:</p>
+<div class="language-text codeBlockContainer_Ckt0 theme-code-block" style="--prism-color:#393A34;--prism-background-color:#f6f8fa"><div class="codeBlockContent_QJqH"><pre tabindex="0" class="prism-code language-text codeBlock_bY9V thin-scrollbar" style="color:#393A34;background-color:#f6f8fa"><code class="codeBlockLines_e6Vv"><span class="token-line" style="color:#393A34"><span class="token plain">Timestamp: 2025-12-06 14:32:15</span><br></span><span class="token-line" style="color:#393A34"><span class="token plain">Command: &quot;Bring red cup&quot;</span><br></span><span class="token-line" style="color:#393A34"><span class="token plain">Failure Mode: Grasp failed (object slipped)</span><br></span><span class="token-line" style="color:#393A34"><span class="token plain">Root Cause: Gripper force too low (0.2N, should be 0.5N)</span><br></span><span class="token-line" style="color:#393A34"><span class="token plain">Fix: Increase force threshold in grasp_controller.yaml</span><br></span><span class="token-line" style="color:#393A34"><span class="token plain">Status: Fixed</span><br></span><span class="token-line" style="color:#393A34"><span class="token plain">Retest: Success</span><br></span></code></pre></div></div>
+<h3 class="anchor anchorTargetStickyNavbar_Vzrq" id="1175-version-control">11.7.5 Version Control<a href="#1175-version-control" class="hash-link" aria-label="Direct link to 11.7.5 Version Control" title="Direct link to 11.7.5 Version Control" translate="no">​</a></h3>
+<p><strong>Use Git</strong> from Day 1.</p>
+<div class="language-bash codeBlockContainer_Ckt0 theme-code-block" style="--prism-color:#393A34;--prism-background-color:#f6f8fa"><div class="codeBlockContent_QJqH"><pre tabindex="0" class="prism-code language-bash codeBlock_bY9V thin-scrollbar" style="color:#393A34;background-color:#f6f8fa"><code class="codeBlockLines_e6Vv"><span class="token-line" style="color:#393A34"><span class="token plain"># Initialize repository</span><br></span><span class="token-line" style="color:#393A34"><span class="token plain">git init</span><br></span><span class="token-line" style="color:#393A34"><span class="token plain">git add .</span><br></span><span class="token-line" style="color:#393A34"><span class="token plain">git commit -m &quot;Initial commit: starter code&quot;</span><br></span><span class="token-line" style="color:#393A34"><span class="token plain" style="display:inline-block"></span><br></span><span class="token-line" style="color:#393A34"><span class="token plain"># Create branches for features</span><br></span><span class="token-line" style="color:#393A34"><span class="token plain">git checkout -b feature/voice-interface</span><br></span><span class="token-line" style="color:#393A34"><span class="token plain"># ... work on feature ...</span><br></span><span class="token-line" style="color:#393A34"><span class="token plain">git commit -m &quot;Add Whisper integration&quot;</span><br></span><span class="token-line" style="color:#393A34"><span class="token plain">git checkout main</span><br></span><span class="token-line" style="color:#393A34"><span class="token plain">git merge feature/voice-interface</span><br></span><span class="token-line" style="color:#393A34"><span class="token plain" style="display:inline-block"></span><br></span><span class="token-line" style="color:#393A34"><span class="token plain"># Tag milestones</span><br></span><span class="token-line" style="color:#393A34"><span class="token plain">git tag -a v0.1 -m &quot;Milestone: Voice interface working&quot;</span><br></span></code></pre></div></div>
+<h3 class="anchor anchorTargetStickyNavbar_Vzrq" id="1176-ask-for-help">11.7.6 Ask for Help<a href="#1176-ask-for-help" class="hash-link" aria-label="Direct link to 11.7.6 Ask for Help" title="Direct link to 11.7.6 Ask for Help" translate="no">​</a></h3>
+<p><strong>When stuck (&gt;1 hour), ask</strong>:</p>
+<ul>
+<li class="">Instructor (office hours)</li>
+<li class="">TAs (lab sessions)</li>
+<li class="">Classmates (study groups)</li>
+<li class="">Online (ROS Discourse, Stack Overflow)</li>
+</ul>
+<p><strong>How to ask</strong>:</p>
+<ol>
+<li class="">Describe what you&#x27;re trying to do</li>
+<li class="">Show what you&#x27;ve tried</li>
+<li class="">Include error messages (full logs)</li>
+<li class="">Specify environment (OS, ROS version, hardware)</li>
+</ol>
+<hr>
+<h2 class="anchor anchorTargetStickyNavbar_Vzrq" id="118-common-pitfalls">11.8 Common Pitfalls<a href="#118-common-pitfalls" class="hash-link" aria-label="Direct link to 11.8 Common Pitfalls" title="Direct link to 11.8 Common Pitfalls" translate="no">​</a></h2>
+<h3 class="anchor anchorTargetStickyNavbar_Vzrq" id="pitfall-1-underestimating-integration-time">Pitfall 1: Underestimating Integration Time<a href="#pitfall-1-underestimating-integration-time" class="hash-link" aria-label="Direct link to Pitfall 1: Underestimating Integration Time" title="Direct link to Pitfall 1: Underestimating Integration Time" translate="no">​</a></h3>
+<p><strong>Symptom</strong>: Modules work individually but fail together.</p>
+<p><strong>Cause</strong>: Timing issues, message format mismatches, race conditions.</p>
+<p><strong>Fix</strong>: Allocate 2-3 days for integration + debugging.</p>
+<h3 class="anchor anchorTargetStickyNavbar_Vzrq" id="pitfall-2-ignoring-edge-cases">Pitfall 2: Ignoring Edge Cases<a href="#pitfall-2-ignoring-edge-cases" class="hash-link" aria-label="Direct link to Pitfall 2: Ignoring Edge Cases" title="Direct link to Pitfall 2: Ignoring Edge Cases" translate="no">​</a></h3>
+<p><strong>Symptom</strong>: System works for simple commands but fails on complex ones.</p>
+<p><strong>Cause</strong>: Only tested happy path (no obstacles, perfect perception).</p>
+<p><strong>Fix</strong>: Test failure modes explicitly (blocked path, misdetection, grasp failure).</p>
+<h3 class="anchor anchorTargetStickyNavbar_Vzrq" id="pitfall-3-hardcoding-parameters">Pitfall 3: Hardcoding Parameters<a href="#pitfall-3-hardcoding-parameters" class="hash-link" aria-label="Direct link to Pitfall 3: Hardcoding Parameters" title="Direct link to Pitfall 3: Hardcoding Parameters" translate="no">​</a></h3>
+<p><strong>Symptom</strong>: Changing a value requires recompiling.</p>
+<p><strong>Cause</strong>: Parameters in Python code instead of config files.</p>
+<p><strong>Fix</strong>: Use ROS 2 parameters + YAML config files.</p>
+<div class="language-python codeBlockContainer_Ckt0 theme-code-block" style="--prism-color:#393A34;--prism-background-color:#f6f8fa"><div class="codeBlockContent_QJqH"><pre tabindex="0" class="prism-code language-python codeBlock_bY9V thin-scrollbar" style="color:#393A34;background-color:#f6f8fa"><code class="codeBlockLines_e6Vv"><span class="token-line" style="color:#393A34"><span class="token comment" style="color:#999988;font-style:italic"># Bad</span><span class="token plain"></span><br></span><span class="token-line" style="color:#393A34"><span class="token plain">max_speed </span><span class="token operator" style="color:#393A34">=</span><span class="token plain"> </span><span class="token number" style="color:#36acaa">0.5</span><span class="token plain">  </span><span class="token comment" style="color:#999988;font-style:italic"># Hardcoded</span><span class="token plain"></span><br></span><span class="token-line" style="color:#393A34"><span class="token plain" style="display:inline-block"></span><br></span><span class="token-line" style="color:#393A34"><span class="token plain"></span><span class="token comment" style="color:#999988;font-style:italic"># Good</span><span class="token plain"></span><br></span><span class="token-line" style="color:#393A34"><span class="token plain">self</span><span class="token punctuation" style="color:#393A34">.</span><span class="token plain">declare_parameter</span><span class="token punctuation" style="color:#393A34">(</span><span class="token string" style="color:#e3116c">&#x27;max_speed&#x27;</span><span class="token punctuation" style="color:#393A34">,</span><span class="token plain"> </span><span class="token number" style="color:#36acaa">0.5</span><span class="token punctuation" style="color:#393A34">)</span><span class="token plain"></span><br></span><span class="token-line" style="color:#393A34"><span class="token plain">max_speed </span><span class="token operator" style="color:#393A34">=</span><span class="token plain"> self</span><span class="token punctuation" style="color:#393A34">.</span><span class="token plain">get_parameter</span><span class="token punctuation" style="color:#393A34">(</span><span class="token string" style="color:#e3116c">&#x27;max_speed&#x27;</span><span class="token punctuation" style="color:#393A34">)</span><span class="token punctuation" style="color:#393A34">.</span><span class="token plain">value</span><br></span></code></pre></div></div>
+<h3 class="anchor anchorTargetStickyNavbar_Vzrq" id="pitfall-4-poor-logging">Pitfall 4: Poor Logging<a href="#pitfall-4-poor-logging" class="hash-link" aria-label="Direct link to Pitfall 4: Poor Logging" title="Direct link to Pitfall 4: Poor Logging" translate="no">​</a></h3>
+<p><strong>Symptom</strong>: Failure occurs, but can&#x27;t diagnose why.</p>
+<p><strong>Cause</strong>: No log messages.</p>
+<p><strong>Fix</strong>: Log all key events (state transitions, errors, timing).</p>
+<div class="language-python codeBlockContainer_Ckt0 theme-code-block" style="--prism-color:#393A34;--prism-background-color:#f6f8fa"><div class="codeBlockContent_QJqH"><pre tabindex="0" class="prism-code language-python codeBlock_bY9V thin-scrollbar" style="color:#393A34;background-color:#f6f8fa"><code class="codeBlockLines_e6Vv"><span class="token-line" style="color:#393A34"><span class="token plain">self</span><span class="token punctuation" style="color:#393A34">.</span><span class="token plain">get_logger</span><span class="token punctuation" style="color:#393A34">(</span><span class="token punctuation" style="color:#393A34">)</span><span class="token punctuation" style="color:#393A34">.</span><span class="token plain">info</span><span class="token punctuation" style="color:#393A34">(</span><span class="token string-interpolation string" style="color:#e3116c">f&#x27;Received command: </span><span class="token string-interpolation interpolation punctuation" style="color:#393A34">{</span><span class="token string-interpolation interpolation">command</span><span class="token string-interpolation interpolation punctuation" style="color:#393A34">}</span><span class="token string-interpolation string" style="color:#e3116c">&#x27;</span><span class="token punctuation" style="color:#393A34">)</span><span class="token plain"></span><br></span><span class="token-line" style="color:#393A34"><span class="token plain">self</span><span class="token punctuation" style="color:#393A34">.</span><span class="token plain">get_logger</span><span class="token punctuation" style="color:#393A34">(</span><span class="token punctuation" style="color:#393A34">)</span><span class="token punctuation" style="color:#393A34">.</span><span class="token plain">warn</span><span class="token punctuation" style="color:#393A34">(</span><span class="token string-interpolation string" style="color:#e3116c">f&#x27;Navigation took </span><span class="token string-interpolation interpolation punctuation" style="color:#393A34">{</span><span class="token string-interpolation interpolation">elapsed</span><span class="token string-interpolation interpolation punctuation" style="color:#393A34">:</span><span class="token string-interpolation interpolation format-spec">.1f</span><span class="token string-interpolation interpolation punctuation" style="color:#393A34">}</span><span class="token string-interpolation string" style="color:#e3116c">s (expected &lt;5s)&#x27;</span><span class="token punctuation" style="color:#393A34">)</span><span class="token plain"></span><br></span><span class="token-line" style="color:#393A34"><span class="token plain">self</span><span class="token punctuation" style="color:#393A34">.</span><span class="token plain">get_logger</span><span class="token punctuation" style="color:#393A34">(</span><span class="token punctuation" style="color:#393A34">)</span><span class="token punctuation" style="color:#393A34">.</span><span class="token plain">error</span><span class="token punctuation" style="color:#393A34">(</span><span class="token string-interpolation string" style="color:#e3116c">f&#x27;Grasp failed: </span><span class="token string-interpolation interpolation punctuation" style="color:#393A34">{</span><span class="token string-interpolation interpolation">error_msg</span><span class="token string-interpolation interpolation punctuation" style="color:#393A34">}</span><span class="token string-interpolation string" style="color:#e3116c">&#x27;</span><span class="token punctuation" style="color:#393A34">)</span><br></span></code></pre></div></div>
+<hr>
+<h2 class="anchor anchorTargetStickyNavbar_Vzrq" id="119-post-project-extensions">11.9 Post-Project Extensions<a href="#119-post-project-extensions" class="hash-link" aria-label="Direct link to 11.9 Post-Project Extensions" title="Direct link to 11.9 Post-Project Extensions" translate="no">​</a></h2>
+<p><strong>After completing the capstone</strong>, consider these extensions:</p>
+<ol>
+<li class="">
+<p><strong>Bi-Manual Manipulation</strong></p>
+<ul>
+<li class="">Use both arms (carry large objects, open jars)</li>
+</ul>
+</li>
+<li class="">
+<p><strong>Multi-Robot Coordination</strong></p>
+<ul>
+<li class="">Two humanoids collaborate (one holds, one assembles)</li>
+</ul>
+</li>
+<li class="">
+<p><strong>Real Hardware Deployment</strong></p>
+<ul>
+<li class="">Deploy to Unitree G1 (requires hardware access)</li>
+</ul>
+</li>
+<li class="">
+<p><strong>Improved Perception</strong></p>
+<ul>
+<li class="">Train custom YOLOv8 on kitchen objects</li>
+<li class="">Add object tracking (DeepSORT)</li>
+</ul>
+</li>
+<li class="">
+<p><strong>Natural Language Feedback</strong></p>
+<ul>
+<li class="">Robot explains what it&#x27;s doing (text-to-speech)</li>
+<li class="">Asks clarification questions (&quot;Which cup?&quot;)</li>
+</ul>
+</li>
+<li class="">
+<p><strong>Sim-to-Real Transfer</strong></p>
+<ul>
+<li class="">Domain randomization in simulation</li>
+<li class="">Deploy to real robot, measure success rate</li>
+</ul>
+</li>
+</ol>
+<hr>
+<h2 class="anchor anchorTargetStickyNavbar_Vzrq" id="1110-resources">11.10 Resources<a href="#1110-resources" class="hash-link" aria-label="Direct link to 11.10 Resources" title="Direct link to 11.10 Resources" translate="no">​</a></h2>
+<h3 class="anchor anchorTargetStickyNavbar_Vzrq" id="code-repositories">Code Repositories<a href="#code-repositories" class="hash-link" aria-label="Direct link to Code Repositories" title="Direct link to Code Repositories" translate="no">​</a></h3>
+<ul>
+<li class=""><strong>Starter Code</strong>: <a href="https://github.com/Shumailaaijaz/physical-ai-capstone" target="_blank" rel="noopener noreferrer" class="">github.com/Shumailaaijaz/physical-ai-capstone</a></li>
+<li class=""><strong>Example Projects</strong>: <a href="https://github.com/Shumailaaijaz/capstone-examples" target="_blank" rel="noopener noreferrer" class="">github.com/Shumailaaijaz/capstone-examples</a></li>
+</ul>
+<h3 class="anchor anchorTargetStickyNavbar_Vzrq" id="reference-documentation">Reference Documentation<a href="#reference-documentation" class="hash-link" aria-label="Direct link to Reference Documentation" title="Direct link to Reference Documentation" translate="no">​</a></h3>
+<ul>
+<li class=""><strong>ROS 2 Humble</strong>: <a href="https://docs.ros.org/en/humble/" target="_blank" rel="noopener noreferrer" class="">https://docs.ros.org/en/humble/</a></li>
+<li class=""><strong>Nav2</strong>: <a href="https://navigation.ros.org/" target="_blank" rel="noopener noreferrer" class="">https://navigation.ros.org/</a></li>
+<li class=""><strong>MoveIt 2</strong>: <a href="https://moveit.ros.org/" target="_blank" rel="noopener noreferrer" class="">https://moveit.ros.org/</a></li>
+<li class=""><strong>Gazebo</strong>: <a href="https://gazebosim.org/docs" target="_blank" rel="noopener noreferrer" class="">https://gazebosim.org/docs</a></li>
+<li class=""><strong>Isaac ROS</strong>: <a href="https://nvidia-isaac-ros.github.io/" target="_blank" rel="noopener noreferrer" class="">https://nvidia-isaac-ros.github.io/</a></li>
+</ul>
+<h3 class="anchor anchorTargetStickyNavbar_Vzrq" id="support">Support<a href="#support" class="hash-link" aria-label="Direct link to Support" title="Direct link to Support" translate="no">​</a></h3>
+<ul>
+<li class=""><strong>Office Hours</strong>: TBD</li>
+<li class=""><strong>Discussion Forum</strong>: [Piazza link]</li>
+<li class=""><strong>ROS Answers</strong>: <a href="https://answers.ros.org/" target="_blank" rel="noopener noreferrer" class="">https://answers.ros.org/</a></li>
+</ul>
+<hr>
+<h2 class="anchor anchorTargetStickyNavbar_Vzrq" id="1111-submission-checklist">11.11 Submission Checklist<a href="#1111-submission-checklist" class="hash-link" aria-label="Direct link to 11.11 Submission Checklist" title="Direct link to 11.11 Submission Checklist" translate="no">​</a></h2>
+<p>Before submitting, verify:</p>
+<ul class="contains-task-list containsTaskList_mC6p">
+<li class="task-list-item"><input type="checkbox" disabled=""> <!-- -->System design document (PDF, 10-15 pages)</li>
+<li class="task-list-item"><input type="checkbox" disabled=""> <!-- -->Code repository (GitHub link with README)</li>
+<li class="task-list-item"><input type="checkbox" disabled=""> <!-- -->Docker Compose file (one-command setup)</li>
+<li class="task-list-item"><input type="checkbox" disabled=""> <!-- -->Evaluation report (PDF, 5-10 pages with graphs)</li>
+<li class="task-list-item"><input type="checkbox" disabled=""> <!-- -->Demo video (YouTube link, 3-5 minutes)</li>
+<li class="task-list-item"><input type="checkbox" disabled=""> <!-- -->Presentation slides (PDF, 10-12 slides)</li>
+<li class="task-list-item"><input type="checkbox" disabled=""> <!-- -->All deliverables in one ZIP file OR GitHub release</li>
+</ul>
+<p><strong>File naming convention</strong>:</p>
+<div class="language-text codeBlockContainer_Ckt0 theme-code-block" style="--prism-color:#393A34;--prism-background-color:#f6f8fa"><div class="codeBlockContent_QJqH"><pre tabindex="0" class="prism-code language-text codeBlock_bY9V thin-scrollbar" style="color:#393A34;background-color:#f6f8fa"><code class="codeBlockLines_e6Vv"><span class="token-line" style="color:#393A34"><span class="token plain">LastName_FirstName_Capstone.zip</span><br></span><span class="token-line" style="color:#393A34"><span class="token plain">├── design_document.pdf</span><br></span><span class="token-line" style="color:#393A34"><span class="token plain">├── code/  (or github_link.txt)</span><br></span><span class="token-line" style="color:#393A34"><span class="token plain">├── evaluation_report.pdf</span><br></span><span class="token-line" style="color:#393A34"><span class="token plain">├── demo_video_link.txt</span><br></span><span class="token-line" style="color:#393A34"><span class="token plain">└── presentation_slides.pdf</span><br></span></code></pre></div></div>
+<hr>
+<p><strong>Good luck on your capstone project! Remember: The journey is more valuable than the destination. Every bug fixed and failure analyzed makes you a better roboticist.</strong></p>
+<hr>
+<p><em>This textbook is a living document. Found an error? Have a suggestion? Submit an issue or PR at <a href="https://github.com/Shumailaaijaz/physical-ai-textbook" target="_blank" rel="noopener noreferrer" class="">github.com/Shumailaaijaz/physical-ai-textbook</a></em></p></div><footer class="theme-doc-footer docusaurus-mt-lg"><div class="row margin-top--sm theme-doc-footer-edit-meta-row"><div class="col noPrint_WFHX"><a href="https://github.com/Shumailaaijaz/physical-ai-textbook/tree/main/docs/11-capstone-project.mdx" target="_blank" rel="noopener noreferrer" class="theme-edit-this-page"><svg fill="currentColor" height="20" width="20" viewBox="0 0 40 40" class="iconEdit_Z9Sw" aria-hidden="true"><g><path d="m34.5 11.7l-3 3.1-6.3-6.3 3.1-3q0.5-0.5 1.2-0.5t1.1 0.5l3.9 3.9q0.5 0.4 0.5 1.1t-0.5 1.2z m-29.5 17.1l18.4-18.5 6.3 6.3-18.4 18.4h-6.3v-6.2z"></path></g></svg>Edit this page</a></div><div class="col lastUpdated_JAkA"></div></div></footer></article><nav class="docusaurus-mt-lg pagination-nav" aria-label="Docs pages"><a class="pagination-nav__link pagination-nav__link--prev" href="/physical-ai-textbook/docs/10-vision-language-action"><div class="pagination-nav__sublabel">Previous</div><div class="pagination-nav__label">Chapter 10: Vision-Language-Action (VLA) Models</div></a><a class="pagination-nav__link pagination-nav__link--next" href="/physical-ai-textbook/docs/12-hardware-guide"><div class="pagination-nav__sublabel">Next</div><div class="pagination-nav__label">Chapter 12: Hardware Guide</div></a></nav></div></div><div class="col col--3"><div class="tableOfContents_bqdL thin-scrollbar theme-doc-toc-desktop"><ul class="table-of-contents table-of-contents__left-border"><li><a href="#learning-objectives" class="table-of-contents__link toc-highlight">Learning Objectives</a></li><li><a href="#111-project-specification" class="table-of-contents__link toc-highlight">11.1 Project Specification</a><ul><li><a href="#1111-title" class="table-of-contents__link toc-highlight">11.1.1 Title</a></li><li><a href="#1112-scenario" class="table-of-contents__link toc-highlight">11.1.2 Scenario</a></li><li><a href="#1113-system-architecture" class="table-of-contents__link toc-highlight">11.1.3 System Architecture</a></li><li><a href="#1114-required-components" class="table-of-contents__link toc-highlight">11.1.4 Required Components</a></li></ul></li><li><a href="#112-deliverables" class="table-of-contents__link toc-highlight">11.2 Deliverables</a><ul><li><a href="#1121-system-design-document-10-15-pages" class="table-of-contents__link toc-highlight">11.2.1 System Design Document (10-15 pages)</a></li><li><a href="#1122-implementation-code--docker" class="table-of-contents__link toc-highlight">11.2.2 Implementation (Code + Docker)</a></li><li><a href="#1123-evaluation-report-5-10-pages" class="table-of-contents__link toc-highlight">11.2.3 Evaluation Report (5-10 pages)</a></li><li><a href="#1124-video-demonstration-3-5-minutes" class="table-of-contents__link toc-highlight">11.2.4 Video Demonstration (3-5 minutes)</a></li><li><a href="#1125-presentation-10-minutes--5-min-qa" class="table-of-contents__link toc-highlight">11.2.5 Presentation (10 minutes + 5 min Q&amp;A)</a></li></ul></li><li><a href="#113-starter-code" class="table-of-contents__link toc-highlight">11.3 Starter Code</a></li><li><a href="#114-timeline-1-week" class="table-of-contents__link toc-highlight">11.4 Timeline (1 Week)</a><ul><li><a href="#day-1-2-design--setup" class="table-of-contents__link toc-highlight">Day 1-2: Design &amp; Setup</a></li><li><a href="#day-3-4-module-implementation" class="table-of-contents__link toc-highlight">Day 3-4: Module Implementation</a></li><li><a href="#day-5-integration" class="table-of-contents__link toc-highlight">Day 5: Integration</a></li><li><a href="#day-6-evaluation" class="table-of-contents__link toc-highlight">Day 6: Evaluation</a></li><li><a href="#day-7-documentation--presentation" class="table-of-contents__link toc-highlight">Day 7: Documentation &amp; Presentation</a></li></ul></li><li><a href="#115-grading-rubric-100-points" class="table-of-contents__link toc-highlight">11.5 Grading Rubric (100 points)</a><ul><li><a href="#system-design-20-points" class="table-of-contents__link toc-highlight">System Design (20 points)</a></li><li><a href="#implementation-quality-25-points" class="table-of-contents__link toc-highlight">Implementation Quality (25 points)</a></li><li><a href="#functionality-30-points" class="table-of-contents__link toc-highlight">Functionality (30 points)</a></li><li><a href="#evaluation-15-points" class="table-of-contents__link toc-highlight">Evaluation (15 points)</a></li><li><a href="#presentation-10-points" class="table-of-contents__link toc-highlight">Presentation (10 points)</a></li></ul></li><li><a href="#116-example-projects-inspiration" class="table-of-contents__link toc-highlight">11.6 Example Projects (Inspiration)</a><ul><li><a href="#project-1-coffee-fetch" class="table-of-contents__link toc-highlight">Project 1: &quot;Coffee Fetch&quot;</a></li><li><a href="#project-2-table-cleanup" class="table-of-contents__link toc-highlight">Project 2: &quot;Table Cleanup&quot;</a></li><li><a href="#project-3-tool-handover" class="table-of-contents__link toc-highlight">Project 3: &quot;Tool Handover&quot;</a></li></ul></li><li><a href="#117-tips-for-success" class="table-of-contents__link toc-highlight">11.7 Tips for Success</a><ul><li><a href="#1171-start-simple" class="table-of-contents__link toc-highlight">11.7.1 Start Simple</a></li><li><a href="#1172-test-incrementally" class="table-of-contents__link toc-highlight">11.7.2 Test Incrementally</a></li><li><a href="#1173-use-simulation" class="table-of-contents__link toc-highlight">11.7.3 Use Simulation</a></li><li><a href="#1174-document-failures" class="table-of-contents__link toc-highlight">11.7.4 Document Failures</a></li><li><a href="#1175-version-control" class="table-of-contents__link toc-highlight">11.7.5 Version Control</a></li><li><a href="#1176-ask-for-help" class="table-of-contents__link toc-highlight">11.7.6 Ask for Help</a></li></ul></li><li><a href="#118-common-pitfalls" class="table-of-contents__link toc-highlight">11.8 Common Pitfalls</a><ul><li><a href="#pitfall-1-underestimating-integration-time" class="table-of-contents__link toc-highlight">Pitfall 1: Underestimating Integration Time</a></li><li><a href="#pitfall-2-ignoring-edge-cases" class="table-of-contents__link toc-highlight">Pitfall 2: Ignoring Edge Cases</a></li><li><a href="#pitfall-3-hardcoding-parameters" class="table-of-contents__link toc-highlight">Pitfall 3: Hardcoding Parameters</a></li><li><a href="#pitfall-4-poor-logging" class="table-of-contents__link toc-highlight">Pitfall 4: Poor Logging</a></li></ul></li><li><a href="#119-post-project-extensions" class="table-of-contents__link toc-highlight">11.9 Post-Project Extensions</a></li><li><a href="#1110-resources" class="table-of-contents__link toc-highlight">11.10 Resources</a><ul><li><a href="#code-repositories" class="table-of-contents__link toc-highlight">Code Repositories</a></li><li><a href="#reference-documentation" class="table-of-contents__link toc-highlight">Reference Documentation</a></li><li><a href="#support" class="table-of-contents__link toc-highlight">Support</a></li></ul></li><li><a href="#1111-submission-checklist" class="table-of-contents__link toc-highlight">11.11 Submission Checklist</a></li></ul></div></div></div></div></main></div></div></div><footer class="theme-layout-footer footer footer--dark"><div class="container container-fluid"><div class="row footer__links"><div class="theme-layout-footer-column col footer__col"><div class="footer__title">Textbook</div><ul class="footer__items clean-list"><li class="footer__item"><a class="footer__link-item" href="/physical-ai-textbook/docs/00-preface">Start Learning</a></li><li class="footer__item"><a class="footer__link-item" href="/physical-ai-textbook/docs/CHAPTER_OUTLINES">Chapter Outlines</a></li></ul></div><div class="theme-layout-footer-column col footer__col"><div class="footer__title">Resources</div><ul class="footer__items clean-list"><li class="footer__item"><a href="https://github.com/Shumailaaijaz/physical-ai-labs" target="_blank" rel="noopener noreferrer" class="footer__link-item">Labs Repository<svg width="13.5" height="13.5" aria-label="(opens in new tab)" class="iconExternalLink_nPIU"><use href="#theme-svg-external-link"></use></svg></a></li><li class="footer__item"><a href="https://github.com/Shumailaaijaz/physical-ai-textbook" target="_blank" rel="noopener noreferrer" class="footer__link-item">Textbook Repository<svg width="13.5" height="13.5" aria-label="(opens in new tab)" class="iconExternalLink_nPIU"><use href="#theme-svg-external-link"></use></svg></a></li><li class="footer__item"><a href="https://github.com/Shumailaaijaz/physical-ai-textbook/discussions" target="_blank" rel="noopener noreferrer" class="footer__link-item">GitHub Discussions<svg width="13.5" height="13.5" aria-label="(opens in new tab)" class="iconExternalLink_nPIU"><use href="#theme-svg-external-link"></use></svg></a></li></ul></div><div class="theme-layout-footer-column col footer__col"><div class="footer__title">More</div><ul class="footer__items clean-list"><li class="footer__item"><a class="footer__link-item" href="/physical-ai-textbook/blog">Blog</a></li><li class="footer__item"><a href="https://github.com/Shumailaaijaz/physical-ai-textbook/issues" target="_blank" rel="noopener noreferrer" class="footer__link-item">Report Issues<svg width="13.5" height="13.5" aria-label="(opens in new tab)" class="iconExternalLink_nPIU"><use href="#theme-svg-external-link"></use></svg></a></li></ul></div></div><div class="footer__bottom text--center"><div class="footer__copyright">Copyright © 2026 Physical AI Textbook. Open source under MIT License.<br><div style="margin-top: 1rem;"><a href="https://www.linkedin.com/in/shumaila-aijaz-916b412b3" target="_blank" rel="noopener noreferrer" style="display: inline-flex; align-items: center; gap: 0.5rem; text-decoration: none;"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="currentColor"><path d="M19 0h-14c-2.761 0-5 2.239-5 5v14c0 2.761 2.239 5 5 5h14c2.762 0 5-2.239 5-5v-14c0-2.761-2.238-5-5-5zm-11 19h-3v-11h3v11zm-1.5-12.268c-.966 0-1.75-.79-1.75-1.764s.784-1.764 1.75-1.764 1.75.79 1.75 1.764-.783 1.764-1.75 1.764zm13.5 12.268h-3v-5.604c0-3.368-4-3.113-4 0v5.604h-3v-11h3v1.765c1.396-2.586 7-2.777 7 2.476v6.759z"/></svg><span>Connect on LinkedIn</span></a></div></div></div></div></footer><div></div></div>
+</body>
+</html>

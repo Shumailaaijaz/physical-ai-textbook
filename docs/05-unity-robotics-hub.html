@@ -1,0 +1,504 @@
+<!doctype html>
+<html lang="en" dir="ltr" class="docs-wrapper plugin-docs plugin-id-default docs-version-current docs-doc-page docs-doc-id-05-unity-robotics-hub" data-has-hydrated="false">
+<head>
+<meta charset="UTF-8">
+<meta name="generator" content="Docusaurus v3.9.2">
+<title data-rh="true">Chapter 5: Unity Robotics Hub | Physical AI &amp; Humanoid Robotics</title><meta data-rh="true" name="viewport" content="width=device-width,initial-scale=1"><meta data-rh="true" name="twitter:card" content="summary_large_image"><meta data-rh="true" property="og:image" content="https://shumailaaijaz.github.io/physical-ai-textbook/img/docusaurus-social-card.jpg"><meta data-rh="true" name="twitter:image" content="https://shumailaaijaz.github.io/physical-ai-textbook/img/docusaurus-social-card.jpg"><meta data-rh="true" property="og:url" content="https://shumailaaijaz.github.io/physical-ai-textbook/docs/05-unity-robotics-hub"><meta data-rh="true" property="og:locale" content="en"><meta data-rh="true" name="docusaurus_locale" content="en"><meta data-rh="true" name="docsearch:language" content="en"><meta data-rh="true" name="docusaurus_version" content="current"><meta data-rh="true" name="docusaurus_tag" content="docs-default-current"><meta data-rh="true" name="docsearch:version" content="current"><meta data-rh="true" name="docsearch:docusaurus_tag" content="docs-default-current"><meta data-rh="true" property="og:title" content="Chapter 5: Unity Robotics Hub | Physical AI &amp; Humanoid Robotics"><meta data-rh="true" name="description" content="&quot;Unity brings photorealism to robotics—where Gazebo shows you physics, Unity shows you reality.&quot;"><meta data-rh="true" property="og:description" content="&quot;Unity brings photorealism to robotics—where Gazebo shows you physics, Unity shows you reality.&quot;"><link data-rh="true" rel="icon" href="/physical-ai-textbook/img/favicon.ico"><link data-rh="true" rel="canonical" href="https://shumailaaijaz.github.io/physical-ai-textbook/docs/05-unity-robotics-hub"><link data-rh="true" rel="alternate" href="https://shumailaaijaz.github.io/physical-ai-textbook/docs/05-unity-robotics-hub" hreflang="en"><link data-rh="true" rel="alternate" href="https://shumailaaijaz.github.io/physical-ai-textbook/docs/05-unity-robotics-hub" hreflang="x-default"><script data-rh="true" type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Chapter 5: Unity Robotics Hub","item":"https://shumailaaijaz.github.io/physical-ai-textbook/docs/05-unity-robotics-hub"}]}</script><link rel="alternate" type="application/rss+xml" href="/physical-ai-textbook/blog/rss.xml" title="Physical AI &amp; Humanoid Robotics RSS Feed">
+<link rel="alternate" type="application/atom+xml" href="/physical-ai-textbook/blog/atom.xml" title="Physical AI &amp; Humanoid Robotics Atom Feed"><link rel="stylesheet" href="/physical-ai-textbook/assets/css/styles.2bd0a4a8.css">
+<script src="/physical-ai-textbook/assets/js/runtime~main.3b1ba462.js" defer="defer"></script>
+<script src="/physical-ai-textbook/assets/js/main.4469a88a.js" defer="defer"></script>
+</head>
+<body class="navigation-with-keyboard">
+<svg style="display: none;"><defs>
+<symbol id="theme-svg-external-link" viewBox="0 0 24 24"><path fill="currentColor" d="M21 13v10h-21v-19h12v2h-10v15h17v-8h2zm3-12h-10.988l4.035 4-6.977 7.07 2.828 2.828 6.977-7.07 4.125 4.172v-11z"/></symbol>
+</defs></svg>
+<script>!function(){var t=function(){try{return new URLSearchParams(window.location.search).get("docusaurus-theme")}catch(t){}}()||function(){try{return window.localStorage.getItem("theme")}catch(t){}}();document.documentElement.setAttribute("data-theme",t||"light"),document.documentElement.setAttribute("data-theme-choice",t||"light")}(),function(){try{const c=new URLSearchParams(window.location.search).entries();for(var[t,e]of c)if(t.startsWith("docusaurus-data-")){var a=t.replace("docusaurus-data-","data-");document.documentElement.setAttribute(a,e)}}catch(t){}}()</script><div id="__docusaurus"><link rel="preload" as="image" href="/physical-ai-textbook/img/logo.jpeg"><div role="region" aria-label="Skip to main content"><a class="skipToContent_fXgn" href="#__docusaurus_skipToContent_fallback">Skip to main content</a></div><nav aria-label="Main" class="theme-layout-navbar navbar navbar--fixed-top"><div class="navbar__inner"><div class="navbar__items"><button aria-label="Toggle navigation bar" aria-expanded="false" class="navbar__toggle clean-btn" type="button"><svg width="30" height="30" viewBox="0 0 30 30" aria-hidden="true"><path stroke="currentColor" stroke-linecap="round" stroke-miterlimit="10" stroke-width="2" d="M4 7h22M4 15h22M4 23h22"></path></svg></button><a class="navbar__brand" href="/physical-ai-textbook/"><div class="navbar__logo"><img src="/physical-ai-textbook/img/logo.jpeg" alt="Physical AI Logo" class="themedComponent_mlkZ themedComponent--light_NVdE" style="border-radius:50%;width:40px;height:40px"><img src="/physical-ai-textbook/img/logo.jpeg" alt="Physical AI Logo" class="themedComponent_mlkZ themedComponent--dark_xIcU" style="border-radius:50%;width:40px;height:40px"></div><b class="navbar__title text--truncate">Physical AI Textbook</b></a><a aria-current="page" class="navbar__item navbar__link navbar__link--active" href="/physical-ai-textbook/docs/00-preface">Textbook</a><a class="navbar__item navbar__link" href="/physical-ai-textbook/blog">Blog</a><a class="navbar__item navbar__link" href="/physical-ai-textbook/chatbot">AI Chatbot</a></div><div class="navbar__items navbar__items--right"><a href="https://github.com/Shumailaaijaz/physical-ai-labs" target="_blank" rel="noopener noreferrer" class="navbar__item navbar__link">Labs<svg width="13.5" height="13.5" aria-label="(opens in new tab)" class="iconExternalLink_nPIU"><use href="#theme-svg-external-link"></use></svg></a><a href="https://github.com/Shumailaaijaz/physical-ai-textbook" target="_blank" rel="noopener noreferrer" class="navbar__item navbar__link">GitHub<svg width="13.5" height="13.5" aria-label="(opens in new tab)" class="iconExternalLink_nPIU"><use href="#theme-svg-external-link"></use></svg></a><a class="navbar__item navbar__link" href="/physical-ai-textbook/login">Login</a><a class="navbar__item navbar__link" href="/physical-ai-textbook/signup">Sign Up</a><div class="toggle_vylO colorModeToggle_x44X"><button class="clean-btn toggleButton_gllP toggleButtonDisabled_aARS" type="button" disabled="" title="system mode" aria-label="Switch between dark and light mode (currently system mode)"><svg viewBox="0 0 24 24" width="24" height="24" aria-hidden="true" class="toggleIcon_g3eP lightToggleIcon_pyhR"><path fill="currentColor" d="M12,9c1.65,0,3,1.35,3,3s-1.35,3-3,3s-3-1.35-3-3S10.35,9,12,9 M12,7c-2.76,0-5,2.24-5,5s2.24,5,5,5s5-2.24,5-5 S14.76,7,12,7L12,7z M2,13l2,0c0.55,0,1-0.45,1-1s-0.45-1-1-1l-2,0c-0.55,0-1,0.45-1,1S1.45,13,2,13z M20,13l2,0c0.55,0,1-0.45,1-1 s-0.45-1-1-1l-2,0c-0.55,0-1,0.45-1,1S19.45,13,20,13z M11,2v2c0,0.55,0.45,1,1,1s1-0.45,1-1V2c0-0.55-0.45-1-1-1S11,1.45,11,2z M11,20v2c0,0.55,0.45,1,1,1s1-0.45,1-1v-2c0-0.55-0.45-1-1-1C11.45,19,11,19.45,11,20z M5.99,4.58c-0.39-0.39-1.03-0.39-1.41,0 c-0.39,0.39-0.39,1.03,0,1.41l1.06,1.06c0.39,0.39,1.03,0.39,1.41,0s0.39-1.03,0-1.41L5.99,4.58z M18.36,16.95 c-0.39-0.39-1.03-0.39-1.41,0c-0.39,0.39-0.39,1.03,0,1.41l1.06,1.06c0.39,0.39,1.03,0.39,1.41,0c0.39-0.39,0.39-1.03,0-1.41 L18.36,16.95z M19.42,5.99c0.39-0.39,0.39-1.03,0-1.41c-0.39-0.39-1.03-0.39-1.41,0l-1.06,1.06c-0.39,0.39-0.39,1.03,0,1.41 s1.03,0.39,1.41,0L19.42,5.99z M7.05,18.36c0.39-0.39,0.39-1.03,0-1.41c-0.39-0.39-1.03-0.39-1.41,0l-1.06,1.06 c-0.39,0.39-0.39,1.03,0,1.41s1.03,0.39,1.41,0L7.05,18.36z"></path></svg><svg viewBox="0 0 24 24" width="24" height="24" aria-hidden="true" class="toggleIcon_g3eP darkToggleIcon_wfgR"><path fill="currentColor" d="M9.37,5.51C9.19,6.15,9.1,6.82,9.1,7.5c0,4.08,3.32,7.4,7.4,7.4c0.68,0,1.35-0.09,1.99-0.27C17.45,17.19,14.93,19,12,19 c-3.86,0-7-3.14-7-7C5,9.07,6.81,6.55,9.37,5.51z M12,3c-4.97,0-9,4.03-9,9s4.03,9,9,9s9-4.03,9-9c0-0.46-0.04-0.92-0.1-1.36 c-0.98,1.37-2.58,2.26-4.4,2.26c-2.98,0-5.4-2.42-5.4-5.4c0-1.81,0.89-3.42,2.26-4.4C12.92,3.04,12.46,3,12,3L12,3z"></path></svg><svg viewBox="0 0 24 24" width="24" height="24" aria-hidden="true" class="toggleIcon_g3eP systemToggleIcon_QzmC"><path fill="currentColor" d="m12 21c4.971 0 9-4.029 9-9s-4.029-9-9-9-9 4.029-9 9 4.029 9 9 9zm4.95-13.95c1.313 1.313 2.05 3.093 2.05 4.95s-0.738 3.637-2.05 4.95c-1.313 1.313-3.093 2.05-4.95 2.05v-14c1.857 0 3.637 0.737 4.95 2.05z"></path></svg></button></div><div class="navbarSearchContainer_Bca1"></div></div></div><div role="presentation" class="navbar-sidebar__backdrop"></div></nav><div id="__docusaurus_skipToContent_fallback" class="theme-layout-main main-wrapper mainWrapper_z2l0"><div class="docsWrapper_hBAB"><button aria-label="Scroll back to top" class="clean-btn theme-back-to-top-button backToTopButton_sjWU" type="button"></button><div class="docRoot_UBD9"><aside class="theme-doc-sidebar-container docSidebarContainer_YfHR"><div class="sidebarViewport_aRkj"><div class="sidebar_njMd"><nav aria-label="Docs sidebar" class="menu thin-scrollbar menu_SIkG"><ul class="theme-doc-sidebar-menu menu__list"><li class="theme-doc-sidebar-item-link theme-doc-sidebar-item-link-level-1 menu__list-item"><a class="menu__link" href="/physical-ai-textbook/docs/00-preface"><span title="Preface" class="linkLabel_WmDU">Preface</span></a></li><li class="theme-doc-sidebar-item-link theme-doc-sidebar-item-link-level-1 menu__list-item"><a class="menu__link" href="/physical-ai-textbook/docs/01-introduction-to-physical-ai"><span title="Chapter 1: Introduction to Physical AI" class="linkLabel_WmDU">Chapter 1: Introduction to Physical AI</span></a></li><li class="theme-doc-sidebar-item-link theme-doc-sidebar-item-link-level-1 menu__list-item"><a class="menu__link" href="/physical-ai-textbook/docs/02-ros2-fundamentals"><span title="Chapter 2: ROS 2 Fundamentals" class="linkLabel_WmDU">Chapter 2: ROS 2 Fundamentals</span></a></li><li class="theme-doc-sidebar-item-link theme-doc-sidebar-item-link-level-1 menu__list-item"><a class="menu__link" href="/physical-ai-textbook/docs/03-urdf-robot-modeling"><span title="Chapter 3: URDF &amp; Robot Modeling" class="linkLabel_WmDU">Chapter 3: URDF &amp; Robot Modeling</span></a></li><li class="theme-doc-sidebar-item-link theme-doc-sidebar-item-link-level-1 menu__list-item"><a class="menu__link" href="/physical-ai-textbook/docs/04-gazebo-simulation"><span title="Chapter 4: Gazebo Simulation" class="linkLabel_WmDU">Chapter 4: Gazebo Simulation</span></a></li><li class="theme-doc-sidebar-item-link theme-doc-sidebar-item-link-level-1 menu__list-item"><a class="menu__link menu__link--active" aria-current="page" href="/physical-ai-textbook/docs/05-unity-robotics-hub"><span title="Chapter 5: Unity Robotics Hub" class="linkLabel_WmDU">Chapter 5: Unity Robotics Hub</span></a></li><li class="theme-doc-sidebar-item-link theme-doc-sidebar-item-link-level-1 menu__list-item"><a class="menu__link" href="/physical-ai-textbook/docs/06-isaac-sim-basics"><span title="Chapter 6: NVIDIA Isaac Sim Basics" class="linkLabel_WmDU">Chapter 6: NVIDIA Isaac Sim Basics</span></a></li><li class="theme-doc-sidebar-item-link theme-doc-sidebar-item-link-level-1 menu__list-item"><a class="menu__link" href="/physical-ai-textbook/docs/07-isaac-ros-integration"><span title="Chapter 7: Isaac ROS Integration" class="linkLabel_WmDU">Chapter 7: Isaac ROS Integration</span></a></li><li class="theme-doc-sidebar-item-link theme-doc-sidebar-item-link-level-1 menu__list-item"><a class="menu__link" href="/physical-ai-textbook/docs/08-legged-locomotion"><span title="Chapter 8: Legged Locomotion" class="linkLabel_WmDU">Chapter 8: Legged Locomotion</span></a></li><li class="theme-doc-sidebar-item-link theme-doc-sidebar-item-link-level-1 menu__list-item"><a class="menu__link" href="/physical-ai-textbook/docs/09-manipulation-grasping"><span title="Chapter 9: Manipulation &amp; Grasping" class="linkLabel_WmDU">Chapter 9: Manipulation &amp; Grasping</span></a></li><li class="theme-doc-sidebar-item-link theme-doc-sidebar-item-link-level-1 menu__list-item"><a class="menu__link" href="/physical-ai-textbook/docs/10-vision-language-action"><span title="Chapter 10: Vision-Language-Action (VLA) Models" class="linkLabel_WmDU">Chapter 10: Vision-Language-Action (VLA) Models</span></a></li><li class="theme-doc-sidebar-item-link theme-doc-sidebar-item-link-level-1 menu__list-item"><a class="menu__link" href="/physical-ai-textbook/docs/11-capstone-project"><span title="Chapter 11: Capstone Project" class="linkLabel_WmDU">Chapter 11: Capstone Project</span></a></li><li class="theme-doc-sidebar-item-link theme-doc-sidebar-item-link-level-1 menu__list-item"><a class="menu__link" href="/physical-ai-textbook/docs/12-hardware-guide"><span title="Chapter 12: Hardware Guide" class="linkLabel_WmDU">Chapter 12: Hardware Guide</span></a></li><li class="theme-doc-sidebar-item-link theme-doc-sidebar-item-link-level-1 menu__list-item"><a class="menu__link" href="/physical-ai-textbook/docs/13-ethics-future-physical-ai"><span title="Chapter 13: Ethics &amp; Future of Physical AI" class="linkLabel_WmDU">Chapter 13: Ethics &amp; Future of Physical AI</span></a></li><li class="theme-doc-sidebar-item-link theme-doc-sidebar-item-link-level-1 menu__list-item"><a class="menu__link" href="/physical-ai-textbook/docs/example-diagrams"><span title="Example Diagrams" class="linkLabel_WmDU">Example Diagrams</span></a></li><li class="theme-doc-sidebar-item-link theme-doc-sidebar-item-link-level-1 menu__list-item"><a class="menu__link" href="/physical-ai-textbook/docs/CHAPTER_OUTLINES"><span title="Chapter Outlines: Physical AI &amp; Humanoid Robotics Textbook" class="linkLabel_WmDU">Chapter Outlines: Physical AI &amp; Humanoid Robotics Textbook</span></a></li></ul></nav></div></div></aside><main class="docMainContainer_TBSr"><div class="container padding-top--md padding-bottom--lg"><div style="display:flex;gap:1rem;margin-bottom:1.5rem;flex-wrap:wrap;position:sticky;top:60px;z-index:100;background-color:var(--ifm-background-color);padding:0.5rem 0;border-bottom:1px solid var(--ifm-color-emphasis-200)"><div class="urduTranslate_pQle"><button class="translateButton_xb_Y" aria-label="View in Urdu">🇵🇰 اردو میں دیکھیں (View in Urdu)</button></div></div><div class="row"><div class="col docItemCol_VOVn"><div class="docItemContainer_Djhp"><article><nav class="theme-doc-breadcrumbs breadcrumbsContainer_Z_bl" aria-label="Breadcrumbs"><ul class="breadcrumbs"><li class="breadcrumbs__item"><a aria-label="Home page" class="breadcrumbs__link" href="/physical-ai-textbook/"><svg viewBox="0 0 24 24" class="breadcrumbHomeIcon_YNFT"><path d="M10 19v-5h4v5c0 .55.45 1 1 1h3c.55 0 1-.45 1-1v-7h1.7c.46 0 .68-.57.33-.87L12.67 3.6c-.38-.34-.96-.34-1.34 0l-8.36 7.53c-.34.3-.13.87.33.87H5v7c0 .55.45 1 1 1h3c.55 0 1-.45 1-1z" fill="currentColor"></path></svg></a></li><li class="breadcrumbs__item breadcrumbs__item--active"><span class="breadcrumbs__link">Chapter 5: Unity Robotics Hub</span></li></ul></nav><div class="tocCollapsible_ETCw theme-doc-toc-mobile tocMobile_ITEo"><button type="button" class="clean-btn tocCollapsibleButton_TO0P">On this page</button></div><div class="theme-doc-markdown markdown"><header><h1>Chapter 5: Unity Robotics Hub</h1></header>
+<blockquote>
+<p><em>&quot;Unity brings photorealism to robotics—where Gazebo shows you physics, Unity shows you reality.&quot;</em></p>
+</blockquote>
+<h2 class="anchor anchorTargetStickyNavbar_Vzrq" id="learning-objectives">Learning Objectives<a href="#learning-objectives" class="hash-link" aria-label="Direct link to Learning Objectives" title="Direct link to Learning Objectives" translate="no">​</a></h2>
+<p>By the end of this chapter, you will be able to:</p>
+<ol>
+<li class=""><strong>Set up Unity</strong> for robotics simulation</li>
+<li class=""><strong>Connect Unity to ROS 2</strong> via TCP endpoint</li>
+<li class=""><strong>Import robot models</strong> (URDF) into Unity</li>
+<li class=""><strong>Create high-fidelity environments</strong> for human-robot interaction</li>
+<li class=""><strong>Generate synthetic training data</strong> (images, depth, segmentation)</li>
+</ol>
+<p><strong>Estimated Time</strong>: 6-8 hours (reading + labs)</p>
+<hr>
+<h2 class="anchor anchorTargetStickyNavbar_Vzrq" id="51-introduction-why-unity">5.1 Introduction: Why Unity?<a href="#51-introduction-why-unity" class="hash-link" aria-label="Direct link to 5.1 Introduction: Why Unity?" title="Direct link to 5.1 Introduction: Why Unity?" translate="no">​</a></h2>
+<p>Gazebo is excellent for physics and navigation, but has limitations:</p>
+<ul>
+<li class=""><strong>Graphics</strong>: Basic rendering (no shadows, reflections, or advanced lighting)</li>
+<li class=""><strong>Environments</strong>: Sparse model library</li>
+<li class=""><strong>Human interaction</strong>: Limited support for animated humans</li>
+</ul>
+<p><strong>Unity</strong> is a game engine (think Fortnite, Pokemon GO) repurposed for robotics:</p>
+<ul>
+<li class=""><strong>Photorealistic rendering</strong>: RTX ray tracing, global illumination</li>
+<li class=""><strong>Massive asset library</strong>: 100,000+ pre-made 3D models (furniture, buildings, humans)</li>
+<li class=""><strong>VR/AR support</strong>: Test human-robot interaction in immersive environments</li>
+</ul>
+<h3 class="anchor anchorTargetStickyNavbar_Vzrq" id="511-unity-vs-gazebo">5.1.1 Unity vs Gazebo<a href="#511-unity-vs-gazebo" class="hash-link" aria-label="Direct link to 5.1.1 Unity vs Gazebo" title="Direct link to 5.1.1 Unity vs Gazebo" translate="no">​</a></h3>
+<table><thead><tr><th>Feature</th><th>Gazebo</th><th>Unity</th></tr></thead><tbody><tr><td><strong>Physics</strong></td><td>⭐⭐⭐⭐⭐ (ODE, Bullet)</td><td>⭐⭐⭐⭐ (PhysX 4)</td></tr><tr><td><strong>Graphics</strong></td><td>⭐⭐ (OpenGL)</td><td>⭐⭐⭐⭐⭐ (HDRP, ray tracing)</td></tr><tr><td><strong>ROS Integration</strong></td><td>⭐⭐⭐⭐⭐ (Native)</td><td>⭐⭐⭐ (TCP bridge)</td></tr><tr><td><strong>Ease of Use</strong></td><td>⭐⭐⭐ (SDF/URDF)</td><td>⭐⭐⭐⭐ (GUI drag-and-drop)</td></tr><tr><td><strong>Platform</strong></td><td>Linux primary</td><td>Windows, macOS, Linux</td></tr><tr><td><strong>Cost</strong></td><td>Free (open-source)</td><td>Free (Personal), Paid (Pro)</td></tr></tbody></table>
+<p><strong>Best practices</strong>:</p>
+<ul>
+<li class=""><strong>Gazebo</strong>: Navigation, manipulation, physics-critical tasks</li>
+<li class=""><strong>Unity</strong>: Vision training, HRI, photorealistic visualization</li>
+</ul>
+<h3 class="anchor anchorTargetStickyNavbar_Vzrq" id="512-use-cases">5.1.2 Use Cases<a href="#512-use-cases" class="hash-link" aria-label="Direct link to 5.1.2 Use Cases" title="Direct link to 5.1.2 Use Cases" translate="no">​</a></h3>
+<ol>
+<li class=""><strong>Synthetic data generation</strong>: Train YOLOv8 on 100,000 Unity-generated images (no manual labeling)</li>
+<li class=""><strong>Human-robot interaction</strong>: Simulate robots navigating crowded cafes</li>
+<li class=""><strong>Visualization</strong>: Create demos for stakeholders (investors, customers)</li>
+<li class=""><strong>VR teleoperation</strong>: Control robots in VR (real-time feedback)</li>
+</ol>
+<hr>
+<h2 class="anchor anchorTargetStickyNavbar_Vzrq" id="52-unity-robotics-hub-overview">5.2 Unity Robotics Hub Overview<a href="#52-unity-robotics-hub-overview" class="hash-link" aria-label="Direct link to 5.2 Unity Robotics Hub Overview" title="Direct link to 5.2 Unity Robotics Hub Overview" translate="no">​</a></h2>
+<p><strong>Unity Robotics Hub</strong> is Unity&#x27;s official ROS integration. It consists of:</p>
+<ol>
+<li class=""><strong>ROS-TCP-Connector</strong> (Unity plugin): Connects Unity to ROS via TCP</li>
+<li class=""><strong>ROS-TCP-Endpoint</strong> (ROS package): ROS 2 node that bridges topics/services</li>
+<li class=""><strong>URDF Importer</strong>: Load robot models into Unity</li>
+<li class=""><strong>Articulation Body</strong>: Unity&#x27;s physics system for robots</li>
+</ol>
+<p><strong>Architecture</strong>:</p>
+<div class="language-text codeBlockContainer_Ckt0 theme-code-block" style="--prism-color:#393A34;--prism-background-color:#f6f8fa"><div class="codeBlockContent_QJqH"><pre tabindex="0" class="prism-code language-text codeBlock_bY9V thin-scrollbar" style="color:#393A34;background-color:#f6f8fa"><code class="codeBlockLines_e6Vv"><span class="token-line" style="color:#393A34"><span class="token plain">┌──────────────┐     TCP (port 10000)     ┌──────────────┐</span><br></span><span class="token-line" style="color:#393A34"><span class="token plain">│    Unity     │◄────────────────────────►│   ROS 2      │</span><br></span><span class="token-line" style="color:#393A34"><span class="token plain">│  (Simulator) │     JSON messages        │  (Control)   │</span><br></span><span class="token-line" style="color:#393A34"><span class="token plain">└──────────────┘                          └──────────────┘</span><br></span><span class="token-line" style="color:#393A34"><span class="token plain">     │                                            │</span><br></span><span class="token-line" style="color:#393A34"><span class="token plain">     │ Publishes: /camera/image                  │ Publishes: /cmd_vel</span><br></span><span class="token-line" style="color:#393A34"><span class="token plain">     │ Subscribes: /cmd_vel                      │ Subscribes: /camera/image</span><br></span></code></pre></div></div>
+<hr>
+<h2 class="anchor anchorTargetStickyNavbar_Vzrq" id="53-installing-unity-on-windows-native">5.3 Installing Unity on Windows (Native!)<a href="#53-installing-unity-on-windows-native" class="hash-link" aria-label="Direct link to 5.3 Installing Unity on Windows (Native!)" title="Direct link to 5.3 Installing Unity on Windows (Native!)" translate="no">​</a></h2>
+<p><strong>Advantage</strong>: Unity runs <strong>natively on Windows</strong>—no Docker, no WSL2 needed!</p>
+<details class="details_lb9f alert alert--info details_b_Ee" data-collapsed="true"><summary>Click to expand: Unity Installation</summary><div><div class="collapsibleContent_i85q"><p><strong>Step 1: Install Unity Hub</strong></p><ol>
+<li class="">Download: <a href="https://unity.com/download" target="_blank" rel="noopener noreferrer" class="">https://unity.com/download</a></li>
+<li class="">Install Unity Hub (launcher for Unity versions)</li>
+<li class="">Create a Unity account (free)</li>
+</ol><p><strong>Step 2: Install Unity Editor</strong></p><ol>
+<li class="">Open Unity Hub</li>
+<li class="">Installs → Add → Install Unity Editor</li>
+<li class=""><strong>Recommended version</strong>: <strong>Unity 2022.3 LTS</strong> (Long Term Support)</li>
+<li class="">Select modules:<!-- -->
+<ul>
+<li class=""><strong>Windows Build Support</strong> (IL2CPP)</li>
+<li class=""><strong>Linux Build Support</strong> (for deploying to edge devices)</li>
+<li class=""><strong>Visual Studio</strong> (for C# editing)</li>
+</ul>
+</li>
+</ol><p><strong>Installation time</strong>: ~20 minutes (8 GB download)</p><p><strong>Step 3: Verify Installation</strong></p><ol>
+<li class="">Unity Hub → Projects → New Project</li>
+<li class="">Template: <strong>3D Core</strong></li>
+<li class="">Project name: <code>RoboticsTest</code></li>
+<li class="">Create → Unity Editor opens</li>
+</ol><p><strong>Success!</strong> You see Unity&#x27;s interface (Scene view, Game view, Inspector).</p></div></div></details>
+<hr>
+<h2 class="anchor anchorTargetStickyNavbar_Vzrq" id="54-setting-up-unity-robotics-hub">5.4 Setting Up Unity Robotics Hub<a href="#54-setting-up-unity-robotics-hub" class="hash-link" aria-label="Direct link to 5.4 Setting Up Unity Robotics Hub" title="Direct link to 5.4 Setting Up Unity Robotics Hub" translate="no">​</a></h2>
+<h3 class="anchor anchorTargetStickyNavbar_Vzrq" id="541-install-ros-tcp-connector-unity-side">5.4.1 Install ROS-TCP-Connector (Unity Side)<a href="#541-install-ros-tcp-connector-unity-side" class="hash-link" aria-label="Direct link to 5.4.1 Install ROS-TCP-Connector (Unity Side)" title="Direct link to 5.4.1 Install ROS-TCP-Connector (Unity Side)" translate="no">​</a></h3>
+<p><strong>Method 1: Package Manager</strong> (Recommended)</p>
+<ol>
+<li class="">Open Unity Editor</li>
+<li class="">Window → Package Manager</li>
+<li class=""><code>+</code> → Add package from git URL</li>
+<li class="">Enter:<!-- -->
+<div class="language-text codeBlockContainer_Ckt0 theme-code-block" style="--prism-color:#393A34;--prism-background-color:#f6f8fa"><div class="codeBlockContent_QJqH"><pre tabindex="0" class="prism-code language-text codeBlock_bY9V thin-scrollbar" style="color:#393A34;background-color:#f6f8fa"><code class="codeBlockLines_e6Vv"><span class="token-line" style="color:#393A34"><span class="token plain">https://github.com/Unity-Technologies/ROS-TCP-Connector.git?path=/com.unity.robotics.ros-tcp-connector</span><br></span></code></pre></div></div>
+</li>
+<li class="">Click &quot;Add&quot; → Package installs (2 minutes)</li>
+</ol>
+<p><strong>Method 2: Manual Install</strong></p>
+<ol>
+<li class="">Download: <a href="https://github.com/Unity-Technologies/Unity-Robotics-Hub/releases" target="_blank" rel="noopener noreferrer" class="">https://github.com/Unity-Technologies/Unity-Robotics-Hub/releases</a></li>
+<li class="">Extract to <code>Packages/</code> folder in your Unity project</li>
+</ol>
+<h3 class="anchor anchorTargetStickyNavbar_Vzrq" id="542-install-ros-tcp-endpoint-ros-2-side">5.4.2 Install ROS-TCP-Endpoint (ROS 2 Side)<a href="#542-install-ros-tcp-endpoint-ros-2-side" class="hash-link" aria-label="Direct link to 5.4.2 Install ROS-TCP-Endpoint (ROS 2 Side)" title="Direct link to 5.4.2 Install ROS-TCP-Endpoint (ROS 2 Side)" translate="no">​</a></h3>
+<div class="language-bash codeBlockContainer_Ckt0 theme-code-block" style="--prism-color:#393A34;--prism-background-color:#f6f8fa"><div class="codeBlockContent_QJqH"><pre tabindex="0" class="prism-code language-bash codeBlock_bY9V thin-scrollbar" style="color:#393A34;background-color:#f6f8fa"><code class="codeBlockLines_e6Vv"><span class="token-line" style="color:#393A34"><span class="token plain"># Inside Docker/WSL2:</span><br></span><span class="token-line" style="color:#393A34"><span class="token plain">cd ~/ros2_ws/src</span><br></span><span class="token-line" style="color:#393A34"><span class="token plain">git clone https://github.com/Unity-Technologies/ROS-TCP-Endpoint.git</span><br></span><span class="token-line" style="color:#393A34"><span class="token plain" style="display:inline-block"></span><br></span><span class="token-line" style="color:#393A34"><span class="token plain"># Build</span><br></span><span class="token-line" style="color:#393A34"><span class="token plain">cd ~/ros2_ws</span><br></span><span class="token-line" style="color:#393A34"><span class="token plain">colcon build --packages-select ros_tcp_endpoint</span><br></span><span class="token-line" style="color:#393A34"><span class="token plain">source install/setup.bash</span><br></span></code></pre></div></div>
+<h3 class="anchor anchorTargetStickyNavbar_Vzrq" id="543-configure-connection">5.4.3 Configure Connection<a href="#543-configure-connection" class="hash-link" aria-label="Direct link to 5.4.3 Configure Connection" title="Direct link to 5.4.3 Configure Connection" translate="no">​</a></h3>
+<p><strong>In Unity</strong>:</p>
+<ol>
+<li class="">Robotics → ROS Settings</li>
+<li class=""><strong>ROS IP Address</strong>: <code>127.0.0.1</code> (localhost)</li>
+<li class=""><strong>ROS Port</strong>: <code>10000</code> (default)</li>
+<li class=""><strong>Protocol</strong>: ROS 2</li>
+</ol>
+<p><strong>Launch ROS endpoint</strong>:</p>
+<div class="language-bash codeBlockContainer_Ckt0 theme-code-block" style="--prism-color:#393A34;--prism-background-color:#f6f8fa"><div class="codeBlockContent_QJqH"><pre tabindex="0" class="prism-code language-bash codeBlock_bY9V thin-scrollbar" style="color:#393A34;background-color:#f6f8fa"><code class="codeBlockLines_e6Vv"><span class="token-line" style="color:#393A34"><span class="token plain">ros2 run ros_tcp_endpoint default_server_endpoint --ros-args -p ROS_IP:=0.0.0.0</span><br></span></code></pre></div></div>
+<p><strong>Expected output</strong>:</p>
+<div class="language-text codeBlockContainer_Ckt0 theme-code-block" style="--prism-color:#393A34;--prism-background-color:#f6f8fa"><div class="codeBlockContent_QJqH"><pre tabindex="0" class="prism-code language-text codeBlock_bY9V thin-scrollbar" style="color:#393A34;background-color:#f6f8fa"><code class="codeBlockLines_e6Vv"><span class="token-line" style="color:#393A34"><span class="token plain">[INFO] [ros_tcp_endpoint]: Starting server on 0.0.0.0:10000</span><br></span></code></pre></div></div>
+<p><strong>Test connection</strong>: Unity Editor → Robotics → ROS Settings → &quot;Connect&quot; button turns green.</p>
+<hr>
+<h2 class="anchor anchorTargetStickyNavbar_Vzrq" id="55-your-first-unity-ros-2-project">5.5 Your First Unity-ROS 2 Project<a href="#55-your-first-unity-ros-2-project" class="hash-link" aria-label="Direct link to 5.5 Your First Unity-ROS 2 Project" title="Direct link to 5.5 Your First Unity-ROS 2 Project" translate="no">​</a></h2>
+<p>Let&#x27;s create a simple scene with a sphere that moves based on ROS <code>/cmd_vel</code> commands.</p>
+<h3 class="anchor anchorTargetStickyNavbar_Vzrq" id="551-create-unity-scene">5.5.1 Create Unity Scene<a href="#551-create-unity-scene" class="hash-link" aria-label="Direct link to 5.5.1 Create Unity Scene" title="Direct link to 5.5.1 Create Unity Scene" translate="no">​</a></h3>
+<ol>
+<li class="">
+<p><strong>Create scene</strong>:</p>
+<ul>
+<li class="">File → New Scene → 3D Core</li>
+<li class="">Save as <code>RoboticsScene</code></li>
+</ul>
+</li>
+<li class="">
+<p><strong>Add ground plane</strong>:</p>
+<ul>
+<li class="">Right-click in Hierarchy → 3D Object → Plane</li>
+<li class="">Transform: Position (0, 0, 0), Scale (10, 1, 10)</li>
+</ul>
+</li>
+<li class="">
+<p><strong>Add robot (sphere)</strong>:</p>
+<ul>
+<li class="">Right-click in Hierarchy → 3D Object → Sphere</li>
+<li class="">Rename to &quot;Robot&quot;</li>
+<li class="">Transform: Position (0, 0.5, 0)</li>
+</ul>
+</li>
+<li class="">
+<p><strong>Add physics</strong>:</p>
+<ul>
+<li class="">Select Robot</li>
+<li class="">Inspector → Add Component → Rigidbody</li>
+<li class="">Mass: 1, Drag: 0.5, Angular Drag: 0.5</li>
+</ul>
+</li>
+</ol>
+<h3 class="anchor anchorTargetStickyNavbar_Vzrq" id="552-create-c-script-to-subscribe-to-cmd_vel">5.5.2 Create C# Script to Subscribe to <code>/cmd_vel</code><a href="#552-create-c-script-to-subscribe-to-cmd_vel" class="hash-link" aria-label="Direct link to 552-create-c-script-to-subscribe-to-cmd_vel" title="Direct link to 552-create-c-script-to-subscribe-to-cmd_vel" translate="no">​</a></h3>
+<p><strong>Create script</strong>:</p>
+<ol>
+<li class="">Right-click in Project panel → Create → C# Script</li>
+<li class="">Name: <code>RobotController</code></li>
+<li class="">Double-click to open in Visual Studio</li>
+</ol>
+<p><strong>Code</strong>:</p>
+<div class="language-csharp codeBlockContainer_Ckt0 theme-code-block" style="--prism-color:#393A34;--prism-background-color:#f6f8fa"><div class="codeBlockContent_QJqH"><pre tabindex="0" class="prism-code language-csharp codeBlock_bY9V thin-scrollbar" style="color:#393A34;background-color:#f6f8fa"><code class="codeBlockLines_e6Vv"><span class="token-line" style="color:#393A34"><span class="token plain">using UnityEngine;</span><br></span><span class="token-line" style="color:#393A34"><span class="token plain">using Unity.Robotics.ROSTCPConnector;</span><br></span><span class="token-line" style="color:#393A34"><span class="token plain">using RosMessageTypes.Geometry;</span><br></span><span class="token-line" style="color:#393A34"><span class="token plain" style="display:inline-block"></span><br></span><span class="token-line" style="color:#393A34"><span class="token plain">public class RobotController : MonoBehaviour</span><br></span><span class="token-line" style="color:#393A34"><span class="token plain">{</span><br></span><span class="token-line" style="color:#393A34"><span class="token plain">    private ROSConnection ros;</span><br></span><span class="token-line" style="color:#393A34"><span class="token plain">    private Rigidbody rb;</span><br></span><span class="token-line" style="color:#393A34"><span class="token plain" style="display:inline-block"></span><br></span><span class="token-line" style="color:#393A34"><span class="token plain">    // Movement parameters</span><br></span><span class="token-line" style="color:#393A34"><span class="token plain">    public float forceMultiplier = 10f;</span><br></span><span class="token-line" style="color:#393A34"><span class="token plain">    public float torqueMultiplier = 10f;</span><br></span><span class="token-line" style="color:#393A34"><span class="token plain" style="display:inline-block"></span><br></span><span class="token-line" style="color:#393A34"><span class="token plain">    void Start()</span><br></span><span class="token-line" style="color:#393A34"><span class="token plain">    {</span><br></span><span class="token-line" style="color:#393A34"><span class="token plain">        // Get ROS connection instance</span><br></span><span class="token-line" style="color:#393A34"><span class="token plain">        ros = ROSConnection.GetOrCreateInstance();</span><br></span><span class="token-line" style="color:#393A34"><span class="token plain">        ros.RegisterRosService&lt;Empty&gt;(&quot;ping&quot;);  // Test service</span><br></span><span class="token-line" style="color:#393A34"><span class="token plain" style="display:inline-block"></span><br></span><span class="token-line" style="color:#393A34"><span class="token plain">        // Subscribe to /cmd_vel</span><br></span><span class="token-line" style="color:#393A34"><span class="token plain">        ros.Subscribe&lt;TwistMsg&gt;(&quot;/cmd_vel&quot;, ApplyVelocityCommand);</span><br></span><span class="token-line" style="color:#393A34"><span class="token plain" style="display:inline-block"></span><br></span><span class="token-line" style="color:#393A34"><span class="token plain">        // Get Rigidbody component</span><br></span><span class="token-line" style="color:#393A34"><span class="token plain">        rb = GetComponent&lt;Rigidbody&gt;();</span><br></span><span class="token-line" style="color:#393A34"><span class="token plain" style="display:inline-block"></span><br></span><span class="token-line" style="color:#393A34"><span class="token plain">        Debug.Log(&quot;RobotController: Subscribed to /cmd_vel&quot;);</span><br></span><span class="token-line" style="color:#393A34"><span class="token plain">    }</span><br></span><span class="token-line" style="color:#393A34"><span class="token plain" style="display:inline-block"></span><br></span><span class="token-line" style="color:#393A34"><span class="token plain">    void ApplyVelocityCommand(TwistMsg twist)</span><br></span><span class="token-line" style="color:#393A34"><span class="token plain">    {</span><br></span><span class="token-line" style="color:#393A34"><span class="token plain">        // Extract velocity commands</span><br></span><span class="token-line" style="color:#393A34"><span class="token plain">        float linearX = (float)twist.linear.x;</span><br></span><span class="token-line" style="color:#393A34"><span class="token plain">        float angularZ = (float)twist.angular.z;</span><br></span><span class="token-line" style="color:#393A34"><span class="token plain" style="display:inline-block"></span><br></span><span class="token-line" style="color:#393A34"><span class="token plain">        // Apply force (forward/backward)</span><br></span><span class="token-line" style="color:#393A34"><span class="token plain">        Vector3 force = transform.forward * linearX * forceMultiplier;</span><br></span><span class="token-line" style="color:#393A34"><span class="token plain">        rb.AddForce(force, ForceMode.Force);</span><br></span><span class="token-line" style="color:#393A34"><span class="token plain" style="display:inline-block"></span><br></span><span class="token-line" style="color:#393A34"><span class="token plain">        // Apply torque (turning)</span><br></span><span class="token-line" style="color:#393A34"><span class="token plain">        Vector3 torque = Vector3.up * angularZ * torqueMultiplier;</span><br></span><span class="token-line" style="color:#393A34"><span class="token plain">        rb.AddTorque(torque, ForceMode.Force);</span><br></span><span class="token-line" style="color:#393A34"><span class="token plain" style="display:inline-block"></span><br></span><span class="token-line" style="color:#393A34"><span class="token plain">        Debug.Log($&quot;Received cmd_vel: linear.x={linearX}, angular.z={angularZ}&quot;);</span><br></span><span class="token-line" style="color:#393A34"><span class="token plain">    }</span><br></span><span class="token-line" style="color:#393A34"><span class="token plain">}</span><br></span></code></pre></div></div>
+<p><strong>Attach script to Robot</strong>:</p>
+<ol>
+<li class="">Select &quot;Robot&quot; in Hierarchy</li>
+<li class="">Drag <code>RobotController</code> script onto Robot</li>
+<li class="">Inspector: Set <code>Force Multiplier</code> = 10, <code>Torque Multiplier</code> = 10</li>
+</ol>
+<h3 class="anchor anchorTargetStickyNavbar_Vzrq" id="553-test">5.5.3 Test<a href="#553-test" class="hash-link" aria-label="Direct link to 5.5.3 Test" title="Direct link to 5.5.3 Test" translate="no">​</a></h3>
+<p><strong>Terminal 1: Start ROS endpoint</strong></p>
+<div class="language-bash codeBlockContainer_Ckt0 theme-code-block" style="--prism-color:#393A34;--prism-background-color:#f6f8fa"><div class="codeBlockContent_QJqH"><pre tabindex="0" class="prism-code language-bash codeBlock_bY9V thin-scrollbar" style="color:#393A34;background-color:#f6f8fa"><code class="codeBlockLines_e6Vv"><span class="token-line" style="color:#393A34"><span class="token plain">ros2 run ros_tcp_endpoint default_server_endpoint --ros-args -p ROS_IP:=0.0.0.0</span><br></span></code></pre></div></div>
+<p><strong>Terminal 2: Publish velocity</strong></p>
+<div class="language-bash codeBlockContainer_Ckt0 theme-code-block" style="--prism-color:#393A34;--prism-background-color:#f6f8fa"><div class="codeBlockContent_QJqH"><pre tabindex="0" class="prism-code language-bash codeBlock_bY9V thin-scrollbar" style="color:#393A34;background-color:#f6f8fa"><code class="codeBlockLines_e6Vv"><span class="token-line" style="color:#393A34"><span class="token plain">ros2 topic pub /cmd_vel geometry_msgs/Twist \</span><br></span><span class="token-line" style="color:#393A34"><span class="token plain">  &quot;linear: {x: 1.0, y: 0.0, z: 0.0}</span><br></span><span class="token-line" style="color:#393A34"><span class="token plain">   angular: {x: 0.0, y: 0.0, z: 0.0}&quot;</span><br></span></code></pre></div></div>
+<p><strong>Unity Editor</strong>: Press <strong>Play</strong> button → Sphere moves forward!</p>
+<hr>
+<h2 class="anchor anchorTargetStickyNavbar_Vzrq" id="56-importing-urdf-into-unity">5.6 Importing URDF into Unity<a href="#56-importing-urdf-into-unity" class="hash-link" aria-label="Direct link to 5.6 Importing URDF into Unity" title="Direct link to 5.6 Importing URDF into Unity" translate="no">​</a></h2>
+<p>Unity can import robot URDF files directly.</p>
+<h3 class="anchor anchorTargetStickyNavbar_Vzrq" id="561-install-urdf-importer">5.6.1 Install URDF Importer<a href="#561-install-urdf-importer" class="hash-link" aria-label="Direct link to 5.6.1 Install URDF Importer" title="Direct link to 5.6.1 Install URDF Importer" translate="no">​</a></h3>
+<ol>
+<li class="">Package Manager → Add from git URL:<!-- -->
+<div class="language-text codeBlockContainer_Ckt0 theme-code-block" style="--prism-color:#393A34;--prism-background-color:#f6f8fa"><div class="codeBlockContent_QJqH"><pre tabindex="0" class="prism-code language-text codeBlock_bY9V thin-scrollbar" style="color:#393A34;background-color:#f6f8fa"><code class="codeBlockLines_e6Vv"><span class="token-line" style="color:#393A34"><span class="token plain">https://github.com/Unity-Technologies/URDF-Importer.git?path=/com.unity.robotics.urdf-importer</span><br></span></code></pre></div></div>
+</li>
+</ol>
+<h3 class="anchor anchorTargetStickyNavbar_Vzrq" id="562-import-robot">5.6.2 Import Robot<a href="#562-import-robot" class="hash-link" aria-label="Direct link to 5.6.2 Import Robot" title="Direct link to 5.6.2 Import Robot" translate="no">​</a></h3>
+<p><strong>Example: TurtleBot3</strong></p>
+<ol>
+<li class="">
+<p>Download TurtleBot3 URDF:</p>
+<div class="language-bash codeBlockContainer_Ckt0 theme-code-block" style="--prism-color:#393A34;--prism-background-color:#f6f8fa"><div class="codeBlockContent_QJqH"><pre tabindex="0" class="prism-code language-bash codeBlock_bY9V thin-scrollbar" style="color:#393A34;background-color:#f6f8fa"><code class="codeBlockLines_e6Vv"><span class="token-line" style="color:#393A34"><span class="token plain">git clone https://github.com/ROBOTIS-GIT/turtlebot3.git</span><br></span></code></pre></div></div>
+</li>
+<li class="">
+<p>In Unity:</p>
+<ul>
+<li class="">Assets → Import Robot from URDF</li>
+<li class="">Browse to <code>turtlebot3_description/urdf/turtlebot3_burger.urdf</code></li>
+<li class="">Import Settings:<!-- -->
+<ul>
+<li class="">Axis Type: Y-Up (Unity default)</li>
+<li class="">Mesh Decomposer: VHACD (for collision)</li>
+</ul>
+</li>
+<li class="">Click &quot;Import&quot;</li>
+</ul>
+</li>
+</ol>
+<p><strong>Result</strong>: TurtleBot3 appears in scene with all joints, links, sensors.</p>
+<h3 class="anchor anchorTargetStickyNavbar_Vzrq" id="563-configure-articulation-body">5.6.3 Configure Articulation Body<a href="#563-configure-articulation-body" class="hash-link" aria-label="Direct link to 5.6.3 Configure Articulation Body" title="Direct link to 5.6.3 Configure Articulation Body" translate="no">​</a></h3>
+<p>Unity&#x27;s <strong>Articulation Body</strong> component handles robot physics.</p>
+<p><strong>Hierarchy after import</strong>:</p>
+<div class="language-text codeBlockContainer_Ckt0 theme-code-block" style="--prism-color:#393A34;--prism-background-color:#f6f8fa"><div class="codeBlockContent_QJqH"><pre tabindex="0" class="prism-code language-text codeBlock_bY9V thin-scrollbar" style="color:#393A34;background-color:#f6f8fa"><code class="codeBlockLines_e6Vv"><span class="token-line" style="color:#393A34"><span class="token plain">turtlebot3_burger</span><br></span><span class="token-line" style="color:#393A34"><span class="token plain">├── base_link (Articulation Body)</span><br></span><span class="token-line" style="color:#393A34"><span class="token plain">├── wheel_left_link (Articulation Body)</span><br></span><span class="token-line" style="color:#393A34"><span class="token plain">├── wheel_right_link (Articulation Body)</span><br></span><span class="token-line" style="color:#393A34"><span class="token plain">└── camera_link</span><br></span></code></pre></div></div>
+<p><strong>Joint types map</strong>:</p>
+<ul>
+<li class="">URDF <code>revolute</code> → Unity <code>Revolute</code></li>
+<li class="">URDF <code>prismatic</code> → Unity <code>Prismatic</code></li>
+<li class="">URDF <code>fixed</code> → Unity <code>Fixed</code></li>
+</ul>
+<hr>
+<h2 class="anchor anchorTargetStickyNavbar_Vzrq" id="57-publishing-camera-images-to-ros">5.7 Publishing Camera Images to ROS<a href="#57-publishing-camera-images-to-ros" class="hash-link" aria-label="Direct link to 5.7 Publishing Camera Images to ROS" title="Direct link to 5.7 Publishing Camera Images to ROS" translate="no">​</a></h2>
+<p>Let&#x27;s add a camera to the robot and publish RGB images to ROS.</p>
+<h3 class="anchor anchorTargetStickyNavbar_Vzrq" id="571-add-camera">5.7.1 Add Camera<a href="#571-add-camera" class="hash-link" aria-label="Direct link to 5.7.1 Add Camera" title="Direct link to 5.7.1 Add Camera" translate="no">​</a></h3>
+<ol>
+<li class="">Right-click on robot → Create Empty → Rename &quot;CameraMount&quot;</li>
+<li class="">Transform: Position (0, 0.5, 0.2) (0.2m forward from center)</li>
+<li class="">Right-click CameraMount → Camera</li>
+<li class="">Camera settings:<!-- -->
+<ul>
+<li class="">Field of View: 60</li>
+<li class="">Clipping Planes: Near 0.1, Far 100</li>
+</ul>
+</li>
+</ol>
+<h3 class="anchor anchorTargetStickyNavbar_Vzrq" id="572-create-camera-publisher-script">5.7.2 Create Camera Publisher Script<a href="#572-create-camera-publisher-script" class="hash-link" aria-label="Direct link to 5.7.2 Create Camera Publisher Script" title="Direct link to 5.7.2 Create Camera Publisher Script" translate="no">​</a></h3>
+<div class="language-csharp codeBlockContainer_Ckt0 theme-code-block" style="--prism-color:#393A34;--prism-background-color:#f6f8fa"><div class="codeBlockContent_QJqH"><pre tabindex="0" class="prism-code language-csharp codeBlock_bY9V thin-scrollbar" style="color:#393A34;background-color:#f6f8fa"><code class="codeBlockLines_e6Vv"><span class="token-line" style="color:#393A34"><span class="token plain">using UnityEngine;</span><br></span><span class="token-line" style="color:#393A34"><span class="token plain">using Unity.Robotics.ROSTCPConnector;</span><br></span><span class="token-line" style="color:#393A34"><span class="token plain">using RosMessageTypes.Sensor;</span><br></span><span class="token-line" style="color:#393A34"><span class="token plain">using Unity.Robotics.ROSTCPConnector.MessageGeneration;</span><br></span><span class="token-line" style="color:#393A34"><span class="token plain" style="display:inline-block"></span><br></span><span class="token-line" style="color:#393A34"><span class="token plain">public class CameraPublisher : MonoBehaviour</span><br></span><span class="token-line" style="color:#393A34"><span class="token plain">{</span><br></span><span class="token-line" style="color:#393A34"><span class="token plain">    private ROSConnection ros;</span><br></span><span class="token-line" style="color:#393A34"><span class="token plain">    private Camera cam;</span><br></span><span class="token-line" style="color:#393A34"><span class="token plain" style="display:inline-block"></span><br></span><span class="token-line" style="color:#393A34"><span class="token plain">    public string topicName = &quot;/camera/image_raw&quot;;</span><br></span><span class="token-line" style="color:#393A34"><span class="token plain">    public float publishRate = 10f;  // Hz</span><br></span><span class="token-line" style="color:#393A34"><span class="token plain" style="display:inline-block"></span><br></span><span class="token-line" style="color:#393A34"><span class="token plain">    private float timer;</span><br></span><span class="token-line" style="color:#393A34"><span class="token plain">    private RenderTexture renderTexture;</span><br></span><span class="token-line" style="color:#393A34"><span class="token plain" style="display:inline-block"></span><br></span><span class="token-line" style="color:#393A34"><span class="token plain">    void Start()</span><br></span><span class="token-line" style="color:#393A34"><span class="token plain">    {</span><br></span><span class="token-line" style="color:#393A34"><span class="token plain">        ros = ROSConnection.GetOrCreateInstance();</span><br></span><span class="token-line" style="color:#393A34"><span class="token plain">        ros.RegisterPublisher&lt;ImageMsg&gt;(topicName);</span><br></span><span class="token-line" style="color:#393A34"><span class="token plain" style="display:inline-block"></span><br></span><span class="token-line" style="color:#393A34"><span class="token plain">        cam = GetComponent&lt;Camera&gt;();</span><br></span><span class="token-line" style="color:#393A34"><span class="token plain" style="display:inline-block"></span><br></span><span class="token-line" style="color:#393A34"><span class="token plain">        // Create render texture</span><br></span><span class="token-line" style="color:#393A34"><span class="token plain">        renderTexture = new RenderTexture(640, 480, 24);</span><br></span><span class="token-line" style="color:#393A34"><span class="token plain">        cam.targetTexture = renderTexture;</span><br></span><span class="token-line" style="color:#393A34"><span class="token plain" style="display:inline-block"></span><br></span><span class="token-line" style="color:#393A34"><span class="token plain">        timer = 1f / publishRate;</span><br></span><span class="token-line" style="color:#393A34"><span class="token plain">    }</span><br></span><span class="token-line" style="color:#393A34"><span class="token plain" style="display:inline-block"></span><br></span><span class="token-line" style="color:#393A34"><span class="token plain">    void Update()</span><br></span><span class="token-line" style="color:#393A34"><span class="token plain">    {</span><br></span><span class="token-line" style="color:#393A34"><span class="token plain">        timer -= Time.deltaTime;</span><br></span><span class="token-line" style="color:#393A34"><span class="token plain" style="display:inline-block"></span><br></span><span class="token-line" style="color:#393A34"><span class="token plain">        if (timer &lt;= 0)</span><br></span><span class="token-line" style="color:#393A34"><span class="token plain">        {</span><br></span><span class="token-line" style="color:#393A34"><span class="token plain">            timer = 1f / publishRate;</span><br></span><span class="token-line" style="color:#393A34"><span class="token plain">            PublishImage();</span><br></span><span class="token-line" style="color:#393A34"><span class="token plain">        }</span><br></span><span class="token-line" style="color:#393A34"><span class="token plain">    }</span><br></span><span class="token-line" style="color:#393A34"><span class="token plain" style="display:inline-block"></span><br></span><span class="token-line" style="color:#393A34"><span class="token plain">    void PublishImage()</span><br></span><span class="token-line" style="color:#393A34"><span class="token plain">    {</span><br></span><span class="token-line" style="color:#393A34"><span class="token plain">        // Render camera to texture</span><br></span><span class="token-line" style="color:#393A34"><span class="token plain">        RenderTexture.active = renderTexture;</span><br></span><span class="token-line" style="color:#393A34"><span class="token plain">        Texture2D texture = new Texture2D(renderTexture.width, renderTexture.height, TextureFormat.RGB24, false);</span><br></span><span class="token-line" style="color:#393A34"><span class="token plain">        texture.ReadPixels(new Rect(0, 0, renderTexture.width, renderTexture.height), 0, 0);</span><br></span><span class="token-line" style="color:#393A34"><span class="token plain">        texture.Apply();</span><br></span><span class="token-line" style="color:#393A34"><span class="token plain" style="display:inline-block"></span><br></span><span class="token-line" style="color:#393A34"><span class="token plain">        // Convert to ROS message</span><br></span><span class="token-line" style="color:#393A34"><span class="token plain">        ImageMsg msg = new ImageMsg</span><br></span><span class="token-line" style="color:#393A34"><span class="token plain">        {</span><br></span><span class="token-line" style="color:#393A34"><span class="token plain">            header = new RosMessageTypes.Std.HeaderMsg</span><br></span><span class="token-line" style="color:#393A34"><span class="token plain">            {</span><br></span><span class="token-line" style="color:#393A34"><span class="token plain">                stamp = new RosMessageTypes.BuiltinInterfaces.TimeMsg</span><br></span><span class="token-line" style="color:#393A34"><span class="token plain">                {</span><br></span><span class="token-line" style="color:#393A34"><span class="token plain">                    sec = (int)Time.time,</span><br></span><span class="token-line" style="color:#393A34"><span class="token plain">                    nanosec = (uint)((Time.time % 1) * 1e9)</span><br></span><span class="token-line" style="color:#393A34"><span class="token plain">                },</span><br></span><span class="token-line" style="color:#393A34"><span class="token plain">                frame_id = &quot;camera_link&quot;</span><br></span><span class="token-line" style="color:#393A34"><span class="token plain">            },</span><br></span><span class="token-line" style="color:#393A34"><span class="token plain">            height = (uint)texture.height,</span><br></span><span class="token-line" style="color:#393A34"><span class="token plain">            width = (uint)texture.width,</span><br></span><span class="token-line" style="color:#393A34"><span class="token plain">            encoding = &quot;rgb8&quot;,</span><br></span><span class="token-line" style="color:#393A34"><span class="token plain">            is_bigendian = 0,</span><br></span><span class="token-line" style="color:#393A34"><span class="token plain">            step = (uint)(texture.width * 3),</span><br></span><span class="token-line" style="color:#393A34"><span class="token plain">            data = texture.GetRawTextureData()</span><br></span><span class="token-line" style="color:#393A34"><span class="token plain">        };</span><br></span><span class="token-line" style="color:#393A34"><span class="token plain" style="display:inline-block"></span><br></span><span class="token-line" style="color:#393A34"><span class="token plain">        ros.Publish(topicName, msg);</span><br></span><span class="token-line" style="color:#393A34"><span class="token plain">    }</span><br></span><span class="token-line" style="color:#393A34"><span class="token plain">}</span><br></span></code></pre></div></div>
+<p><strong>Attach script</strong>:</p>
+<ol>
+<li class="">Select Camera object</li>
+<li class="">Add Component → Camera Publisher</li>
+<li class="">Topic Name: <code>/camera/image_raw</code></li>
+<li class="">Publish Rate: 10</li>
+</ol>
+<p><strong>Test</strong>:</p>
+<div class="language-bash codeBlockContainer_Ckt0 theme-code-block" style="--prism-color:#393A34;--prism-background-color:#f6f8fa"><div class="codeBlockContent_QJqH"><pre tabindex="0" class="prism-code language-bash codeBlock_bY9V thin-scrollbar" style="color:#393A34;background-color:#f6f8fa"><code class="codeBlockLines_e6Vv"><span class="token-line" style="color:#393A34"><span class="token plain"># View images in RViz</span><br></span><span class="token-line" style="color:#393A34"><span class="token plain">ros2 run rqt_image_view rqt_image_view /camera/image_raw</span><br></span></code></pre></div></div>
+<hr>
+<h2 class="anchor anchorTargetStickyNavbar_Vzrq" id="58-high-fidelity-environments">5.8 High-Fidelity Environments<a href="#58-high-fidelity-environments" class="hash-link" aria-label="Direct link to 5.8 High-Fidelity Environments" title="Direct link to 5.8 High-Fidelity Environments" translate="no">​</a></h2>
+<p>Unity&#x27;s strength is creating realistic scenes.</p>
+<h3 class="anchor anchorTargetStickyNavbar_Vzrq" id="581-using-asset-store">5.8.1 Using Asset Store<a href="#581-using-asset-store" class="hash-link" aria-label="Direct link to 5.8.1 Using Asset Store" title="Direct link to 5.8.1 Using Asset Store" translate="no">​</a></h3>
+<p><strong>Unity Asset Store</strong>: 100,000+ free and paid 3D models.</p>
+<p><strong>Example: Kitchen Environment</strong></p>
+<ol>
+<li class="">Unity Editor → Window → Asset Store</li>
+<li class="">Search &quot;Kitchen&quot;</li>
+<li class="">Download free asset pack (e.g., &quot;Modular Kitchen&quot;)</li>
+<li class="">Import into project</li>
+<li class="">Drag prefabs into scene</li>
+</ol>
+<h3 class="anchor anchorTargetStickyNavbar_Vzrq" id="582-probuilder-built-in-modeling">5.8.2 ProBuilder (Built-In Modeling)<a href="#582-probuilder-built-in-modeling" class="hash-link" aria-label="Direct link to 5.8.2 ProBuilder (Built-In Modeling)" title="Direct link to 5.8.2 ProBuilder (Built-In Modeling)" translate="no">​</a></h3>
+<p><strong>ProBuilder</strong>: Build geometry directly in Unity (like Blender, but simpler).</p>
+<p><strong>Create a room</strong>:</p>
+<ol>
+<li class="">Window → Package Manager → Search &quot;ProBuilder&quot; → Install</li>
+<li class="">Tools → ProBuilder → ProBuilder Window</li>
+<li class="">New Shape → Cube → Draw room walls (4 cubes arranged as walls)</li>
+<li class="">Apply materials (wood, concrete, etc.)</li>
+</ol>
+<h3 class="anchor anchorTargetStickyNavbar_Vzrq" id="583-lighting-for-photorealism">5.8.3 Lighting for Photorealism<a href="#583-lighting-for-photorealism" class="hash-link" aria-label="Direct link to 5.8.3 Lighting for Photorealism" title="Direct link to 5.8.3 Lighting for Photorealism" translate="no">​</a></h3>
+<p><strong>High Definition Render Pipeline (HDRP)</strong>:</p>
+<ol>
+<li class="">
+<p>Window → Rendering → Lighting</p>
+</li>
+<li class="">
+<p>Skybox: HDR skybox (search Asset Store for free HDRI images)</p>
+</li>
+<li class="">
+<p>Add lights:</p>
+<ul>
+<li class="">Directional Light (sun)</li>
+<li class="">Point Lights (lamps)</li>
+<li class="">Spotlights (ceiling lights)</li>
+</ul>
+</li>
+<li class="">
+<p><strong>Global Illumination</strong>: Enable bounce lighting (realistic shadows)</p>
+</li>
+</ol>
+<hr>
+<h2 class="anchor anchorTargetStickyNavbar_Vzrq" id="59-human-robot-interaction">5.9 Human-Robot Interaction<a href="#59-human-robot-interaction" class="hash-link" aria-label="Direct link to 5.9 Human-Robot Interaction" title="Direct link to 5.9 Human-Robot Interaction" translate="no">​</a></h2>
+<h3 class="anchor anchorTargetStickyNavbar_Vzrq" id="591-animated-human-models">5.9.1 Animated Human Models<a href="#591-animated-human-models" class="hash-link" aria-label="Direct link to 5.9.1 Animated Human Models" title="Direct link to 5.9.1 Animated Human Models" translate="no">​</a></h3>
+<p><strong>Source</strong>: Mixamo (Adobe&#x27;s free character library)</p>
+<p><strong>Steps</strong>:</p>
+<ol>
+<li class="">Download character from Mixamo: <a href="https://www.mixamo.com/" target="_blank" rel="noopener noreferrer" class="">https://www.mixamo.com/</a></li>
+<li class="">Select &quot;T-Pose&quot; FBX</li>
+<li class="">Import to Unity</li>
+<li class="">Add Animation Controller:<!-- -->
+<ul>
+<li class="">Window → Animation → Animator</li>
+<li class="">Create new Animator Controller</li>
+<li class="">Add animations (walk, idle, wave)</li>
+</ul>
+</li>
+</ol>
+<h3 class="anchor anchorTargetStickyNavbar_Vzrq" id="592-social-navigation-scenario">5.9.2 Social Navigation Scenario<a href="#592-social-navigation-scenario" class="hash-link" aria-label="Direct link to 5.9.2 Social Navigation Scenario" title="Direct link to 5.9.2 Social Navigation Scenario" translate="no">​</a></h3>
+<p><strong>Goal</strong>: Robot navigates around humans.</p>
+<p><strong>Setup</strong>:</p>
+<ol>
+<li class="">Place 5 animated humans in scene (walking in random directions)</li>
+<li class="">Add Nav Mesh Agent to humans (Unity&#x27;s pathfinding AI)</li>
+<li class="">Robot subscribes to <code>/cmd_vel</code> and must avoid humans</li>
+</ol>
+<p><strong>Code snippet (human waypoint navigation)</strong>:</p>
+<div class="language-csharp codeBlockContainer_Ckt0 theme-code-block" style="--prism-color:#393A34;--prism-background-color:#f6f8fa"><div class="codeBlockContent_QJqH"><pre tabindex="0" class="prism-code language-csharp codeBlock_bY9V thin-scrollbar" style="color:#393A34;background-color:#f6f8fa"><code class="codeBlockLines_e6Vv"><span class="token-line" style="color:#393A34"><span class="token plain">using UnityEngine;</span><br></span><span class="token-line" style="color:#393A34"><span class="token plain">using UnityEngine.AI;</span><br></span><span class="token-line" style="color:#393A34"><span class="token plain" style="display:inline-block"></span><br></span><span class="token-line" style="color:#393A34"><span class="token plain">public class HumanWalker : MonoBehaviour</span><br></span><span class="token-line" style="color:#393A34"><span class="token plain">{</span><br></span><span class="token-line" style="color:#393A34"><span class="token plain">    private NavMeshAgent agent;</span><br></span><span class="token-line" style="color:#393A34"><span class="token plain">    public Transform[] waypoints;</span><br></span><span class="token-line" style="color:#393A34"><span class="token plain">    private int currentWaypoint = 0;</span><br></span><span class="token-line" style="color:#393A34"><span class="token plain" style="display:inline-block"></span><br></span><span class="token-line" style="color:#393A34"><span class="token plain">    void Start()</span><br></span><span class="token-line" style="color:#393A34"><span class="token plain">    {</span><br></span><span class="token-line" style="color:#393A34"><span class="token plain">        agent = GetComponent&lt;NavMeshAgent&gt;();</span><br></span><span class="token-line" style="color:#393A34"><span class="token plain">        agent.SetDestination(waypoints[0].position);</span><br></span><span class="token-line" style="color:#393A34"><span class="token plain">    }</span><br></span><span class="token-line" style="color:#393A34"><span class="token plain" style="display:inline-block"></span><br></span><span class="token-line" style="color:#393A34"><span class="token plain">    void Update()</span><br></span><span class="token-line" style="color:#393A34"><span class="token plain">    {</span><br></span><span class="token-line" style="color:#393A34"><span class="token plain">        if (!agent.pathPending &amp;&amp; agent.remainingDistance &lt; 0.5f)</span><br></span><span class="token-line" style="color:#393A34"><span class="token plain">        {</span><br></span><span class="token-line" style="color:#393A34"><span class="token plain">            // Reached waypoint, go to next</span><br></span><span class="token-line" style="color:#393A34"><span class="token plain">            currentWaypoint = (currentWaypoint + 1) % waypoints.Length;</span><br></span><span class="token-line" style="color:#393A34"><span class="token plain">            agent.SetDestination(waypoints[currentWaypoint].position);</span><br></span><span class="token-line" style="color:#393A34"><span class="token plain">        }</span><br></span><span class="token-line" style="color:#393A34"><span class="token plain">    }</span><br></span><span class="token-line" style="color:#393A34"><span class="token plain">}</span><br></span></code></pre></div></div>
+<hr>
+<h2 class="anchor anchorTargetStickyNavbar_Vzrq" id="510-synthetic-data-generation">5.10 Synthetic Data Generation<a href="#510-synthetic-data-generation" class="hash-link" aria-label="Direct link to 5.10 Synthetic Data Generation" title="Direct link to 5.10 Synthetic Data Generation" translate="no">​</a></h2>
+<p><strong>Goal</strong>: Generate labeled datasets for training ML models.</p>
+<h3 class="anchor anchorTargetStickyNavbar_Vzrq" id="5101-unity-perception-package">5.10.1 Unity Perception Package<a href="#5101-unity-perception-package" class="hash-link" aria-label="Direct link to 5.10.1 Unity Perception Package" title="Direct link to 5.10.1 Unity Perception Package" translate="no">​</a></h3>
+<p><strong>Install</strong>:</p>
+<ol>
+<li class="">Package Manager → Add from git URL:<!-- -->
+<div class="language-text codeBlockContainer_Ckt0 theme-code-block" style="--prism-color:#393A34;--prism-background-color:#f6f8fa"><div class="codeBlockContent_QJqH"><pre tabindex="0" class="prism-code language-text codeBlock_bY9V thin-scrollbar" style="color:#393A34;background-color:#f6f8fa"><code class="codeBlockLines_e6Vv"><span class="token-line" style="color:#393A34"><span class="token plain">https://github.com/Unity-Technologies/com.unity.perception.git</span><br></span></code></pre></div></div>
+</li>
+</ol>
+<h3 class="anchor anchorTargetStickyNavbar_Vzrq" id="5102-capture-rgb--segmentation">5.10.2 Capture RGB + Segmentation<a href="#5102-capture-rgb--segmentation" class="hash-link" aria-label="Direct link to 5.10.2 Capture RGB + Segmentation" title="Direct link to 5.10.2 Capture RGB + Segmentation" translate="no">​</a></h3>
+<p><strong>Setup</strong>:</p>
+<ol>
+<li class="">
+<p>Add Perception Camera:</p>
+<ul>
+<li class="">Select camera → Add Component → Perception Camera</li>
+</ul>
+</li>
+<li class="">
+<p>Configure captures:</p>
+<ul>
+<li class="">RGB: Enable</li>
+<li class="">Semantic Segmentation: Enable</li>
+<li class="">Bounding Boxes: Enable</li>
+</ul>
+</li>
+<li class="">
+<p>Create labeling configuration:</p>
+<ul>
+<li class="">Assets → Create → Perception → ID Label Config</li>
+<li class="">Add labels: &quot;robot&quot;, &quot;table&quot;, &quot;chair&quot;, &quot;human&quot;</li>
+</ul>
+</li>
+<li class="">
+<p>Tag objects:</p>
+<ul>
+<li class="">Select object → Add Component → Labeling</li>
+<li class="">Add Label: &quot;table&quot;</li>
+</ul>
+</li>
+</ol>
+<h3 class="anchor anchorTargetStickyNavbar_Vzrq" id="5103-domain-randomization">5.10.3 Domain Randomization<a href="#5103-domain-randomization" class="hash-link" aria-label="Direct link to 5.10.3 Domain Randomization" title="Direct link to 5.10.3 Domain Randomization" translate="no">​</a></h3>
+<p><strong>Randomize every frame</strong>:</p>
+<ul>
+<li class="">Object positions</li>
+<li class="">Object rotations</li>
+<li class="">Lighting (intensity, color)</li>
+<li class="">Textures (swap materials)</li>
+</ul>
+<p><strong>Script</strong>:</p>
+<div class="language-csharp codeBlockContainer_Ckt0 theme-code-block" style="--prism-color:#393A34;--prism-background-color:#f6f8fa"><div class="codeBlockContent_QJqH"><pre tabindex="0" class="prism-code language-csharp codeBlock_bY9V thin-scrollbar" style="color:#393A34;background-color:#f6f8fa"><code class="codeBlockLines_e6Vv"><span class="token-line" style="color:#393A34"><span class="token plain">using UnityEngine;</span><br></span><span class="token-line" style="color:#393A34"><span class="token plain">using UnityEngine.Perception.Randomization.Samplers;</span><br></span><span class="token-line" style="color:#393A34"><span class="token plain" style="display:inline-block"></span><br></span><span class="token-line" style="color:#393A34"><span class="token plain">public class DomainRandomizer : MonoBehaviour</span><br></span><span class="token-line" style="color:#393A34"><span class="token plain">{</span><br></span><span class="token-line" style="color:#393A34"><span class="token plain">    public GameObject[] objectsToRandomize;</span><br></span><span class="token-line" style="color:#393A34"><span class="token plain">    public Material[] materials;</span><br></span><span class="token-line" style="color:#393A34"><span class="token plain" style="display:inline-block"></span><br></span><span class="token-line" style="color:#393A34"><span class="token plain">    private UniformSampler positionSampler = new UniformSampler(-5f, 5f);</span><br></span><span class="token-line" style="color:#393A34"><span class="token plain">    private UniformSampler rotationSampler = new UniformSampler(0f, 360f);</span><br></span><span class="token-line" style="color:#393A34"><span class="token plain" style="display:inline-block"></span><br></span><span class="token-line" style="color:#393A34"><span class="token plain">    void Update()</span><br></span><span class="token-line" style="color:#393A34"><span class="token plain">    {</span><br></span><span class="token-line" style="color:#393A34"><span class="token plain">        foreach (GameObject obj in objectsToRandomize)</span><br></span><span class="token-line" style="color:#393A34"><span class="token plain">        {</span><br></span><span class="token-line" style="color:#393A34"><span class="token plain">            // Randomize position</span><br></span><span class="token-line" style="color:#393A34"><span class="token plain">            obj.transform.position = new Vector3(</span><br></span><span class="token-line" style="color:#393A34"><span class="token plain">                positionSampler.Sample(),</span><br></span><span class="token-line" style="color:#393A34"><span class="token plain">                obj.transform.position.y,</span><br></span><span class="token-line" style="color:#393A34"><span class="token plain">                positionSampler.Sample()</span><br></span><span class="token-line" style="color:#393A34"><span class="token plain">            );</span><br></span><span class="token-line" style="color:#393A34"><span class="token plain" style="display:inline-block"></span><br></span><span class="token-line" style="color:#393A34"><span class="token plain">            // Randomize rotation</span><br></span><span class="token-line" style="color:#393A34"><span class="token plain">            obj.transform.rotation = Quaternion.Euler(0, rotationSampler.Sample(), 0);</span><br></span><span class="token-line" style="color:#393A34"><span class="token plain" style="display:inline-block"></span><br></span><span class="token-line" style="color:#393A34"><span class="token plain">            // Randomize material</span><br></span><span class="token-line" style="color:#393A34"><span class="token plain">            obj.GetComponent&lt;Renderer&gt;().material = materials[Random.Range(0, materials.Length)];</span><br></span><span class="token-line" style="color:#393A34"><span class="token plain">        }</span><br></span><span class="token-line" style="color:#393A34"><span class="token plain">    }</span><br></span><span class="token-line" style="color:#393A34"><span class="token plain">}</span><br></span></code></pre></div></div>
+<h3 class="anchor anchorTargetStickyNavbar_Vzrq" id="5104-generate-dataset">5.10.4 Generate Dataset<a href="#5104-generate-dataset" class="hash-link" aria-label="Direct link to 5.10.4 Generate Dataset" title="Direct link to 5.10.4 Generate Dataset" translate="no">​</a></h3>
+<p><strong>Run simulation</strong>:</p>
+<ol>
+<li class="">Set Perception Camera → Frames Per Iteration: 10,000</li>
+<li class="">Play → Unity captures 10,000 images with:<!-- -->
+<ul>
+<li class="">RGB images</li>
+<li class="">Semantic segmentation masks</li>
+<li class="">Bounding boxes (JSON)</li>
+</ul>
+</li>
+</ol>
+<p><strong>Output</strong> (saved to <code>{Project}/Perception/</code>):</p>
+<div class="language-text codeBlockContainer_Ckt0 theme-code-block" style="--prism-color:#393A34;--prism-background-color:#f6f8fa"><div class="codeBlockContent_QJqH"><pre tabindex="0" class="prism-code language-text codeBlock_bY9V thin-scrollbar" style="color:#393A34;background-color:#f6f8fa"><code class="codeBlockLines_e6Vv"><span class="token-line" style="color:#393A34"><span class="token plain">Dataset/</span><br></span><span class="token-line" style="color:#393A34"><span class="token plain">├── RGB/</span><br></span><span class="token-line" style="color:#393A34"><span class="token plain">│   ├── 00001.png</span><br></span><span class="token-line" style="color:#393A34"><span class="token plain">│   ├── 00002.png</span><br></span><span class="token-line" style="color:#393A34"><span class="token plain">│   └── ...</span><br></span><span class="token-line" style="color:#393A34"><span class="token plain">├── Segmentation/</span><br></span><span class="token-line" style="color:#393A34"><span class="token plain">│   ├── 00001.png (colored masks)</span><br></span><span class="token-line" style="color:#393A34"><span class="token plain">│   └── ...</span><br></span><span class="token-line" style="color:#393A34"><span class="token plain">└── annotations.json (COCO format)</span><br></span></code></pre></div></div>
+<p><strong>Use for training</strong>: Train YOLOv8, Mask R-CNN, etc.</p>
+<hr>
+<h2 class="anchor anchorTargetStickyNavbar_Vzrq" id="511-unity-ml-agents-preview">5.11 Unity ML-Agents (Preview)<a href="#511-unity-ml-agents-preview" class="hash-link" aria-label="Direct link to 5.11 Unity ML-Agents (Preview)" title="Direct link to 5.11 Unity ML-Agents (Preview)" translate="no">​</a></h2>
+<p><strong>Unity ML-Agents</strong>: Train RL policies directly in Unity.</p>
+<p><strong>Example</strong>: Train quadruped to walk.</p>
+<p><strong>High-level process</strong>:</p>
+<ol>
+<li class="">Define observation space (joint angles, torso orientation)</li>
+<li class="">Define action space (joint torques)</li>
+<li class="">Define reward function (forward velocity, upright posture)</li>
+<li class="">Train with PPO algorithm (PyTorch backend)</li>
+</ol>
+<p><strong>Integration with ROS</strong>:</p>
+<ul>
+<li class="">Actions from RL policy → Publish to ROS <code>/joint_commands</code></li>
+<li class="">Observations from ROS sensors → Input to policy</li>
+</ul>
+<p><strong>Reference</strong>: <a href="https://github.com/Unity-Technologies/ml-agents" target="_blank" rel="noopener noreferrer" class="">https://github.com/Unity-Technologies/ml-agents</a></p>
+<hr>
+<h2 class="anchor anchorTargetStickyNavbar_Vzrq" id="512-unity-vs-gazebo-decision-matrix">5.12 Unity vs Gazebo: Decision Matrix<a href="#512-unity-vs-gazebo-decision-matrix" class="hash-link" aria-label="Direct link to 5.12 Unity vs Gazebo: Decision Matrix" title="Direct link to 5.12 Unity vs Gazebo: Decision Matrix" translate="no">​</a></h2>
+<table><thead><tr><th>Use Unity When...</th><th>Use Gazebo When...</th></tr></thead><tbody><tr><td>Training vision models (need labeled data)</td><td>Testing navigation algorithms</td></tr><tr><td>Creating demos for non-technical stakeholders</td><td>Rapid prototyping (URDF → spawn in seconds)</td></tr><tr><td>Simulating human-robot interaction</td><td>Physics-critical tasks (grasping, bipedal balance)</td></tr><tr><td>Deploying VR/AR teleoperation</td><td>Integrating with existing ROS pipelines</td></tr><tr><td>Need photorealistic rendering</td><td>Need real-time factor &gt; 1.0 (faster-than-real-time)</td></tr></tbody></table>
+<p><strong>Recommendation</strong>: Use <strong>both</strong>. Develop in Gazebo, visualize in Unity.</p>
+<hr>
+<h2 class="anchor anchorTargetStickyNavbar_Vzrq" id="exercises">Exercises<a href="#exercises" class="hash-link" aria-label="Direct link to Exercises" title="Direct link to Exercises" translate="no">​</a></h2>
+<h3 class="anchor anchorTargetStickyNavbar_Vzrq" id="exercise-51-urdf-import-and-control">Exercise 5.1: URDF Import and Control<a href="#exercise-51-urdf-import-and-control" class="hash-link" aria-label="Direct link to Exercise 5.1: URDF Import and Control" title="Direct link to Exercise 5.1: URDF Import and Control" translate="no">​</a></h3>
+<p><strong>Goal</strong>: Import a robot URDF into Unity, control joints via ROS.</p>
+<p><strong>Requirements</strong>:</p>
+<ol>
+<li class="">Import <code>simple_arm.urdf</code> (from Chapter 3)</li>
+<li class="">Subscribe to <code>/joint_commands</code> (sensor_msgs/JointState)</li>
+<li class="">Apply joint positions using Articulation Body</li>
+</ol>
+<p><strong>Expected</strong>: Robot arm moves when you publish joint commands.</p>
+<h3 class="anchor anchorTargetStickyNavbar_Vzrq" id="exercise-52-kitchen-scene--object-detection">Exercise 5.2: Kitchen Scene + Object Detection<a href="#exercise-52-kitchen-scene--object-detection" class="hash-link" aria-label="Direct link to Exercise 5.2: Kitchen Scene + Object Detection" title="Direct link to Exercise 5.2: Kitchen Scene + Object Detection" translate="no">​</a></h3>
+<p><strong>Goal</strong>: Create a kitchen scene, place 10 objects, capture 100 images with bounding boxes.</p>
+<p><strong>Requirements</strong>:</p>
+<ol>
+<li class="">Download kitchen asset from Asset Store</li>
+<li class="">Place objects (cups, plates, bottles)</li>
+<li class="">Add labels (&quot;cup&quot;, &quot;plate&quot;, etc.)</li>
+<li class="">Run Perception Camera for 100 frames</li>
+</ol>
+<p><strong>Output</strong>: 100 RGB images + annotations.json (COCO format)</p>
+<h3 class="anchor anchorTargetStickyNavbar_Vzrq" id="exercise-53-social-navigation">Exercise 5.3: Social Navigation<a href="#exercise-53-social-navigation" class="hash-link" aria-label="Direct link to Exercise 5.3: Social Navigation" title="Direct link to Exercise 5.3: Social Navigation" translate="no">​</a></h3>
+<p><strong>Goal</strong>: Robot avoids moving humans.</p>
+<p><strong>Requirements</strong>:</p>
+<ol>
+<li class="">Add 3 animated humans (walking in circles)</li>
+<li class="">Robot subscribes to <code>/cmd_vel</code></li>
+<li class="">Implement obstacle avoidance (stop if human within 1m)</li>
+</ol>
+<p><strong>Success criteria</strong>: Robot navigates for 5 minutes without colliding with humans.</p>
+<hr>
+<h2 class="anchor anchorTargetStickyNavbar_Vzrq" id="citations">Citations<a href="#citations" class="hash-link" aria-label="Direct link to Citations" title="Direct link to Citations" translate="no">​</a></h2>
+<ol>
+<li class="">
+<p>Unity Technologies. (2023). <em>Unity Robotics Hub Documentation.</em> <a href="https://github.com/Unity-Technologies/Unity-Robotics-Hub" target="_blank" rel="noopener noreferrer" class="">https://github.com/Unity-Technologies/Unity-Robotics-Hub</a></p>
+</li>
+<li class="">
+<p>Juliani, A., Berges, V. P., Teng, E., Cohen, A., Harper, J., Elion, C., ... &amp; Lange, D. (2018). <em>Unity: A general platform for intelligent agents.</em> arXiv preprint arXiv:1809.02627.</p>
+</li>
+<li class="">
+<p>Unity Technologies. (2023). <em>Unity Perception Package.</em> <a href="https://github.com/Unity-Technologies/com.unity.perception" target="_blank" rel="noopener noreferrer" class="">https://github.com/Unity-Technologies/com.unity.perception</a></p>
+</li>
+<li class="">
+<p>Tobin, J., Fong, R., Ray, A., Schneider, J., Zaremba, W., &amp; Abbeel, P. (2017). <em>Domain randomization for transferring deep neural networks from simulation to the real world.</em> IEEE/RSJ International Conference on Intelligent Robots and Systems (IROS), 23-30.</p>
+</li>
+<li class="">
+<p>Tremblay, J., Prakash, A., Acuna, D., Brophy, M., Jampani, V., Anil, C., ... &amp; Birchfield, S. (2018). <em>Training deep networks with synthetic data: Bridging the reality gap by domain randomization.</em> IEEE Conference on Computer Vision and Pattern Recognition Workshops (CVPRW), 969-977.</p>
+</li>
+<li class="">
+<p>Unity Technologies. (2023). <em>High Definition Render Pipeline (HDRP).</em> <a href="https://docs.unity3d.com/Packages/com.unity.render-pipelines.high-definition@latest" target="_blank" rel="noopener noreferrer" class="">https://docs.unity3d.com/Packages/com.unity.render-pipelines.high-definition@latest</a></p>
+</li>
+<li class="">
+<p>Adobe. (2023). <em>Mixamo: Animated 3D Characters.</em> <a href="https://www.mixamo.com/" target="_blank" rel="noopener noreferrer" class="">https://www.mixamo.com/</a></p>
+</li>
+<li class="">
+<p>Unity Technologies. (2023). <em>ML-Agents Toolkit.</em> <a href="https://github.com/Unity-Technologies/ml-agents" target="_blank" rel="noopener noreferrer" class="">https://github.com/Unity-Technologies/ml-agents</a></p>
+</li>
+</ol>
+<hr>
+<h2 class="anchor anchorTargetStickyNavbar_Vzrq" id="hardware-requirements">Hardware Requirements<a href="#hardware-requirements" class="hash-link" aria-label="Direct link to Hardware Requirements" title="Direct link to Hardware Requirements" translate="no">​</a></h2>
+<p><strong>Minimum</strong>:</p>
+<ul>
+<li class=""><strong>GPU</strong>: NVIDIA GTX 1060 6GB OR AMD RX 580</li>
+<li class=""><strong>RAM</strong>: 8 GB</li>
+<li class=""><strong>Disk</strong>: 20 GB free space</li>
+</ul>
+<p><strong>Recommended</strong>:</p>
+<ul>
+<li class=""><strong>GPU</strong>: NVIDIA RTX 3060 12GB (for real-time ray tracing)</li>
+<li class=""><strong>RAM</strong>: 16 GB</li>
+<li class=""><strong>Disk</strong>: 50 GB (for Asset Store assets)</li>
+</ul>
+<p><strong>For synthetic data generation</strong>:</p>
+<ul>
+<li class=""><strong>GPU</strong>: RTX 3080 or better (batch rendering 10,000 images)</li>
+</ul>
+<hr>
+<h2 class="anchor anchorTargetStickyNavbar_Vzrq" id="lab">Lab<a href="#lab" class="hash-link" aria-label="Direct link to Lab" title="Direct link to Lab" translate="no">​</a></h2>
+<p><strong>Lab 5.1: Unity ROS Bridge + Teleoperation</strong></p>
+<p><strong>Repository</strong>: <a href="https://github.com/Shumailaaijaz/physical-ai-labs" target="_blank" rel="noopener noreferrer" class="">github.com/Shumailaaijaz/physical-ai-labs</a></p>
+<p><strong>Lab Path</strong>: <code>labs/chapter-05-unity-tcp-connector/</code></p>
+<p><strong>What&#x27;s Included</strong>:</p>
+<ul>
+<li class="">Unity project (pre-configured scene)</li>
+<li class="">ROS 2 teleop node (keyboard control)</li>
+<li class="">Camera publisher script</li>
+<li class="">README with tasks</li>
+</ul>
+<p><strong>To Run</strong>:</p>
+<div class="language-bash codeBlockContainer_Ckt0 theme-code-block" style="--prism-color:#393A34;--prism-background-color:#f6f8fa"><div class="codeBlockContent_QJqH"><pre tabindex="0" class="prism-code language-bash codeBlock_bY9V thin-scrollbar" style="color:#393A34;background-color:#f6f8fa"><code class="codeBlockLines_e6Vv"><span class="token-line" style="color:#393A34"><span class="token plain"># Terminal 1: ROS endpoint</span><br></span><span class="token-line" style="color:#393A34"><span class="token plain">cd labs/chapter-05-unity-tcp-connector/ros2_ws</span><br></span><span class="token-line" style="color:#393A34"><span class="token plain">source install/setup.bash</span><br></span><span class="token-line" style="color:#393A34"><span class="token plain">ros2 run ros_tcp_endpoint default_server_endpoint --ros-args -p ROS_IP:=0.0.0.0</span><br></span><span class="token-line" style="color:#393A34"><span class="token plain" style="display:inline-block"></span><br></span><span class="token-line" style="color:#393A34"><span class="token plain"># Terminal 2: Teleop</span><br></span><span class="token-line" style="color:#393A34"><span class="token plain">ros2 run teleop_twist_keyboard teleop_twist_keyboard</span><br></span><span class="token-line" style="color:#393A34"><span class="token plain" style="display:inline-block"></span><br></span><span class="token-line" style="color:#393A34"><span class="token plain"># Unity: Open project, press Play</span><br></span></code></pre></div></div>
+<p><strong>Expected Result</strong>: Control robot in Unity with keyboard, view camera feed in RViz.</p>
+<hr>
+<p><strong>Next Chapter</strong>: <a class="" href="/physical-ai-textbook/docs/06-isaac-sim-basics">Chapter 6: NVIDIA Isaac Sim Basics →</a></p>
+<hr>
+<p><em>This textbook is a living document. Found an error? Have a suggestion? Submit an issue or PR at <a href="https://github.com/Shumailaaijaz/physical-ai-textbook" target="_blank" rel="noopener noreferrer" class="">github.com/Shumailaaijaz/physical-ai-textbook</a></em></p></div><footer class="theme-doc-footer docusaurus-mt-lg"><div class="row margin-top--sm theme-doc-footer-edit-meta-row"><div class="col noPrint_WFHX"><a href="https://github.com/Shumailaaijaz/physical-ai-textbook/tree/main/docs/05-unity-robotics-hub.mdx" target="_blank" rel="noopener noreferrer" class="theme-edit-this-page"><svg fill="currentColor" height="20" width="20" viewBox="0 0 40 40" class="iconEdit_Z9Sw" aria-hidden="true"><g><path d="m34.5 11.7l-3 3.1-6.3-6.3 3.1-3q0.5-0.5 1.2-0.5t1.1 0.5l3.9 3.9q0.5 0.4 0.5 1.1t-0.5 1.2z m-29.5 17.1l18.4-18.5 6.3 6.3-18.4 18.4h-6.3v-6.2z"></path></g></svg>Edit this page</a></div><div class="col lastUpdated_JAkA"></div></div></footer></article><nav class="docusaurus-mt-lg pagination-nav" aria-label="Docs pages"><a class="pagination-nav__link pagination-nav__link--prev" href="/physical-ai-textbook/docs/04-gazebo-simulation"><div class="pagination-nav__sublabel">Previous</div><div class="pagination-nav__label">Chapter 4: Gazebo Simulation</div></a><a class="pagination-nav__link pagination-nav__link--next" href="/physical-ai-textbook/docs/06-isaac-sim-basics"><div class="pagination-nav__sublabel">Next</div><div class="pagination-nav__label">Chapter 6: NVIDIA Isaac Sim Basics</div></a></nav></div></div><div class="col col--3"><div class="tableOfContents_bqdL thin-scrollbar theme-doc-toc-desktop"><ul class="table-of-contents table-of-contents__left-border"><li><a href="#learning-objectives" class="table-of-contents__link toc-highlight">Learning Objectives</a></li><li><a href="#51-introduction-why-unity" class="table-of-contents__link toc-highlight">5.1 Introduction: Why Unity?</a><ul><li><a href="#511-unity-vs-gazebo" class="table-of-contents__link toc-highlight">5.1.1 Unity vs Gazebo</a></li><li><a href="#512-use-cases" class="table-of-contents__link toc-highlight">5.1.2 Use Cases</a></li></ul></li><li><a href="#52-unity-robotics-hub-overview" class="table-of-contents__link toc-highlight">5.2 Unity Robotics Hub Overview</a></li><li><a href="#53-installing-unity-on-windows-native" class="table-of-contents__link toc-highlight">5.3 Installing Unity on Windows (Native!)</a></li><li><a href="#54-setting-up-unity-robotics-hub" class="table-of-contents__link toc-highlight">5.4 Setting Up Unity Robotics Hub</a><ul><li><a href="#541-install-ros-tcp-connector-unity-side" class="table-of-contents__link toc-highlight">5.4.1 Install ROS-TCP-Connector (Unity Side)</a></li><li><a href="#542-install-ros-tcp-endpoint-ros-2-side" class="table-of-contents__link toc-highlight">5.4.2 Install ROS-TCP-Endpoint (ROS 2 Side)</a></li><li><a href="#543-configure-connection" class="table-of-contents__link toc-highlight">5.4.3 Configure Connection</a></li></ul></li><li><a href="#55-your-first-unity-ros-2-project" class="table-of-contents__link toc-highlight">5.5 Your First Unity-ROS 2 Project</a><ul><li><a href="#551-create-unity-scene" class="table-of-contents__link toc-highlight">5.5.1 Create Unity Scene</a></li><li><a href="#552-create-c-script-to-subscribe-to-cmd_vel" class="table-of-contents__link toc-highlight">5.5.2 Create C# Script to Subscribe to <code>/cmd_vel</code></a></li><li><a href="#553-test" class="table-of-contents__link toc-highlight">5.5.3 Test</a></li></ul></li><li><a href="#56-importing-urdf-into-unity" class="table-of-contents__link toc-highlight">5.6 Importing URDF into Unity</a><ul><li><a href="#561-install-urdf-importer" class="table-of-contents__link toc-highlight">5.6.1 Install URDF Importer</a></li><li><a href="#562-import-robot" class="table-of-contents__link toc-highlight">5.6.2 Import Robot</a></li><li><a href="#563-configure-articulation-body" class="table-of-contents__link toc-highlight">5.6.3 Configure Articulation Body</a></li></ul></li><li><a href="#57-publishing-camera-images-to-ros" class="table-of-contents__link toc-highlight">5.7 Publishing Camera Images to ROS</a><ul><li><a href="#571-add-camera" class="table-of-contents__link toc-highlight">5.7.1 Add Camera</a></li><li><a href="#572-create-camera-publisher-script" class="table-of-contents__link toc-highlight">5.7.2 Create Camera Publisher Script</a></li></ul></li><li><a href="#58-high-fidelity-environments" class="table-of-contents__link toc-highlight">5.8 High-Fidelity Environments</a><ul><li><a href="#581-using-asset-store" class="table-of-contents__link toc-highlight">5.8.1 Using Asset Store</a></li><li><a href="#582-probuilder-built-in-modeling" class="table-of-contents__link toc-highlight">5.8.2 ProBuilder (Built-In Modeling)</a></li><li><a href="#583-lighting-for-photorealism" class="table-of-contents__link toc-highlight">5.8.3 Lighting for Photorealism</a></li></ul></li><li><a href="#59-human-robot-interaction" class="table-of-contents__link toc-highlight">5.9 Human-Robot Interaction</a><ul><li><a href="#591-animated-human-models" class="table-of-contents__link toc-highlight">5.9.1 Animated Human Models</a></li><li><a href="#592-social-navigation-scenario" class="table-of-contents__link toc-highlight">5.9.2 Social Navigation Scenario</a></li></ul></li><li><a href="#510-synthetic-data-generation" class="table-of-contents__link toc-highlight">5.10 Synthetic Data Generation</a><ul><li><a href="#5101-unity-perception-package" class="table-of-contents__link toc-highlight">5.10.1 Unity Perception Package</a></li><li><a href="#5102-capture-rgb--segmentation" class="table-of-contents__link toc-highlight">5.10.2 Capture RGB + Segmentation</a></li><li><a href="#5103-domain-randomization" class="table-of-contents__link toc-highlight">5.10.3 Domain Randomization</a></li><li><a href="#5104-generate-dataset" class="table-of-contents__link toc-highlight">5.10.4 Generate Dataset</a></li></ul></li><li><a href="#511-unity-ml-agents-preview" class="table-of-contents__link toc-highlight">5.11 Unity ML-Agents (Preview)</a></li><li><a href="#512-unity-vs-gazebo-decision-matrix" class="table-of-contents__link toc-highlight">5.12 Unity vs Gazebo: Decision Matrix</a></li><li><a href="#exercises" class="table-of-contents__link toc-highlight">Exercises</a><ul><li><a href="#exercise-51-urdf-import-and-control" class="table-of-contents__link toc-highlight">Exercise 5.1: URDF Import and Control</a></li><li><a href="#exercise-52-kitchen-scene--object-detection" class="table-of-contents__link toc-highlight">Exercise 5.2: Kitchen Scene + Object Detection</a></li><li><a href="#exercise-53-social-navigation" class="table-of-contents__link toc-highlight">Exercise 5.3: Social Navigation</a></li></ul></li><li><a href="#citations" class="table-of-contents__link toc-highlight">Citations</a></li><li><a href="#hardware-requirements" class="table-of-contents__link toc-highlight">Hardware Requirements</a></li><li><a href="#lab" class="table-of-contents__link toc-highlight">Lab</a></li></ul></div></div></div></div></main></div></div></div><footer class="theme-layout-footer footer footer--dark"><div class="container container-fluid"><div class="row footer__links"><div class="theme-layout-footer-column col footer__col"><div class="footer__title">Textbook</div><ul class="footer__items clean-list"><li class="footer__item"><a class="footer__link-item" href="/physical-ai-textbook/docs/00-preface">Start Learning</a></li><li class="footer__item"><a class="footer__link-item" href="/physical-ai-textbook/docs/CHAPTER_OUTLINES">Chapter Outlines</a></li></ul></div><div class="theme-layout-footer-column col footer__col"><div class="footer__title">Resources</div><ul class="footer__items clean-list"><li class="footer__item"><a href="https://github.com/Shumailaaijaz/physical-ai-labs" target="_blank" rel="noopener noreferrer" class="footer__link-item">Labs Repository<svg width="13.5" height="13.5" aria-label="(opens in new tab)" class="iconExternalLink_nPIU"><use href="#theme-svg-external-link"></use></svg></a></li><li class="footer__item"><a href="https://github.com/Shumailaaijaz/physical-ai-textbook" target="_blank" rel="noopener noreferrer" class="footer__link-item">Textbook Repository<svg width="13.5" height="13.5" aria-label="(opens in new tab)" class="iconExternalLink_nPIU"><use href="#theme-svg-external-link"></use></svg></a></li><li class="footer__item"><a href="https://github.com/Shumailaaijaz/physical-ai-textbook/discussions" target="_blank" rel="noopener noreferrer" class="footer__link-item">GitHub Discussions<svg width="13.5" height="13.5" aria-label="(opens in new tab)" class="iconExternalLink_nPIU"><use href="#theme-svg-external-link"></use></svg></a></li></ul></div><div class="theme-layout-footer-column col footer__col"><div class="footer__title">More</div><ul class="footer__items clean-list"><li class="footer__item"><a class="footer__link-item" href="/physical-ai-textbook/blog">Blog</a></li><li class="footer__item"><a href="https://github.com/Shumailaaijaz/physical-ai-textbook/issues" target="_blank" rel="noopener noreferrer" class="footer__link-item">Report Issues<svg width="13.5" height="13.5" aria-label="(opens in new tab)" class="iconExternalLink_nPIU"><use href="#theme-svg-external-link"></use></svg></a></li></ul></div></div><div class="footer__bottom text--center"><div class="footer__copyright">Copyright © 2026 Physical AI Textbook. Open source under MIT License.<br><div style="margin-top: 1rem;"><a href="https://www.linkedin.com/in/shumaila-aijaz-916b412b3" target="_blank" rel="noopener noreferrer" style="display: inline-flex; align-items: center; gap: 0.5rem; text-decoration: none;"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="currentColor"><path d="M19 0h-14c-2.761 0-5 2.239-5 5v14c0 2.761 2.239 5 5 5h14c2.762 0 5-2.239 5-5v-14c0-2.761-2.238-5-5-5zm-11 19h-3v-11h3v11zm-1.5-12.268c-.966 0-1.75-.79-1.75-1.764s.784-1.764 1.75-1.764 1.75.79 1.75 1.764-.783 1.764-1.75 1.764zm13.5 12.268h-3v-5.604c0-3.368-4-3.113-4 0v5.604h-3v-11h3v1.765c1.396-2.586 7-2.777 7 2.476v6.759z"/></svg><span>Connect on LinkedIn</span></a></div></div></div></div></footer><div></div></div>
+</body>
+</html>
