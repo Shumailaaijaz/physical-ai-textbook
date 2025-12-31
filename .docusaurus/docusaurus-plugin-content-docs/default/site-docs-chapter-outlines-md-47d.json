@@ -1,0 +1,20 @@
+{
+  "id": "CHAPTER_OUTLINES",
+  "title": "Chapter Outlines: Physical AI & Humanoid Robotics Textbook",
+  "description": "Status: Draft outlines for Chapters 2-13 (awaiting approval)",
+  "source": "@site/docs/CHAPTER_OUTLINES.md",
+  "sourceDirName": ".",
+  "slug": "/CHAPTER_OUTLINES",
+  "permalink": "/physical-ai-textbook/docs/CHAPTER_OUTLINES",
+  "draft": false,
+  "unlisted": false,
+  "editUrl": "https://github.com/Shumailaaijaz/physical-ai-textbook/tree/main/docs/CHAPTER_OUTLINES.md",
+  "tags": [],
+  "version": "current",
+  "frontMatter": {},
+  "sidebar": "tutorialSidebar",
+  "previous": {
+    "title": "Example Diagrams",
+    "permalink": "/physical-ai-textbook/docs/example-diagrams"
+  }
+}

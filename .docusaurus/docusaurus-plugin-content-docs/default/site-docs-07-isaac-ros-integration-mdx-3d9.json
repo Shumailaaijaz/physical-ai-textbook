@@ -1,0 +1,41 @@
+{
+  "id": "07-isaac-ros-integration",
+  "title": "Chapter 7: Isaac ROS Integration",
+  "description": "\"Hardware acceleration transforms perception from a bottleneck into a superpower.\"",
+  "source": "@site/docs/07-isaac-ros-integration.mdx",
+  "sourceDirName": ".",
+  "slug": "/07-isaac-ros-integration",
+  "permalink": "/physical-ai-textbook/docs/07-isaac-ros-integration",
+  "draft": false,
+  "unlisted": false,
+  "editUrl": "https://github.com/Shumailaaijaz/physical-ai-textbook/tree/main/docs/07-isaac-ros-integration.mdx",
+  "tags": [],
+  "version": "current",
+  "sidebarPosition": 7,
+  "frontMatter": {
+    "id": "07-isaac-ros-integration",
+    "title": "Chapter 7: Isaac ROS Integration",
+    "sidebar_position": 7,
+    "part": 3,
+    "week": 10,
+    "difficulty_levels": [
+      "advanced"
+    ],
+    "hardware_tracks": [
+      "budget_hardware",
+      "research_grade"
+    ],
+    "citation_count": 15,
+    "word_count": 7500,
+    "urdu_completeness": 0
+  },
+  "sidebar": "tutorialSidebar",
+  "previous": {
+    "title": "Chapter 6: NVIDIA Isaac Sim Basics",
+    "permalink": "/physical-ai-textbook/docs/06-isaac-sim-basics"
+  },
+  "next": {
+    "title": "Chapter 8: Legged Locomotion",
+    "permalink": "/physical-ai-textbook/docs/08-legged-locomotion"
+  }
+}

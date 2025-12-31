@@ -1,0 +1,44 @@
+{
+  "id": "12-hardware-guide",
+  "title": "Chapter 12: Hardware Guide",
+  "description": "\"The right hardware unlocks the right research.\"",
+  "source": "@site/docs/12-hardware-guide.mdx",
+  "sourceDirName": ".",
+  "slug": "/12-hardware-guide",
+  "permalink": "/physical-ai-textbook/docs/12-hardware-guide",
+  "draft": false,
+  "unlisted": false,
+  "editUrl": "https://github.com/Shumailaaijaz/physical-ai-textbook/tree/main/docs/12-hardware-guide.mdx",
+  "tags": [],
+  "version": "current",
+  "sidebarPosition": 12,
+  "frontMatter": {
+    "id": "12-hardware-guide",
+    "title": "Chapter 12: Hardware Guide",
+    "sidebar_position": 12,
+    "part": 5,
+    "week": "reference",
+    "difficulty_levels": [
+      "beginner",
+      "intermediate",
+      "advanced"
+    ],
+    "hardware_tracks": [
+      "simulation_only",
+      "budget_hardware",
+      "research_grade"
+    ],
+    "citation_count": 8,
+    "word_count": 9000,
+    "urdu_completeness": 0
+  },
+  "sidebar": "tutorialSidebar",
+  "previous": {
+    "title": "Chapter 11: Capstone Project",
+    "permalink": "/physical-ai-textbook/docs/11-capstone-project"
+  },
+  "next": {
+    "title": "Chapter 13: Ethics & Future of Physical AI",
+    "permalink": "/physical-ai-textbook/docs/13-ethics-future-physical-ai"
+  }
+}

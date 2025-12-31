@@ -1,0 +1,42 @@
+{
+  "id": "10-vision-language-action",
+  "title": "Chapter 10: Vision-Language-Action (VLA) Models",
+  "description": "\"Language is the scaffold that connects perception to action.\"",
+  "source": "@site/docs/10-vision-language-action.mdx",
+  "sourceDirName": ".",
+  "slug": "/10-vision-language-action",
+  "permalink": "/physical-ai-textbook/docs/10-vision-language-action",
+  "draft": false,
+  "unlisted": false,
+  "editUrl": "https://github.com/Shumailaaijaz/physical-ai-textbook/tree/main/docs/10-vision-language-action.mdx",
+  "tags": [],
+  "version": "current",
+  "sidebarPosition": 10,
+  "frontMatter": {
+    "id": "10-vision-language-action",
+    "title": "Chapter 10: Vision-Language-Action (VLA) Models",
+    "sidebar_position": 10,
+    "part": 4,
+    "week": 13,
+    "difficulty_levels": [
+      "advanced"
+    ],
+    "hardware_tracks": [
+      "simulation_only",
+      "budget_hardware",
+      "research_grade"
+    ],
+    "citation_count": 20,
+    "word_count": 8500,
+    "urdu_completeness": 0
+  },
+  "sidebar": "tutorialSidebar",
+  "previous": {
+    "title": "Chapter 9: Manipulation & Grasping",
+    "permalink": "/physical-ai-textbook/docs/09-manipulation-grasping"
+  },
+  "next": {
+    "title": "Chapter 11: Capstone Project",
+    "permalink": "/physical-ai-textbook/docs/11-capstone-project"
+  }
+}

@@ -1,0 +1,42 @@
+{
+  "id": "05-unity-robotics-hub",
+  "title": "Chapter 5: Unity Robotics Hub",
+  "description": "\"Unity brings photorealism to robotics—where Gazebo shows you physics, Unity shows you reality.\"",
+  "source": "@site/docs/05-unity-robotics-hub.mdx",
+  "sourceDirName": ".",
+  "slug": "/05-unity-robotics-hub",
+  "permalink": "/physical-ai-textbook/docs/05-unity-robotics-hub",
+  "draft": false,
+  "unlisted": false,
+  "editUrl": "https://github.com/Shumailaaijaz/physical-ai-textbook/tree/main/docs/05-unity-robotics-hub.mdx",
+  "tags": [],
+  "version": "current",
+  "sidebarPosition": 5,
+  "frontMatter": {
+    "id": "05-unity-robotics-hub",
+    "title": "Chapter 5: Unity Robotics Hub",
+    "sidebar_position": 5,
+    "part": 2,
+    "week": 7,
+    "difficulty_levels": [
+      "intermediate"
+    ],
+    "hardware_tracks": [
+      "simulation_only",
+      "budget_hardware",
+      "research_grade"
+    ],
+    "citation_count": 8,
+    "word_count": 6500,
+    "urdu_completeness": 0
+  },
+  "sidebar": "tutorialSidebar",
+  "previous": {
+    "title": "Chapter 4: Gazebo Simulation",
+    "permalink": "/physical-ai-textbook/docs/04-gazebo-simulation"
+  },
+  "next": {
+    "title": "Chapter 6: NVIDIA Isaac Sim Basics",
+    "permalink": "/physical-ai-textbook/docs/06-isaac-sim-basics"
+  }
+}

@@ -1,0 +1,42 @@
+{
+  "id": "13-ethics-future-physical-ai",
+  "title": "Chapter 13: Ethics & Future of Physical AI",
+  "description": "\"With great computational power comes great responsibility.\"",
+  "source": "@site/docs/13-ethics-future-physical-ai.mdx",
+  "sourceDirName": ".",
+  "slug": "/13-ethics-future-physical-ai",
+  "permalink": "/physical-ai-textbook/docs/13-ethics-future-physical-ai",
+  "draft": false,
+  "unlisted": false,
+  "editUrl": "https://github.com/Shumailaaijaz/physical-ai-textbook/tree/main/docs/13-ethics-future-physical-ai.mdx",
+  "tags": [],
+  "version": "current",
+  "sidebarPosition": 13,
+  "frontMatter": {
+    "id": "13-ethics-future-physical-ai",
+    "title": "Chapter 13: Ethics & Future of Physical AI",
+    "sidebar_position": 13,
+    "part": 5,
+    "week": "reference",
+    "difficulty_levels": [
+      "all"
+    ],
+    "hardware_tracks": [
+      "simulation_only",
+      "budget_hardware",
+      "research_grade"
+    ],
+    "citation_count": 15,
+    "word_count": 6000,
+    "urdu_completeness": 0
+  },
+  "sidebar": "tutorialSidebar",
+  "previous": {
+    "title": "Chapter 12: Hardware Guide",
+    "permalink": "/physical-ai-textbook/docs/12-hardware-guide"
+  },
+  "next": {
+    "title": "Example Diagrams",
+    "permalink": "/physical-ai-textbook/docs/example-diagrams"
+  }
+}

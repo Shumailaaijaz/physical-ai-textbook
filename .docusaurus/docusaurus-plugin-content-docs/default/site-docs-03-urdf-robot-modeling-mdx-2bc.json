@@ -1,0 +1,42 @@
+{
+  "id": "03-urdf-robot-modeling",
+  "title": "Chapter 3: URDF & Robot Modeling",
+  "description": "\"A robot's URDF is its DNA—defining every link, joint, and sensor that brings it to life in simulation.\"",
+  "source": "@site/docs/03-urdf-robot-modeling.mdx",
+  "sourceDirName": ".",
+  "slug": "/03-urdf-robot-modeling",
+  "permalink": "/physical-ai-textbook/docs/03-urdf-robot-modeling",
+  "draft": false,
+  "unlisted": false,
+  "editUrl": "https://github.com/Shumailaaijaz/physical-ai-textbook/tree/main/docs/03-urdf-robot-modeling.mdx",
+  "tags": [],
+  "version": "current",
+  "sidebarPosition": 3,
+  "frontMatter": {
+    "id": "03-urdf-robot-modeling",
+    "title": "Chapter 3: URDF & Robot Modeling",
+    "sidebar_position": 3,
+    "part": 2,
+    "week": 5,
+    "difficulty_levels": [
+      "intermediate"
+    ],
+    "hardware_tracks": [
+      "simulation_only",
+      "budget_hardware",
+      "research_grade"
+    ],
+    "citation_count": 12,
+    "word_count": 7000,
+    "urdu_completeness": 0
+  },
+  "sidebar": "tutorialSidebar",
+  "previous": {
+    "title": "Chapter 2: ROS 2 Fundamentals",
+    "permalink": "/physical-ai-textbook/docs/02-ros2-fundamentals"
+  },
+  "next": {
+    "title": "Chapter 4: Gazebo Simulation",
+    "permalink": "/physical-ai-textbook/docs/04-gazebo-simulation"
+  }
+}

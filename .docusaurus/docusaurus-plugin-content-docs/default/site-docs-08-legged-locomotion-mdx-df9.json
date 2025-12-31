@@ -1,0 +1,41 @@
+{
+  "id": "08-legged-locomotion",
+  "title": "Chapter 8: Legged Locomotion",
+  "description": "\"Walking on two legs is the hardest thing a robot can do—and the most human.\"",
+  "source": "@site/docs/08-legged-locomotion.mdx",
+  "sourceDirName": ".",
+  "slug": "/08-legged-locomotion",
+  "permalink": "/physical-ai-textbook/docs/08-legged-locomotion",
+  "draft": false,
+  "unlisted": false,
+  "editUrl": "https://github.com/Shumailaaijaz/physical-ai-textbook/tree/main/docs/08-legged-locomotion.mdx",
+  "tags": [],
+  "version": "current",
+  "sidebarPosition": 8,
+  "frontMatter": {
+    "id": "08-legged-locomotion",
+    "title": "Chapter 8: Legged Locomotion",
+    "sidebar_position": 8,
+    "part": 4,
+    "week": 11,
+    "difficulty_levels": [
+      "advanced"
+    ],
+    "hardware_tracks": [
+      "simulation_only",
+      "research_grade"
+    ],
+    "citation_count": 18,
+    "word_count": 7000,
+    "urdu_completeness": 0
+  },
+  "sidebar": "tutorialSidebar",
+  "previous": {
+    "title": "Chapter 7: Isaac ROS Integration",
+    "permalink": "/physical-ai-textbook/docs/07-isaac-ros-integration"
+  },
+  "next": {
+    "title": "Chapter 9: Manipulation & Grasping",
+    "permalink": "/physical-ai-textbook/docs/09-manipulation-grasping"
+  }
+}

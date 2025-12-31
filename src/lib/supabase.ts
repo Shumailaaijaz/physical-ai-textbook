@@ -1,9 +1,18 @@
 import { createClient } from '@supabase/supabase-js';
 
-const supabaseUrl = process.env.SUPABASE_URL || 'https://placeholder.supabase.co';
-const supabaseAnonKey = process.env.SUPABASE_ANON_KEY || 'placeholder-key';
+// Safe access to environment variables in browser and Node.js contexts
+const getEnvVar = (key: string, defaultValue: string): string => {
+  if (typeof process !== 'undefined' && process.env) {
+    return process.env[key] || defaultValue;
+  }
+  return defaultValue;
+};
 
-const isConfigured = process.env.SUPABASE_URL && process.env.SUPABASE_ANON_KEY;
+const supabaseUrl = getEnvVar('SUPABASE_URL', 'https://placeholder.supabase.co');
+const supabaseAnonKey = getEnvVar('SUPABASE_ANON_KEY', 'placeholder-key');
+
+const isConfigured = typeof process !== 'undefined' && process.env &&
+  process.env.SUPABASE_URL && process.env.SUPABASE_ANON_KEY;
 
 if (!isConfigured && typeof window !== 'undefined') {
   console.warn('Supabase environment variables not set. Database features will be disabled.');

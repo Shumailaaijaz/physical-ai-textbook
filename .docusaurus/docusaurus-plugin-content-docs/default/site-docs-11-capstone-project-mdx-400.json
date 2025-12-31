@@ -1,0 +1,41 @@
+{
+  "id": "11-capstone-project",
+  "title": "Chapter 11: Capstone Project",
+  "description": "\"The best way to learn robotics is to build a complete system.\"",
+  "source": "@site/docs/11-capstone-project.mdx",
+  "sourceDirName": ".",
+  "slug": "/11-capstone-project",
+  "permalink": "/physical-ai-textbook/docs/11-capstone-project",
+  "draft": false,
+  "unlisted": false,
+  "editUrl": "https://github.com/Shumailaaijaz/physical-ai-textbook/tree/main/docs/11-capstone-project.mdx",
+  "tags": [],
+  "version": "current",
+  "sidebarPosition": 11,
+  "frontMatter": {
+    "id": "11-capstone-project",
+    "title": "Chapter 11: Capstone Project",
+    "sidebar_position": 11,
+    "part": 4,
+    "week": 13,
+    "difficulty_levels": [
+      "capstone"
+    ],
+    "hardware_tracks": [
+      "simulation_only",
+      "research_grade"
+    ],
+    "citation_count": 0,
+    "word_count": 5000,
+    "urdu_completeness": 0
+  },
+  "sidebar": "tutorialSidebar",
+  "previous": {
+    "title": "Chapter 10: Vision-Language-Action (VLA) Models",
+    "permalink": "/physical-ai-textbook/docs/10-vision-language-action"
+  },
+  "next": {
+    "title": "Chapter 12: Hardware Guide",
+    "permalink": "/physical-ai-textbook/docs/12-hardware-guide"
+  }
+}

@@ -1,0 +1,44 @@
+{
+  "id": "01-introduction-to-physical-ai",
+  "title": "Chapter 1: Introduction to Physical AI",
+  "description": "Learning Objectives",
+  "source": "@site/docs/01-introduction-to-physical-ai.mdx",
+  "sourceDirName": ".",
+  "slug": "/01-introduction-to-physical-ai",
+  "permalink": "/physical-ai-textbook/docs/01-introduction-to-physical-ai",
+  "draft": false,
+  "unlisted": false,
+  "editUrl": "https://github.com/Shumailaaijaz/physical-ai-textbook/tree/main/docs/01-introduction-to-physical-ai.mdx",
+  "tags": [],
+  "version": "current",
+  "sidebarPosition": 1,
+  "frontMatter": {
+    "id": "01-introduction-to-physical-ai",
+    "title": "Chapter 1: Introduction to Physical AI",
+    "sidebar_position": 1,
+    "part": 1,
+    "week": "1-2",
+    "difficulty_levels": [
+      "beginner",
+      "intermediate",
+      "advanced"
+    ],
+    "hardware_tracks": [
+      "simulation_only",
+      "budget_hardware",
+      "research_grade"
+    ],
+    "citation_count": 25,
+    "word_count": 7500,
+    "urdu_completeness": 0
+  },
+  "sidebar": "tutorialSidebar",
+  "previous": {
+    "title": "Preface",
+    "permalink": "/physical-ai-textbook/docs/00-preface"
+  },
+  "next": {
+    "title": "Chapter 2: ROS 2 Fundamentals",
+    "permalink": "/physical-ai-textbook/docs/02-ros2-fundamentals"
+  }
+}

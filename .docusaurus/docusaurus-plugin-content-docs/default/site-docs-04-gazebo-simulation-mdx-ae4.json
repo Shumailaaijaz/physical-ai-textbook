@@ -1,0 +1,42 @@
+{
+  "id": "04-gazebo-simulation",
+  "title": "Chapter 4: Gazebo Simulation",
+  "description": "\"Simulation is where robots learn to fall a million times so they never fall once in reality.\"",
+  "source": "@site/docs/04-gazebo-simulation.mdx",
+  "sourceDirName": ".",
+  "slug": "/04-gazebo-simulation",
+  "permalink": "/physical-ai-textbook/docs/04-gazebo-simulation",
+  "draft": false,
+  "unlisted": false,
+  "editUrl": "https://github.com/Shumailaaijaz/physical-ai-textbook/tree/main/docs/04-gazebo-simulation.mdx",
+  "tags": [],
+  "version": "current",
+  "sidebarPosition": 4,
+  "frontMatter": {
+    "id": "04-gazebo-simulation",
+    "title": "Chapter 4: Gazebo Simulation",
+    "sidebar_position": 4,
+    "part": 2,
+    "week": 6,
+    "difficulty_levels": [
+      "intermediate"
+    ],
+    "hardware_tracks": [
+      "simulation_only",
+      "budget_hardware",
+      "research_grade"
+    ],
+    "citation_count": 10,
+    "word_count": 7500,
+    "urdu_completeness": 0
+  },
+  "sidebar": "tutorialSidebar",
+  "previous": {
+    "title": "Chapter 3: URDF & Robot Modeling",
+    "permalink": "/physical-ai-textbook/docs/03-urdf-robot-modeling"
+  },
+  "next": {
+    "title": "Chapter 5: Unity Robotics Hub",
+    "permalink": "/physical-ai-textbook/docs/05-unity-robotics-hub"
+  }
+}

@@ -1,0 +1,30 @@
+{
+  "id": "example-diagrams",
+  "title": "Example Mermaid Diagrams",
+  "description": "This page demonstrates the various diagram types available in the textbook using Mermaid.js.",
+  "source": "@site/docs/example-diagrams.mdx",
+  "sourceDirName": ".",
+  "slug": "/example-diagrams",
+  "permalink": "/physical-ai-textbook/docs/example-diagrams",
+  "draft": false,
+  "unlisted": false,
+  "editUrl": "https://github.com/Shumailaaijaz/physical-ai-textbook/tree/main/docs/example-diagrams.mdx",
+  "tags": [],
+  "version": "current",
+  "sidebarPosition": 100,
+  "frontMatter": {
+    "id": "example-diagrams",
+    "title": "Example Mermaid Diagrams",
+    "sidebar_label": "Example Diagrams",
+    "sidebar_position": 100
+  },
+  "sidebar": "tutorialSidebar",
+  "previous": {
+    "title": "Chapter 13: Ethics & Future of Physical AI",
+    "permalink": "/physical-ai-textbook/docs/13-ethics-future-physical-ai"
+  },
+  "next": {
+    "title": "Chapter Outlines: Physical AI & Humanoid Robotics Textbook",
+    "permalink": "/physical-ai-textbook/docs/CHAPTER_OUTLINES"
+  }
+}

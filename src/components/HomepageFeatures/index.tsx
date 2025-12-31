@@ -1,5 +1,6 @@
 import type {ReactNode} from 'react';
 import clsx from 'clsx';
+import Link from '@docusaurus/Link';
 import Heading from '@theme/Heading';
 import styles from './styles.module.css';
 
@@ -10,6 +11,7 @@ type ModuleItem = {
   description: string;
   learningOutcomes: string[];
   icon: string;
+  link: string;
 };
 
 const ModuleList: ModuleItem[] = [
@@ -24,7 +26,8 @@ const ModuleList: ModuleItem[] = [
       'Define robot structure using URDF and visualize in RViz2',
       'Launch multi-node systems and debug distributed applications'
     ],
-    icon: '🤖'
+    icon: '🤖',
+    link: '/docs/02-ros2-fundamentals'
   },
   {
     id: 'module-2-digital-twin',
@@ -37,7 +40,8 @@ const ModuleList: ModuleItem[] = [
       'Test navigation and perception algorithms in simulation',
       'Bridge simulated and real robot workflows'
     ],
-    icon: '🎮'
+    icon: '🎮',
+    link: '/docs/04-gazebo-simulation'
   },
   {
     id: 'module-3-isaac',
@@ -50,7 +54,8 @@ const ModuleList: ModuleItem[] = [
       'Deploy Nav2 navigation stack for autonomous navigation',
       'Train reinforcement learning policies in Isaac Gym'
     ],
-    icon: '🚀'
+    icon: '🚀',
+    link: '/docs/06-isaac-sim-basics'
   },
   {
     id: 'module-4-vla-humanoids',
@@ -63,32 +68,35 @@ const ModuleList: ModuleItem[] = [
       'Integrate conversational AI with robot action planning',
       'Deploy end-to-end VLA systems for voice-driven robotics'
     ],
-    icon: '🦾'
+    icon: '🦾',
+    link: '/docs/08-legged-locomotion'
   }
 ];
 
-function Module({id, title, weekRange, description, learningOutcomes, icon}: ModuleItem) {
+function Module({id, title, weekRange, description, learningOutcomes, icon, link}: ModuleItem) {
   return (
     <div className={clsx('col col--3')}>
-      <div className={clsx(styles.moduleCard, styles[id])}>
-        <div className={styles.moduleHeader}>
-          <div className={styles.moduleIcon}>{icon}</div>
-          <div className={styles.weekRange}>{weekRange}</div>
-        </div>
-        <Heading as="h3" className={styles.moduleTitle}>{title}</Heading>
-        <p className={styles.moduleDescription}>{description}</p>
-        <div className={styles.learningOutcomes}>
-          <div className={styles.outcomesHeader}>
-            <span className={styles.outcomesIcon}>✓</span>
-            <strong>What You'll Master</strong>
+      <Link to={link} className={styles.moduleLink}>
+        <div className={clsx(styles.moduleCard, styles[id])}>
+          <div className={styles.moduleHeader}>
+            <div className={styles.moduleIcon}>{icon}</div>
+            <div className={styles.weekRange}>{weekRange}</div>
           </div>
-          <ul>
-            {learningOutcomes.map((outcome, idx) => (
-              <li key={idx}>{outcome}</li>
-            ))}
-          </ul>
+          <Heading as="h3" className={styles.moduleTitle}>{title}</Heading>
+          <p className={styles.moduleDescription}>{description}</p>
+          <div className={styles.learningOutcomes}>
+            <div className={styles.outcomesHeader}>
+              <span className={styles.outcomesIcon}>✓</span>
+              <strong>What You'll Master</strong>
+            </div>
+            <ul>
+              {learningOutcomes.map((outcome, idx) => (
+                <li key={idx}>{outcome}</li>
+              ))}
+            </ul>
+          </div>
         </div>
-      </div>
+      </Link>
     </div>
   );
 }

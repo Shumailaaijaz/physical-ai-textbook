@@ -1,0 +1,43 @@
+{
+  "id": "02-ros2-fundamentals",
+  "title": "Chapter 2: ROS 2 Fundamentals",
+  "description": "\"ROS 2 is the nervous system of modern robots—connecting sensors, actuators, and AI into a unified organism.\"",
+  "source": "@site/docs/02-ros2-fundamentals.mdx",
+  "sourceDirName": ".",
+  "slug": "/02-ros2-fundamentals",
+  "permalink": "/physical-ai-textbook/docs/02-ros2-fundamentals",
+  "draft": false,
+  "unlisted": false,
+  "editUrl": "https://github.com/Shumailaaijaz/physical-ai-textbook/tree/main/docs/02-ros2-fundamentals.mdx",
+  "tags": [],
+  "version": "current",
+  "sidebarPosition": 2,
+  "frontMatter": {
+    "id": "02-ros2-fundamentals",
+    "title": "Chapter 2: ROS 2 Fundamentals",
+    "sidebar_position": 2,
+    "part": 2,
+    "week": 3,
+    "difficulty_levels": [
+      "beginner",
+      "intermediate"
+    ],
+    "hardware_tracks": [
+      "simulation_only",
+      "budget_hardware",
+      "research_grade"
+    ],
+    "citation_count": 15,
+    "word_count": 8000,
+    "urdu_completeness": 0
+  },
+  "sidebar": "tutorialSidebar",
+  "previous": {
+    "title": "Chapter 1: Introduction to Physical AI",
+    "permalink": "/physical-ai-textbook/docs/01-introduction-to-physical-ai"
+  },
+  "next": {
+    "title": "Chapter 3: URDF & Robot Modeling",
+    "permalink": "/physical-ai-textbook/docs/03-urdf-robot-modeling"
+  }
+}

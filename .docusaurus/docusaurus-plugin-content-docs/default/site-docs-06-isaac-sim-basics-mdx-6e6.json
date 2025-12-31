@@ -1,0 +1,41 @@
+{
+  "id": "06-isaac-sim-basics",
+  "title": "Chapter 6: NVIDIA Isaac Sim Basics",
+  "description": "\"Isaac Sim is where photorealism meets physics—training robots in worlds indistinguishable from reality.\"",
+  "source": "@site/docs/06-isaac-sim-basics.mdx",
+  "sourceDirName": ".",
+  "slug": "/06-isaac-sim-basics",
+  "permalink": "/physical-ai-textbook/docs/06-isaac-sim-basics",
+  "draft": false,
+  "unlisted": false,
+  "editUrl": "https://github.com/Shumailaaijaz/physical-ai-textbook/tree/main/docs/06-isaac-sim-basics.mdx",
+  "tags": [],
+  "version": "current",
+  "sidebarPosition": 6,
+  "frontMatter": {
+    "id": "06-isaac-sim-basics",
+    "title": "Chapter 6: NVIDIA Isaac Sim Basics",
+    "sidebar_position": 6,
+    "part": 3,
+    "week": 8,
+    "difficulty_levels": [
+      "advanced"
+    ],
+    "hardware_tracks": [
+      "budget_hardware",
+      "research_grade"
+    ],
+    "citation_count": 12,
+    "word_count": 8000,
+    "urdu_completeness": 0
+  },
+  "sidebar": "tutorialSidebar",
+  "previous": {
+    "title": "Chapter 5: Unity Robotics Hub",
+    "permalink": "/physical-ai-textbook/docs/05-unity-robotics-hub"
+  },
+  "next": {
+    "title": "Chapter 7: Isaac ROS Integration",
+    "permalink": "/physical-ai-textbook/docs/07-isaac-ros-integration"
+  }
+}

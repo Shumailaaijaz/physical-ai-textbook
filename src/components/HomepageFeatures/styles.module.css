@@ -9,6 +9,29 @@
   margin-bottom: 3rem;
 }
 
+.moduleLink {
+  text-decoration: none;
+  color: inherit;
+  display: block;
+  height: 100%;
+  cursor: pointer;
+  position: relative;
+  z-index: 1;
+}
+
+.moduleLink:hover {
+  text-decoration: none;
+  color: inherit;
+}
+
+.moduleLink * {
+  pointer-events: none;
+}
+
+.moduleLink {
+  pointer-events: auto;
+}
+
 .sectionHeader h2 {
   font-size: 2.5rem;
   margin-bottom: 1rem;

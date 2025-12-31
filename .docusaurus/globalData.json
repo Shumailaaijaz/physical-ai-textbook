@@ -1,0 +1,108 @@
+{
+  "docusaurus-plugin-content-docs": {
+    "default": {
+      "path": "/physical-ai-textbook/docs",
+      "versions": [
+        {
+          "name": "current",
+          "label": "Next",
+          "isLast": true,
+          "path": "/physical-ai-textbook/docs",
+          "mainDocId": "00-preface",
+          "docs": [
+            {
+              "id": "00-preface",
+              "path": "/physical-ai-textbook/docs/00-preface",
+              "sidebar": "tutorialSidebar"
+            },
+            {
+              "id": "01-introduction-to-physical-ai",
+              "path": "/physical-ai-textbook/docs/01-introduction-to-physical-ai",
+              "sidebar": "tutorialSidebar"
+            },
+            {
+              "id": "02-ros2-fundamentals",
+              "path": "/physical-ai-textbook/docs/02-ros2-fundamentals",
+              "sidebar": "tutorialSidebar"
+            },
+            {
+              "id": "03-urdf-robot-modeling",
+              "path": "/physical-ai-textbook/docs/03-urdf-robot-modeling",
+              "sidebar": "tutorialSidebar"
+            },
+            {
+              "id": "04-gazebo-simulation",
+              "path": "/physical-ai-textbook/docs/04-gazebo-simulation",
+              "sidebar": "tutorialSidebar"
+            },
+            {
+              "id": "05-unity-robotics-hub",
+              "path": "/physical-ai-textbook/docs/05-unity-robotics-hub",
+              "sidebar": "tutorialSidebar"
+            },
+            {
+              "id": "06-isaac-sim-basics",
+              "path": "/physical-ai-textbook/docs/06-isaac-sim-basics",
+              "sidebar": "tutorialSidebar"
+            },
+            {
+              "id": "07-isaac-ros-integration",
+              "path": "/physical-ai-textbook/docs/07-isaac-ros-integration",
+              "sidebar": "tutorialSidebar"
+            },
+            {
+              "id": "08-legged-locomotion",
+              "path": "/physical-ai-textbook/docs/08-legged-locomotion",
+              "sidebar": "tutorialSidebar"
+            },
+            {
+              "id": "09-manipulation-grasping",
+              "path": "/physical-ai-textbook/docs/09-manipulation-grasping",
+              "sidebar": "tutorialSidebar"
+            },
+            {
+              "id": "10-vision-language-action",
+              "path": "/physical-ai-textbook/docs/10-vision-language-action",
+              "sidebar": "tutorialSidebar"
+            },
+            {
+              "id": "11-capstone-project",
+              "path": "/physical-ai-textbook/docs/11-capstone-project",
+              "sidebar": "tutorialSidebar"
+            },
+            {
+              "id": "12-hardware-guide",
+              "path": "/physical-ai-textbook/docs/12-hardware-guide",
+              "sidebar": "tutorialSidebar"
+            },
+            {
+              "id": "13-ethics-future-physical-ai",
+              "path": "/physical-ai-textbook/docs/13-ethics-future-physical-ai",
+              "sidebar": "tutorialSidebar"
+            },
+            {
+              "id": "CHAPTER_OUTLINES",
+              "path": "/physical-ai-textbook/docs/CHAPTER_OUTLINES",
+              "sidebar": "tutorialSidebar"
+            },
+            {
+              "id": "example-diagrams",
+              "path": "/physical-ai-textbook/docs/example-diagrams",
+              "sidebar": "tutorialSidebar"
+            }
+          ],
+          "draftIds": [],
+          "sidebars": {
+            "tutorialSidebar": {
+              "link": {
+                "path": "/physical-ai-textbook/docs/00-preface",
+                "label": "00-preface"
+              }
+            }
+          }
+        }
+      ],
+      "breadcrumbs": true
+    }
+  }
+}

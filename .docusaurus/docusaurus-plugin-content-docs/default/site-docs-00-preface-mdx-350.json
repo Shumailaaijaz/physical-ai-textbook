@@ -1,0 +1,40 @@
+{
+  "id": "00-preface",
+  "title": "Preface",
+  "description": "\"The future of AI extends beyond digital spaces into the physical world.\"",
+  "source": "@site/docs/00-preface.mdx",
+  "sourceDirName": ".",
+  "slug": "/00-preface",
+  "permalink": "/physical-ai-textbook/docs/00-preface",
+  "draft": false,
+  "unlisted": false,
+  "editUrl": "https://github.com/Shumailaaijaz/physical-ai-textbook/tree/main/docs/00-preface.mdx",
+  "tags": [],
+  "version": "current",
+  "sidebarPosition": 0,
+  "frontMatter": {
+    "id": "00-preface",
+    "title": "Preface",
+    "sidebar_position": 0,
+    "part": 0,
+    "week": 1,
+    "difficulty_levels": [
+      "beginner",
+      "intermediate",
+      "advanced"
+    ],
+    "hardware_tracks": [
+      "simulation_only",
+      "budget_hardware",
+      "research_grade"
+    ],
+    "citation_count": 12,
+    "word_count": 3200,
+    "urdu_completeness": 0
+  },
+  "sidebar": "tutorialSidebar",
+  "next": {
+    "title": "Chapter 1: Introduction to Physical AI",
+    "permalink": "/physical-ai-textbook/docs/01-introduction-to-physical-ai"
+  }
+}

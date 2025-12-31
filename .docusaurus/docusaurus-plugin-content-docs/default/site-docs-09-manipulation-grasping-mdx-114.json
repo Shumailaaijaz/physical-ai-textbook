@@ -1,0 +1,41 @@
+{
+  "id": "09-manipulation-grasping",
+  "title": "Chapter 9: Manipulation & Grasping",
+  "description": "\"The hand is the visible part of the brain.\" — Immanuel Kant",
+  "source": "@site/docs/09-manipulation-grasping.mdx",
+  "sourceDirName": ".",
+  "slug": "/09-manipulation-grasping",
+  "permalink": "/physical-ai-textbook/docs/09-manipulation-grasping",
+  "draft": false,
+  "unlisted": false,
+  "editUrl": "https://github.com/Shumailaaijaz/physical-ai-textbook/tree/main/docs/09-manipulation-grasping.mdx",
+  "tags": [],
+  "version": "current",
+  "sidebarPosition": 9,
+  "frontMatter": {
+    "id": "09-manipulation-grasping",
+    "title": "Chapter 9: Manipulation & Grasping",
+    "sidebar_position": 9,
+    "part": 4,
+    "week": 12,
+    "difficulty_levels": [
+      "advanced"
+    ],
+    "hardware_tracks": [
+      "simulation_only",
+      "research_grade"
+    ],
+    "citation_count": 12,
+    "word_count": 6800,
+    "urdu_completeness": 0
+  },
+  "sidebar": "tutorialSidebar",
+  "previous": {
+    "title": "Chapter 8: Legged Locomotion",
+    "permalink": "/physical-ai-textbook/docs/08-legged-locomotion"
+  },
+  "next": {
+    "title": "Chapter 10: Vision-Language-Action (VLA) Models",
+    "permalink": "/physical-ai-textbook/docs/10-vision-language-action"
+  }
+}
