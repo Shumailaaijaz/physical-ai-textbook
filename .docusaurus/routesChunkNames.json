@@ -1,364 +1,321 @@
 {
-  "/physical-ai-textbook/__docusaurus/debug-1b0": {
-    "__comp": "__comp---theme-debug-config-23-a-2ff",
-    "__context": {
-      "plugin": "plugin---physical-ai-textbook-docusaurus-debugb-38-bdb"
-    }
-  },
-  "/physical-ai-textbook/__docusaurus/debug/config-4ef": {
-    "__comp": "__comp---theme-debug-config-23-a-2ff",
-    "__context": {
-      "plugin": "plugin---physical-ai-textbook-docusaurus-debugb-38-bdb"
-    }
-  },
-  "/physical-ai-textbook/__docusaurus/debug/content-02c": {
-    "__comp": "__comp---theme-debug-contentba-8-ce7",
-    "__context": {
-      "plugin": "plugin---physical-ai-textbook-docusaurus-debugb-38-bdb"
-    },
-    "__props": "__props---physical-ai-textbook-docusaurus-debug-contentbe-4-6d3"
-  },
-  "/physical-ai-textbook/__docusaurus/debug/globalData-58f": {
-    "__comp": "__comp---theme-debug-global-dataede-0fa",
-    "__context": {
-      "plugin": "plugin---physical-ai-textbook-docusaurus-debugb-38-bdb"
-    }
-  },
-  "/physical-ai-textbook/__docusaurus/debug/metadata-647": {
-    "__comp": "__comp---theme-debug-site-metadata-68-e-3d4",
-    "__context": {
-      "plugin": "plugin---physical-ai-textbook-docusaurus-debugb-38-bdb"
-    }
-  },
-  "/physical-ai-textbook/__docusaurus/debug/registry-125": {
-    "__comp": "__comp---theme-debug-registry-679-501",
-    "__context": {
-      "plugin": "plugin---physical-ai-textbook-docusaurus-debugb-38-bdb"
-    }
-  },
-  "/physical-ai-textbook/__docusaurus/debug/routes-aa1": {
-    "__comp": "__comp---theme-debug-routes-946-699",
-    "__context": {
-      "plugin": "plugin---physical-ai-textbook-docusaurus-debugb-38-bdb"
-    }
-  },
   "/physical-ai-textbook/blog-a89": {
-    "__comp": "__comp---theme-blog-list-pagea-6-a-7ba",
+    "__comp": "a6aa9e1f",
     "__context": {
-      "plugin": "plugin---physical-ai-textbook-blog-369-026"
+      "plugin": "36994c47"
     },
-    "sidebar": "sidebar---physical-ai-textbook-blog-814-e9b",
+    "sidebar": "814f3328",
     "items": [
       {
-        "content": "content---physical-ai-textbook-blog-766-165"
+        "content": "7661071f"
       },
       {
-        "content": "content---physical-ai-textbook-blogf-4-f-efc"
+        "content": "f4f34a3a"
       },
       {
-        "content": "content---physical-ai-textbook-blog-871-61f"
+        "content": "8717b14a"
       },
       {
-        "content": "content---physical-ai-textbook-blog-925-331"
+        "content": "925b3f96"
       }
     ],
-    "__props": "__props---physical-ai-textbook-blog-132-c0f"
+    "__props": "132c6fa5"
   },
   "/physical-ai-textbook/blog/archive-23c": {
-    "__comp": "__comp---theme-blog-archive-page-9-e-4-1d8",
+    "__comp": "9e4087bc",
     "__context": {
-      "plugin": "plugin---physical-ai-textbook-blog-369-026"
+      "plugin": "36994c47"
     },
-    "__props": "__props---physical-ai-textbook-blog-archivee-4-c-e4a"
+    "__props": "e4c74de6"
   },
   "/physical-ai-textbook/blog/authors-db7": {
-    "__comp": "__comp---theme-blog-pages-blog-authors-list-page-621-70c",
+    "__comp": "621db11d",
     "__context": {
       "data": {
-        "blogMetadata": "blogMetadata---physical-ai-textbook-blog-authorsace-ba4"
+        "blogMetadata": "acecf23e"
       },
-      "plugin": "plugin---physical-ai-textbook-blog-369-026"
+      "plugin": "36994c47"
     },
-    "sidebar": "sidebar---physical-ai-textbook-blog-814-e9b",
-    "__props": "__props---physical-ai-textbook-blog-authors-4-b-8-dc1"
+    "sidebar": "814f3328",
+    "__props": "4b8dade1"
   },
   "/physical-ai-textbook/blog/authors/all-sebastien-lorber-articles-abc": {
-    "__comp": "__comp---theme-blog-pages-blog-authors-posts-page-33-f-bd5",
+    "__comp": "33fc5bb8",
     "__context": {
       "data": {
-        "blogMetadata": "blogMetadata---physical-ai-textbook-blog-authorsace-ba4"
+        "blogMetadata": "acecf23e"
       },
-      "plugin": "plugin---physical-ai-textbook-blog-369-026"
+      "plugin": "36994c47"
     },
     "items": [
       {
-        "content": "content---physical-ai-textbook-blog-766-165"
+        "content": "7661071f"
       },
       {
-        "content": "content---physical-ai-textbook-blogf-4-f-efc"
+        "content": "f4f34a3a"
       },
       {
-        "content": "content---physical-ai-textbook-blog-925-331"
+        "content": "925b3f96"
       }
     ],
-    "sidebar": "sidebar---physical-ai-textbook-blog-814-e9b",
-    "__props": "__props---physical-ai-textbook-blog-authors-all-sebastien-lorber-articles-8-c-9-056"
+    "sidebar": "814f3328",
+    "__props": "8c9e77dd"
   },
   "/physical-ai-textbook/blog/authors/yangshun-c53": {
-    "__comp": "__comp---theme-blog-pages-blog-authors-posts-page-33-f-bd5",
+    "__comp": "33fc5bb8",
     "__context": {
       "data": {
-        "blogMetadata": "blogMetadata---physical-ai-textbook-blog-authorsace-ba4"
+        "blogMetadata": "acecf23e"
       },
-      "plugin": "plugin---physical-ai-textbook-blog-369-026"
+      "plugin": "36994c47"
     },
     "items": [
       {
-        "content": "content---physical-ai-textbook-blog-766-165"
+        "content": "7661071f"
       },
       {
-        "content": "content---physical-ai-textbook-blog-871-61f"
+        "content": "8717b14a"
       },
       {
-        "content": "content---physical-ai-textbook-blog-925-331"
+        "content": "925b3f96"
       }
     ],
-    "sidebar": "sidebar---physical-ai-textbook-blog-814-e9b",
-    "__props": "__props---physical-ai-textbook-blog-authors-yangshun-794-b3d"
+    "sidebar": "814f3328",
+    "__props": "7944a078"
   },
   "/physical-ai-textbook/blog/first-blog-post-1c9": {
-    "__comp": "__comp---theme-blog-post-pageccc-cab",
+    "__comp": "ccc49370",
     "__context": {
       "data": {
-        "blogMetadata": "blogMetadata---physical-ai-textbook-blog-authorsace-ba4"
+        "blogMetadata": "acecf23e"
       },
-      "plugin": "plugin---physical-ai-textbook-blog-369-026"
+      "plugin": "36994c47"
     },
-    "sidebar": "sidebar---physical-ai-textbook-blog-814-e9b",
-    "content": "content---physical-ai-textbook-blog-first-blog-poste-27-332"
+    "sidebar": "814f3328",
+    "content": "e273c56f"
   },
   "/physical-ai-textbook/blog/long-blog-post-309": {
-    "__comp": "__comp---theme-blog-post-pageccc-cab",
+    "__comp": "ccc49370",
     "__context": {
       "data": {
-        "blogMetadata": "blogMetadata---physical-ai-textbook-blog-authorsace-ba4"
+        "blogMetadata": "acecf23e"
       },
-      "plugin": "plugin---physical-ai-textbook-blog-369-026"
+      "plugin": "36994c47"
     },
-    "sidebar": "sidebar---physical-ai-textbook-blog-814-e9b",
-    "content": "content---physical-ai-textbook-blog-long-blog-post-736-ef1"
+    "sidebar": "814f3328",
+    "content": "73664a40"
   },
   "/physical-ai-textbook/blog/mdx-blog-post-da9": {
-    "__comp": "__comp---theme-blog-post-pageccc-cab",
+    "__comp": "ccc49370",
     "__context": {
       "data": {
-        "blogMetadata": "blogMetadata---physical-ai-textbook-blog-authorsace-ba4"
+        "blogMetadata": "acecf23e"
       },
-      "plugin": "plugin---physical-ai-textbook-blog-369-026"
+      "plugin": "36994c47"
     },
-    "sidebar": "sidebar---physical-ai-textbook-blog-814-e9b",
-    "content": "content---physical-ai-textbook-blog-mdx-blog-post-593-4f8"
+    "sidebar": "814f3328",
+    "content": "59362658"
   },
   "/physical-ai-textbook/blog/tags-87b": {
-    "__comp": "__comp---theme-blog-tags-list-page-01-a-d0b",
+    "__comp": "01a85c17",
     "__context": {
-      "plugin": "plugin---physical-ai-textbook-blog-369-026"
+      "plugin": "36994c47"
     },
-    "sidebar": "sidebar---physical-ai-textbook-blog-814-e9b",
-    "__props": "__props---physical-ai-textbook-blog-tags-2-ba-9d2"
+    "sidebar": "814f3328",
+    "__props": "2ba6b1f5"
   },
   "/physical-ai-textbook/blog/tags/docusaurus-735": {
-    "__comp": "__comp---theme-blog-tags-posts-page-687-b6c",
+    "__comp": "6875c492",
     "__context": {
-      "plugin": "plugin---physical-ai-textbook-blog-369-026"
+      "plugin": "36994c47"
     },
-    "sidebar": "sidebar---physical-ai-textbook-blog-814-e9b",
+    "sidebar": "814f3328",
     "items": [
       {
-        "content": "content---physical-ai-textbook-blog-766-165"
+        "content": "7661071f"
       },
       {
-        "content": "content---physical-ai-textbook-blogf-4-f-efc"
+        "content": "f4f34a3a"
       },
       {
-        "content": "content---physical-ai-textbook-blog-871-61f"
+        "content": "8717b14a"
       },
       {
-        "content": "content---physical-ai-textbook-blog-925-331"
+        "content": "925b3f96"
       }
     ],
-    "__props": "__props---physical-ai-textbook-blog-tags-docusaurusef-6-62d"
+    "__props": "ef6c6525"
   },
   "/physical-ai-textbook/blog/tags/facebook-736": {
-    "__comp": "__comp---theme-blog-tags-posts-page-687-b6c",
+    "__comp": "6875c492",
     "__context": {
-      "plugin": "plugin---physical-ai-textbook-blog-369-026"
+      "plugin": "36994c47"
     },
-    "sidebar": "sidebar---physical-ai-textbook-blog-814-e9b",
+    "sidebar": "814f3328",
     "items": [
       {
-        "content": "content---physical-ai-textbook-blog-766-165"
+        "content": "7661071f"
       }
     ],
-    "__props": "__props---physical-ai-textbook-blog-tags-facebooka-26-bd7"
+    "__props": "a26f1958"
   },
   "/physical-ai-textbook/blog/tags/hello-137": {
-    "__comp": "__comp---theme-blog-tags-posts-page-687-b6c",
+    "__comp": "6875c492",
     "__context": {
-      "plugin": "plugin---physical-ai-textbook-blog-369-026"
+      "plugin": "36994c47"
     },
-    "sidebar": "sidebar---physical-ai-textbook-blog-814-e9b",
+    "sidebar": "814f3328",
     "items": [
       {
-        "content": "content---physical-ai-textbook-blog-766-165"
+        "content": "7661071f"
       },
       {
-        "content": "content---physical-ai-textbook-blog-871-61f"
+        "content": "8717b14a"
       }
     ],
-    "__props": "__props---physical-ai-textbook-blog-tags-hello-7-bb-ca5"
+    "__props": "7bbd8cef"
   },
   "/physical-ai-textbook/blog/tags/hola-da4": {
-    "__comp": "__comp---theme-blog-tags-posts-page-687-b6c",
+    "__comp": "6875c492",
     "__context": {
-      "plugin": "plugin---physical-ai-textbook-blog-369-026"
+      "plugin": "36994c47"
     },
-    "sidebar": "sidebar---physical-ai-textbook-blog-814-e9b",
+    "sidebar": "814f3328",
     "items": [
       {
-        "content": "content---physical-ai-textbook-blog-925-331"
+        "content": "925b3f96"
       }
     ],
-    "__props": "__props---physical-ai-textbook-blog-tags-hola-77-b-9ed"
+    "__props": "77bcc632"
   },
   "/physical-ai-textbook/blog/welcome-983": {
-    "__comp": "__comp---theme-blog-post-pageccc-cab",
+    "__comp": "ccc49370",
     "__context": {
       "data": {
-        "blogMetadata": "blogMetadata---physical-ai-textbook-blog-authorsace-ba4"
+        "blogMetadata": "acecf23e"
       },
-      "plugin": "plugin---physical-ai-textbook-blog-369-026"
+      "plugin": "36994c47"
     },
-    "sidebar": "sidebar---physical-ai-textbook-blog-814-e9b",
-    "content": "content---physical-ai-textbook-blog-welcomed-9-f-b7a"
+    "sidebar": "814f3328",
+    "content": "d9f32620"
   },
   "/physical-ai-textbook/chatbot-736": {
-    "__comp": "__comp---site-src-pages-chatbot-jsb-34-5a2",
+    "__comp": "b34d6635",
     "__context": {
-      "plugin": "plugin---physical-ai-textbook-chatbota-74-a21"
+      "plugin": "a7456010"
     },
-    "config": "config---physical-ai-textbook-chatbot-5-e-9-b47"
+    "config": "5e9f5e1a"
   },
   "/physical-ai-textbook/login-c2e": {
-    "__comp": "__comp---site-src-pages-login-tsx-34-b-c7d",
+    "__comp": "34b338d8",
     "__context": {
-      "plugin": "plugin---physical-ai-textbook-chatbota-74-a21"
+      "plugin": "a7456010"
     },
-    "config": "config---physical-ai-textbook-chatbot-5-e-9-b47"
+    "config": "5e9f5e1a"
   },
   "/physical-ai-textbook/markdown-page-0c3": {
-    "__comp": "__comp---theme-mdx-page-1-f-3-b90",
+    "__comp": "1f391b9e",
     "__context": {
-      "plugin": "plugin---physical-ai-textbook-chatbota-74-a21"
+      "plugin": "a7456010"
     },
-    "content": "content---physical-ai-textbook-markdown-page-393-670"
+    "content": "393be207"
   },
   "/physical-ai-textbook/profile-206": {
-    "__comp": "__comp---site-src-pages-profile-tsxe-6-e-75e",
+    "__comp": "e6e2357d",
     "__context": {
-      "plugin": "plugin---physical-ai-textbook-chatbota-74-a21"
+      "plugin": "a7456010"
     },
-    "config": "config---physical-ai-textbook-chatbot-5-e-9-b47"
+    "config": "5e9f5e1a"
   },
   "/physical-ai-textbook/signup-1fd": {
-    "__comp": "__comp---site-src-pages-signup-tsx-8-d-9-369",
+    "__comp": "8d9bf57a",
     "__context": {
-      "plugin": "plugin---physical-ai-textbook-chatbota-74-a21"
+      "plugin": "a7456010"
     },
-    "config": "config---physical-ai-textbook-chatbot-5-e-9-b47"
+    "config": "5e9f5e1a"
   },
   "/physical-ai-textbook/docs-44f": {
-    "__comp": "__comp---theme-docs-root-5-e-9-0b6",
+    "__comp": "5e95c892",
     "__context": {
-      "plugin": "plugin---physical-ai-textbook-docsaba-346"
+      "plugin": "aba21aa0"
     }
   },
   "/physical-ai-textbook/docs-e21": {
-    "__comp": "__comp---theme-doc-version-roota-7-b-5de",
-    "__props": "__props---physical-ai-textbook-docs-802-02c"
+    "__comp": "a7bd4aaa",
+    "__props": "802d872b"
   },
   "/physical-ai-textbook/docs-36c": {
-    "__comp": "__comp---theme-doc-roota-94-67a"
+    "__comp": "a94703ab"
   },
   "/physical-ai-textbook/docs/00-preface-911": {
-    "__comp": "__comp---theme-doc-item-178-a40",
-    "content": "content---physical-ai-textbook-docs-00-preface-350-44c"
+    "__comp": "17896441",
+    "content": "3501589d"
   },
   "/physical-ai-textbook/docs/01-introduction-to-physical-ai-370": {
-    "__comp": "__comp---theme-doc-item-178-a40",
-    "content": "content---physical-ai-textbook-docs-01-introduction-to-physical-ai-236-015"
+    "__comp": "17896441",
+    "content": "2366b669"
   },
   "/physical-ai-textbook/docs/02-ros2-fundamentals-c80": {
-    "__comp": "__comp---theme-doc-item-178-a40",
-    "content": "content---physical-ai-textbook-docs-02-ros-2-fundamentalsc-01-447"
+    "__comp": "17896441",
+    "content": "c01ca406"
   },
   "/physical-ai-textbook/docs/03-urdf-robot-modeling-c98": {
-    "__comp": "__comp---theme-doc-item-178-a40",
-    "content": "content---physical-ai-textbook-docs-03-urdf-robot-modeling-2-bc-f1d"
+    "__comp": "17896441",
+    "content": "2bc834b7"
   },
   "/physical-ai-textbook/docs/04-gazebo-simulation-bf3": {
-    "__comp": "__comp---theme-doc-item-178-a40",
-    "content": "content---physical-ai-textbook-docs-04-gazebo-simulationae-4-944"
+    "__comp": "17896441",
+    "content": "ae43668f"
   },
   "/physical-ai-textbook/docs/05-unity-robotics-hub-0d5": {
-    "__comp": "__comp---theme-doc-item-178-a40",
-    "content": "content---physical-ai-textbook-docs-05-unity-robotics-hub-616-b05"
+    "__comp": "17896441",
+    "content": "616403df"
   },
   "/physical-ai-textbook/docs/06-isaac-sim-basics-8b0": {
-    "__comp": "__comp---theme-doc-item-178-a40",
-    "content": "content---physical-ai-textbook-docs-06-isaac-sim-basics-6-e-6-bd1"
+    "__comp": "17896441",
+    "content": "6e6196a5"
   },
   "/physical-ai-textbook/docs/07-isaac-ros-integration-592": {
-    "__comp": "__comp---theme-doc-item-178-a40",
-    "content": "content---physical-ai-textbook-docs-07-isaac-ros-integration-3-d-9-b03"
+    "__comp": "17896441",
+    "content": "3d991c6b"
   },
   "/physical-ai-textbook/docs/08-legged-locomotion-9ef": {
-    "__comp": "__comp---theme-doc-item-178-a40",
-    "content": "content---physical-ai-textbook-docs-08-legged-locomotiondf-9-945"
+    "__comp": "17896441",
+    "content": "df9785ee"
   },
   "/physical-ai-textbook/docs/09-manipulation-grasping-4ac": {
-    "__comp": "__comp---theme-doc-item-178-a40",
-    "content": "content---physical-ai-textbook-docs-09-manipulation-grasping-114-f5e"
+    "__comp": "17896441",
+    "content": "114df457"
   },
   "/physical-ai-textbook/docs/10-vision-language-action-287": {
-    "__comp": "__comp---theme-doc-item-178-a40",
-    "content": "content---physical-ai-textbook-docs-10-vision-language-action-9-ce-416"
+    "__comp": "17896441",
+    "content": "9cea7a05"
   },
   "/physical-ai-textbook/docs/11-capstone-project-213": {
-    "__comp": "__comp---theme-doc-item-178-a40",
-    "content": "content---physical-ai-textbook-docs-11-capstone-project-400-108"
+    "__comp": "17896441",
+    "content": "400d28c9"
   },
   "/physical-ai-textbook/docs/12-hardware-guide-897": {
-    "__comp": "__comp---theme-doc-item-178-a40",
-    "content": "content---physical-ai-textbook-docs-12-hardware-guided-4-d-479"
+    "__comp": "17896441",
+    "content": "d4d58661"
   },
   "/physical-ai-textbook/docs/13-ethics-future-physical-ai-724": {
-    "__comp": "__comp---theme-doc-item-178-a40",
-    "content": "content---physical-ai-textbook-docs-13-ethics-future-physical-aic-32-db0"
+    "__comp": "17896441",
+    "content": "c3261595"
   },
   "/physical-ai-textbook/docs/CHAPTER_OUTLINES-c15": {
-    "__comp": "__comp---theme-doc-item-178-a40",
-    "content": "content---physical-ai-textbook-docs-chapter-outlines-47-d-0cf"
+    "__comp": "17896441",
+    "content": "47d9e537"
   },
   "/physical-ai-textbook/docs/example-diagrams-dea": {
-    "__comp": "__comp---theme-doc-item-178-a40",
-    "content": "content---physical-ai-textbook-docs-example-diagrams-658-04e"
+    "__comp": "17896441",
+    "content": "6580a815"
   },
   "/physical-ai-textbook/-94f": {
-    "__comp": "__comp---site-src-pages-index-tsx-1-df-d3e",
+    "__comp": "1df93b7f",
     "__context": {
-      "plugin": "plugin---physical-ai-textbook-chatbota-74-a21"
+      "plugin": "a7456010"
     },
-    "config": "config---physical-ai-textbook-chatbot-5-e-9-b47"
+    "config": "5e9f5e1a"
   }
 }
