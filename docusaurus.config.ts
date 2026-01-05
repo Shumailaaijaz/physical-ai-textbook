@@ -117,7 +117,18 @@ const config: Config = {
           position: 'right',
         },
         {
-          type: 'custom-userMenu',
+          to: '/profile',
+          label: 'Profile',
+          position: 'right',
+        },
+        {
+          to: '/login',
+          label: 'Login',
+          position: 'right',
+        },
+        {
+          to: '/signup',
+          label: 'Sign Up',
           position: 'right',
         },
       ],
