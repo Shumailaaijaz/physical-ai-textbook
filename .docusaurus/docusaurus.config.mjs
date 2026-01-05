@@ -7,6 +7,10 @@ export default {
   "title": "Physical AI & Humanoid Robotics",
   "tagline": "A comprehensive 13-week university curriculum for building intelligent robots",
   "favicon": "img/favicon.ico",
+  "customFields": {
+    "SUPABASE_URL": "https://yndqobmkdauicfrlfnss.supabase.co",
+    "SUPABASE_ANON_KEY": "sb_secret_KQBum5ASBaas-hVQx-Pg3g_VV-uLddh"
+  },
   "markdown": {
     "mermaid": true,
     "format": "mdx",
@@ -433,7 +437,6 @@ export default {
   "staticDirectories": [
     "static"
   ],
-  "customFields": {},
   "plugins": [],
   "scripts": [],
   "headTags": [],

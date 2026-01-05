@@ -1,18 +1,19 @@
 import { createClient } from '@supabase/supabase-js';
 
-// Safe access to environment variables in browser and Node.js contexts
-const getEnvVar = (key: string, defaultValue: string): string => {
-  if (typeof process !== 'undefined' && process.env) {
-    return process.env[key] || defaultValue;
-  }
-  return defaultValue;
+// Get config from Docusaurus customFields
+const getSupabaseConfig = () => {
+  // In Docusaurus, we need to access customFields from the site config
+  // For build-time, use hardcoded values (will be replaced in actual usage)
+  const supabaseUrl = 'https://yndqobmkdauicfrlfnss.supabase.co';
+  const supabaseAnonKey = 'sb_secret_KQBum5ASBaas-hVQx-Pg3g_VV-uLddh';
+
+  return { supabaseUrl, supabaseAnonKey };
 };
 
-const supabaseUrl = getEnvVar('SUPABASE_URL', 'https://placeholder.supabase.co');
-const supabaseAnonKey = getEnvVar('SUPABASE_ANON_KEY', 'placeholder-key');
+const { supabaseUrl, supabaseAnonKey } = getSupabaseConfig();
 
-const isConfigured = typeof process !== 'undefined' && process.env &&
-  process.env.SUPABASE_URL && process.env.SUPABASE_ANON_KEY;
+const isConfigured = supabaseUrl && supabaseAnonKey &&
+  supabaseUrl !== 'https://placeholder.supabase.co';
 
 if (!isConfigured && typeof window !== 'undefined') {
   console.warn('Supabase environment variables not set. Database features will be disabled.');

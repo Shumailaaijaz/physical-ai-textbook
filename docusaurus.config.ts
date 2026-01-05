@@ -9,6 +9,12 @@ const config: Config = {
   tagline: 'A comprehensive 13-week university curriculum for building intelligent robots',
   favicon: 'img/favicon.ico',
 
+  // Custom fields for environment variables (accessible in browser)
+  customFields: {
+    SUPABASE_URL: process.env.SUPABASE_URL || 'https://yndqobmkdauicfrlfnss.supabase.co',
+    SUPABASE_ANON_KEY: process.env.SUPABASE_ANON_KEY || 'sb_secret_KQBum5ASBaas-hVQx-Pg3g_VV-uLddh',
+  },
+
   // Mermaid diagram support
   markdown: {
     mermaid: true,
