@@ -1,0 +1,213 @@
+.profileContainer {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 2rem 1rem;
+}
+
+.profileHeader {
+  display: flex;
+  align-items: center;
+  gap: 2rem;
+  padding: 2rem;
+  background: var(--ifm-color-emphasis-100);
+  border-radius: 12px;
+  margin-bottom: 2rem;
+}
+
+.avatarLarge {
+  width: 100px;
+  height: 100px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--ifm-color-primary) 0%, var(--ifm-color-primary-dark) 100%);
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 48px;
+  flex-shrink: 0;
+}
+
+.headerInfo h1 {
+  margin: 0 0 0.5rem 0;
+  font-size: 2rem;
+}
+
+.userEmail {
+  color: var(--ifm-color-emphasis-700);
+  margin: 0 0 0.25rem 0;
+}
+
+.joinedDate {
+  color: var(--ifm-color-emphasis-600);
+  font-size: 0.875rem;
+  margin: 0;
+}
+
+.section {
+  background: var(--ifm-background-color);
+  border: 1px solid var(--ifm-color-emphasis-200);
+  border-radius: 8px;
+  padding: 2rem;
+  margin-bottom: 2rem;
+}
+
+.sectionHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+}
+
+.sectionHeader h2 {
+  margin: 0;
+}
+
+.sectionDescription {
+  color: var(--ifm-color-emphasis-700);
+  margin-bottom: 2rem;
+}
+
+.settingsGrid {
+  display: grid;
+  gap: 1.5rem;
+}
+
+.settingItem label {
+  display: block;
+  font-weight: 600;
+  margin-bottom: 0.5rem;
+  color: var(--ifm-font-color-base);
+}
+
+.settingItem select {
+  width: 100%;
+  padding: 0.75rem;
+  border: 1px solid var(--ifm-color-emphasis-300);
+  border-radius: 6px;
+  background: var(--ifm-background-color);
+  color: var(--ifm-font-color-base);
+  font-size: 1rem;
+}
+
+.settingValue {
+  padding: 0.75rem 1rem;
+  background: var(--ifm-color-emphasis-100);
+  border-radius: 6px;
+  text-transform: capitalize;
+}
+
+.buttonGroup {
+  display: flex;
+  gap: 1rem;
+  margin-top: 2rem;
+  padding-top: 2rem;
+  border-top: 1px solid var(--ifm-color-emphasis-200);
+}
+
+.editButton,
+.saveButton,
+.cancelButton,
+.signOutButton {
+  padding: 0.75rem 1.5rem;
+  border-radius: 6px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  border: none;
+  font-size: 1rem;
+}
+
+.editButton {
+  background: var(--ifm-color-primary);
+  color: white;
+}
+
+.editButton:hover {
+  background: var(--ifm-color-primary-dark);
+}
+
+.saveButton {
+  flex: 1;
+  background: var(--ifm-color-success);
+  color: white;
+}
+
+.saveButton:hover:not(:disabled) {
+  background: var(--ifm-color-success-dark);
+}
+
+.saveButton:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.cancelButton {
+  flex: 1;
+  background: var(--ifm-color-emphasis-300);
+  color: var(--ifm-font-color-base);
+}
+
+.cancelButton:hover:not(:disabled) {
+  background: var(--ifm-color-emphasis-400);
+}
+
+.signOutButton {
+  background: var(--ifm-color-danger);
+  color: white;
+}
+
+.signOutButton:hover {
+  background: var(--ifm-color-danger-dark);
+}
+
+.message {
+  padding: 1rem;
+  border-radius: 6px;
+  margin-bottom: 1.5rem;
+  font-weight: 500;
+}
+
+.message.success {
+  background: var(--ifm-color-success-lightest);
+  color: var(--ifm-color-success-darkest);
+  border: 1px solid var(--ifm-color-success-light);
+}
+
+.message.error {
+  background: var(--ifm-color-danger-lightest);
+  color: var(--ifm-color-danger-darkest);
+  border: 1px solid var(--ifm-color-danger-light);
+}
+
+.notLoggedIn {
+  text-align: center;
+  padding: 4rem 2rem;
+}
+
+.notLoggedIn h2 {
+  margin-bottom: 1rem;
+}
+
+.loginButton {
+  display: inline-block;
+  padding: 0.75rem 2rem;
+  background: var(--ifm-color-primary);
+  color: white;
+  border-radius: 6px;
+  text-decoration: none;
+  font-weight: 600;
+  margin-top: 1rem;
+  transition: background 0.2s ease;
+}
+
+.loginButton:hover {
+  background: var(--ifm-color-primary-dark);
+  color: white;
+  text-decoration: none;
+}
+
+/* Dark mode */
+html[data-theme='dark'] .profileHeader {
+  background: var(--ifm-color-emphasis-200);
+}
