@@ -9,7 +9,7 @@ export default {
   "favicon": "img/favicon.ico",
   "customFields": {
     "SUPABASE_URL": "https://yndqobmkdauicfrlfnss.supabase.co",
-    "SUPABASE_ANON_KEY": "sb_secret_KQBum5ASBaas-hVQx-Pg3g_VV-uLddh"
+    "SUPABASE_ANON_KEY": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InluZHFvYm1rZGF1aWNmcmxmbnNzIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjUzNzQ3OTgsImV4cCI6MjA4MDk1MDc5OH0.GDoqhdC5ZmihAkRdnPOVQ5fkI75d0a6KDCLtF1eg2mw"
   },
   "markdown": {
     "mermaid": true,

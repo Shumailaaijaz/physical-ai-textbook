@@ -2,10 +2,9 @@ import { createClient } from '@supabase/supabase-js';
 
 // Get config from Docusaurus customFields
 const getSupabaseConfig = () => {
-  // In Docusaurus, we need to access customFields from the site config
-  // For build-time, use hardcoded values (will be replaced in actual usage)
+  // Supabase configuration for authentication
   const supabaseUrl = 'https://yndqobmkdauicfrlfnss.supabase.co';
-  const supabaseAnonKey = 'sb_secret_KQBum5ASBaas-hVQx-Pg3g_VV-uLddh';
+  const supabaseAnonKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InluZHFvYm1rZGF1aWNmcmxmbnNzIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjUzNzQ3OTgsImV4cCI6MjA4MDk1MDc5OH0.GDoqhdC5ZmihAkRdnPOVQ5fkI75d0a6KDCLtF1eg2mw';
 
   return { supabaseUrl, supabaseAnonKey };
 };
