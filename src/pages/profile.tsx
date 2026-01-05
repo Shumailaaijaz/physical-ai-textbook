@@ -1,14 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import Layout from '@theme/Layout';
 import { AuthProvider, useAuth } from '../components/Auth/AuthProvider';
-import styles from '../components/Auth/Auth.module.css';
+import styles from './profile.module.css';
 
 function ProfileContent() {
-  const { user, profile, loading, updateProfile } = useAuth();
+  const { user, profile, session, loading, updateProfile, signOut } = useAuth();
   const [editing, setEditing] = useState(false);
   const [saving, setSaving] = useState(false);
-  const [success, setSuccess] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+  const [message, setMessage] = useState<{ type: 'success' | 'error'; text: string } | null>(null);
 
   const [pythonSkill, setPythonSkill] = useState('');
   const [rosExperience, setRosExperience] = useState('');
@@ -30,22 +29,25 @@ function ProfileContent() {
     return <div style={{ textAlign: 'center', padding: '3rem' }}>Loading...</div>;
   }
 
-  if (!user) {
+  if (!user || !session) {
     return (
-      <div style={{ textAlign: 'center', padding: '3rem' }}>
-        <h2>Please sign in to view your profile</h2>
-        <a href="/login" style={{ color: 'var(--ifm-color-primary)' }}>
-          Sign in here
+      <div className={styles.notLoggedIn}>
+        <h2>Please Log In</h2>
+        <p>You need to be logged in to view your profile.</p>
+        <a href="/login" className={styles.loginButton}>
+          Go to Login
         </a>
       </div>
     );
   }
 
+  const userEmail = session.user?.email || '';
+  const userName = userEmail.split('@')[0];
+
   const handleSave = async (e: React.FormEvent) => {
     e.preventDefault();
     setSaving(true);
-    setError(null);
-    setSuccess(false);
+    setMessage(null);
 
     try {
       await updateProfile({
@@ -59,38 +61,58 @@ function ProfileContent() {
         updated_at: new Date().toISOString(),
       });
 
-      setSuccess(true);
+      setMessage({ type: 'success', text: 'Profile updated successfully!' });
       setEditing(false);
 
-      setTimeout(() => setSuccess(false), 3000);
+      setTimeout(() => setMessage(null), 3000);
     } catch (err: any) {
-      setError(err.message || 'Failed to update profile');
+      setMessage({ type: 'error', text: err.message || 'Failed to update profile' });
     } finally {
       setSaving(false);
     }
   };
 
   return (
-    <div className={styles.authForm}>
-      <h2>Your Profile</h2>
+    <div className={styles.profileContainer}>
+      {/* Header Section with User Info */}
+      <div className={styles.profileHeader}>
+        <div className={styles.avatarLarge}>
+          {userName.charAt(0).toUpperCase()}
+        </div>
+        <div className={styles.headerInfo}>
+          <h1>{userName}</h1>
+          <p className={styles.userEmail}>{userEmail}</p>
+          <p className={styles.joinedDate}>
+            Member since {new Date(session.user.created_at || '').toLocaleDateString()}
+          </p>
+        </div>
+      </div>
 
-      {success && (
-        <div style={{
-          padding: '0.75rem',
-          marginBottom: '1rem',
-          backgroundColor: 'var(--ifm-color-success-lightest)',
-          color: 'var(--ifm-color-success-darkest)',
-          border: '1px solid var(--ifm-color-success-light)',
-          borderRadius: '4px'
-        }}>
-          ✓ Profile updated successfully!
+      {/* Message Display */}
+      {message && (
+        <div className={`${styles.message} ${styles[message.type]}`}>
+          {message.type === 'success' ? '✓' : '⚠️'} {message.text}
         </div>
       )}
 
-      {error && <div className={styles.error}>⚠️ {error}</div>}
+      {/* Personalization Settings Section */}
+      <div className={styles.section}>
+        <div className={styles.sectionHeader}>
+          <h2>Personalization Settings</h2>
+          {!editing && (
+            <button onClick={() => setEditing(true)} className={styles.editButton}>
+              Edit
+            </button>
+          )}
+        </div>
+
+        <p className={styles.sectionDescription}>
+          These settings help us tailor content and recommendations to your skill level and resources.
+        </p>
 
       <form onSubmit={handleSave}>
-        <div className={styles.formGroup}>
+        <div className={styles.settingsGrid}>
+        <div className={styles.settingItem}>
           <label>Python Programming Skill</label>
           {editing ? (
             <select
@@ -98,18 +120,18 @@ function ProfileContent() {
               onChange={(e) => setPythonSkill(e.target.value)}
               required
             >
-              <option value="beginner">Beginner</option>
-              <option value="intermediate">Intermediate</option>
-              <option value="advanced">Advanced</option>
+              <option value="beginner">Beginner (new to programming)</option>
+              <option value="intermediate">Intermediate (1-2 years experience)</option>
+              <option value="advanced">Advanced (3+ years experience)</option>
             </select>
           ) : (
-            <div style={{ padding: '0.75rem', backgroundColor: 'var(--ifm-color-emphasis-100)', borderRadius: '4px' }}>
+            <div className={styles.settingValue}>
               {pythonSkill || 'Not set'}
             </div>
           )}
         </div>
 
-        <div className={styles.formGroup}>
+        <div className={styles.settingItem}>
           <label>ROS / ROS 2 Experience</label>
           {editing ? (
             <select
@@ -117,19 +139,19 @@ function ProfileContent() {
               onChange={(e) => setRosExperience(e.target.value)}
               required
             >
-              <option value="none">None</option>
-              <option value="basic">Basic</option>
-              <option value="intermediate">Intermediate</option>
-              <option value="advanced">Advanced</option>
+              <option value="none">None (first time)</option>
+              <option value="basic">Basic (completed tutorials)</option>
+              <option value="intermediate">Intermediate (built projects)</option>
+              <option value="advanced">Advanced (production systems)</option>
             </select>
           ) : (
-            <div style={{ padding: '0.75rem', backgroundColor: 'var(--ifm-color-emphasis-100)', borderRadius: '4px' }}>
+            <div className={styles.settingValue}>
               {rosExperience || 'Not set'}
             </div>
           )}
         </div>
 
-        <div className={styles.formGroup}>
+        <div className={styles.settingItem}>
           <label>Linux / Command Line Familiarity</label>
           {editing ? (
             <select
@@ -137,19 +159,19 @@ function ProfileContent() {
               onChange={(e) => setLinuxFamiliarity(e.target.value)}
               required
             >
-              <option value="none">None</option>
-              <option value="basic">Basic</option>
-              <option value="intermediate">Intermediate</option>
-              <option value="advanced">Advanced</option>
+              <option value="none">None (never used terminal)</option>
+              <option value="basic">Basic (can navigate files)</option>
+              <option value="intermediate">Intermediate (comfortable with bash)</option>
+              <option value="advanced">Advanced (write shell scripts)</option>
             </select>
           ) : (
-            <div style={{ padding: '0.75rem', backgroundColor: 'var(--ifm-color-emphasis-100)', borderRadius: '4px' }}>
+            <div className={styles.settingValue}>
               {linuxFamiliarity || 'Not set'}
             </div>
           )}
         </div>
 
-        <div className={styles.formGroup}>
+        <div className={styles.settingItem}>
           <label>GPU Access</label>
           {editing ? (
             <select
@@ -159,17 +181,17 @@ function ProfileContent() {
             >
               <option value="none">None (CPU only)</option>
               <option value="integrated">Integrated GPU</option>
-              <option value="dedicated_consumer">Dedicated GPU (Consumer)</option>
-              <option value="dedicated_professional">Professional GPU</option>
+              <option value="dedicated_consumer">Dedicated GPU (GTX/RTX 20xx-40xx)</option>
+              <option value="dedicated_professional">Professional GPU (A100/H100)</option>
             </select>
           ) : (
-            <div style={{ padding: '0.75rem', backgroundColor: 'var(--ifm-color-emphasis-100)', borderRadius: '4px' }}>
+            <div className={styles.settingValue}>
               {gpuAccess || 'Not set'}
             </div>
           )}
         </div>
 
-        <div className={styles.formGroup}>
+        <div className={styles.settingItem}>
           <label>Hardware Budget</label>
           {editing ? (
             <select
@@ -177,59 +199,63 @@ function ProfileContent() {
               onChange={(e) => setBudgetTier(e.target.value)}
               required
             >
-              <option value="simulation_only">Simulation Only</option>
-              <option value="budget_hardware">Budget Hardware</option>
-              <option value="research_grade">Research Grade</option>
+              <option value="simulation_only">Simulation Only (Cloud/Codespaces)</option>
+              <option value="budget_hardware">Budget Hardware (&lt; $500)</option>
+              <option value="research_grade">Research Grade ($2000+)</option>
             </select>
           ) : (
-            <div style={{ padding: '0.75rem', backgroundColor: 'var(--ifm-color-emphasis-100)', borderRadius: '4px' }}>
+            <div className={styles.settingValue}>
               {budgetTier || 'Not set'}
             </div>
           )}
         </div>
-
-        <div style={{ display: 'flex', gap: '1rem', marginTop: '1.5rem' }}>
-          {editing ? (
-            <>
-              <button
-                type="submit"
-                className={styles.submitButton}
-                disabled={saving}
-                style={{ flex: 1 }}
-              >
-                {saving ? 'Saving...' : 'Save Changes'}
-              </button>
-              <button
-                type="button"
-                onClick={() => {
-                  setEditing(false);
-                  setError(null);
-                  // Reset to current profile values
-                  if (profile) {
-                    setPythonSkill(profile.python_skill || '');
-                    setRosExperience(profile.ros_experience || '');
-                    setLinuxFamiliarity(profile.linux_familiarity || '');
-                    setGpuAccess(profile.gpu_access || '');
-                    setBudgetTier(profile.budget_tier || '');
-                  }
-                }}
-                className={styles.submitButton}
-                style={{ flex: 1, backgroundColor: 'var(--ifm-color-emphasis-400)' }}
-              >
-                Cancel
-              </button>
-            </>
-          ) : (
-            <button
-              type="button"
-              onClick={() => setEditing(true)}
-              className={styles.submitButton}
-            >
-              Edit Profile
-            </button>
-          )}
         </div>
+
+        {editing && (
+        <div className={styles.buttonGroup}>
+          <button
+            type="submit"
+            className={styles.saveButton}
+            disabled={saving}
+          >
+            {saving ? 'Saving...' : 'Save Changes'}
+          </button>
+          <button
+            type="button"
+            onClick={() => {
+              setEditing(false);
+              setMessage(null);
+              // Reset to current profile values
+              if (profile) {
+                setPythonSkill(profile.python_skill || '');
+                setRosExperience(profile.ros_experience || '');
+                setLinuxFamiliarity(profile.linux_familiarity || '');
+                setGpuAccess(profile.gpu_access || '');
+                setBudgetTier(profile.budget_tier || '');
+              }
+            }}
+            className={styles.cancelButton}
+          >
+            Cancel
+          </button>
+        </div>
+        )}
       </form>
+      </div>
+
+      {/* Account Actions */}
+      <div className={styles.section}>
+        <h2>Account</h2>
+        <button
+          onClick={async () => {
+            await signOut();
+            window.location.href = '/physical-ai-textbook/';
+          }}
+          className={styles.signOutButton}
+        >
+          Sign Out
+        </button>
+      </div>
     </div>
   );
 }
